@@ -938,7 +938,7 @@ def monter_view():
                 st.success(get_text("update_success"))
         else: st.error(get_text("save_error"))
 
-        def get_localized_hup_status(saved_status):
+def get_localized_hup_status(saved_status):
     """
     Tłumaczy zapisany w bazie status HÜP na aktualny język interfejsu.
     Obsługuje przypadki, gdy w bazie jest zapisane po PL, a oglądamy po DE.
@@ -965,7 +965,7 @@ def monter_view():
         target_key = "opt_hup_std"
     elif saved_status in m_variants:
         target_key = "opt_hup_m"
-    elif saved_status in ["Tak", "Ja", "Yes"]: # Czasem zdarza się samo "Tak"
+    elif saved_status in ["Tak", "Ja", "Yes"]: 
         target_key = "opt_hup_yes"
 
     # Jeśli znaleźliśmy klucz, zwracamy tłumaczenie w obecnym języku
