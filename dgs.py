@@ -650,6 +650,7 @@ def admin_view():
     df = load_all_data()
     t1, t2, t3, t4, t5, t6 = st.tabs([get_text("tab_day"), get_text("tab_month"), get_text("tab_emp"), get_text("tab_db"), get_text("tab_users"), get_text("tab_pdf")])
 
+    # --- TAB 1: DZIENNY ---
     with t1:
         if df.empty: st.info(get_text("no_data"))
         else:
@@ -664,6 +665,7 @@ def admin_view():
                         st.subheader(f"{get_text('team_header')} {team.upper()}")
                         st.dataframe(t_data[["address","object_num","we_count","gfta_sum","activation_sum"]], hide_index=True)
 
+    # --- TAB 2: MIESIĘCZNY ---
     with t2:
         if df.empty: st.info(get_text("no_data"))
         else:
@@ -683,6 +685,7 @@ def admin_view():
             st.metric(f"{get_text('lbl_total_hours')}: {sel_emp}", f"{tot_h:.2f} h")
             if w_logs: st.dataframe(pd.DataFrame(w_logs))
 
+    # --- TAB 3: PRACOWNICY (POPRAWIONE) ---
     with t3:
         c_f, c_l = st.columns(2)
         with c_f.form("add_e"):
@@ -690,14 +693,25 @@ def admin_view():
             ct = st.radio(get_text("lbl_contract_type"), ["B2B", "Contract"])
             if st.form_submit_button(get_text("add_emp_btn")) and nm: 
                 if add_employee(nm, ct): st.success("OK"); st.rerun()
+        
         with c_l:
-            for n in get_employees():
-                c1, c2 = st.columns([4,1])
-                c1.write(n)
-                if c2.button("X", key=f"d_{n}"): remove_employee(n); st.rerun()
+            # Tutaj była zmiana: używamy get_employees_map() zamiast get_employees()
+            emp_map = get_employees_map()
+            if emp_map:
+                for name, c_type in emp_map.items():
+                    c1, c2 = st.columns([4,1])
+                    c_label = "B2B" if c_type == "B2B" else "Umowa"
+                    c1.write(f"👤 **{name}** [{c_label}]")
+                    if c2.button("X", key=f"d_{name}"): 
+                        remove_employee(name)
+                        st.rerun()
+            else:
+                st.info("Brak pracowników.")
 
+    # --- TAB 4: BAZA DANYCH ---
     with t4: st.dataframe(df)
 
+    # --- TAB 5: UŻYTKOWNICY SYSTEMU ---
     with t5:
         with st.expander(get_text("add_user_header")):
             with st.form("au"):
@@ -712,6 +726,7 @@ def admin_view():
             if row['username'] != st.session_state['username'] and c3.button("X", key=f"du_{row['username']}"):
                 delete_system_user(row['username']); st.rerun()
 
+    # --- TAB 6: RAPORTY PDF ---
     with t6:
         d1, d2 = st.columns(2)
         sd = d1.date_input("Start", datetime.now().replace(day=1))
