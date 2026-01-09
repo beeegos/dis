@@ -938,6 +938,43 @@ def monter_view():
                 st.success(get_text("update_success"))
         else: st.error(get_text("save_error"))
 
+        def get_localized_hup_status(saved_status):
+    """
+    Tłumaczy zapisany w bazie status HÜP na aktualny język interfejsu.
+    Obsługuje przypadki, gdy w bazie jest zapisane po PL, a oglądamy po DE.
+    """
+    if not saved_status:
+        return "-"
+        
+    # Lista wszystkich możliwych wariantów "NIE" (zapisanych w bazie)
+    no_variants = ["Nie", "Nein", "No"]
+    # Lista wariantów "WYMIANA"
+    change_variants = ["Wymiana na M-Hüp", "Austausch gegen M-Hüp", "Exchange to M-Hüp"]
+    # Warianty standardowe (są takie same w każdym języku, ale dla porządku)
+    std_variants = ["Hüp"]
+    m_variants = ["M-Hüp"]
+
+    # Logika mapowania na klucz słownika TRANSLATIONS
+    target_key = None
+    
+    if saved_status in no_variants:
+        target_key = "opt_hup_no"
+    elif saved_status in change_variants:
+        target_key = "opt_hup_change"
+    elif saved_status in std_variants:
+        target_key = "opt_hup_std"
+    elif saved_status in m_variants:
+        target_key = "opt_hup_m"
+    elif saved_status in ["Tak", "Ja", "Yes"]: # Czasem zdarza się samo "Tak"
+        target_key = "opt_hup_yes"
+
+    # Jeśli znaleźliśmy klucz, zwracamy tłumaczenie w obecnym języku
+    if target_key:
+        return get_text(target_key)
+    
+    # Jeśli to coś innego (np. pusty string), zwracamy oryginał
+    return saved_status
+
 def admin_view():
     disp = st.session_state.get('display_name') or st.session_state['username']
     st.sidebar.warning(f"{get_text('sidebar_admin_warning')} {disp}")
@@ -949,7 +986,7 @@ def admin_view():
         get_text("tab_db"), get_text("tab_users"), get_text("tab_pdf")
     ])
 
-    # --- TAB 1: DZIENNY (NAPRAWIONY) ---
+    # --- TAB 1: DZIENNY (POPRAWIONE TŁUMACZENIE HÜP) ---
     with t1:
         if df.empty:
             st.info(get_text("no_data"))
@@ -962,13 +999,11 @@ def admin_view():
             if d_df.empty:
                 st.info(get_text("no_reports_day"))
             else:
-                # Iteracja po zespołach
                 for team in d_df['team_name'].unique():
                     team_data = d_df[d_df['team_name'] == team]
                     with st.container(border=True):
                         st.subheader(f"{get_text('team_header')} {team.upper()}")
                         
-                        # Zmienne do sumowania dnia dla danego teamu
                         daily_total_hours = 0
                         daily_total_we = 0
                         daily_total_gfta = 0
@@ -990,11 +1025,14 @@ def admin_view():
                             daily_total_ont += (row['ont_gpon_sum'] + row['ont_xgs_sum'])
                             daily_total_activations += row['activation_sum']
                             
-                            hs = row.get('hup_status')
-                            if hs and hs != get_text("opt_hup_no") and hs != "Nie":
+                            # Tłumaczymy status z bazy, aby sprawdzić czy jest "Nie" w obecnym języku
+                            raw_hup = row.get('hup_status')
+                            localized_hup = get_localized_hup_status(raw_hup)
+                            
+                            # Jeśli status to nie "Nie" (w obecnym języku) i nie pusty, to liczymy jako zrobiony
+                            if localized_hup and localized_hup != get_text("opt_hup_no") and localized_hup != "-":
                                 daily_hup_count += 1
 
-                        # Przygotowanie zakładek (Summary + Raporty indywidualne)
                         report_indices = team_data.index.tolist()
                         tab_labels = [get_text("lbl_tab_summary")] 
                         for idx in report_indices:
@@ -1005,7 +1043,6 @@ def admin_view():
                         
                         tabs = st.tabs(tab_labels)
                         
-                        # --- ZAKŁADKA PODSUMOWANIE ---
                         for i, tab in enumerate(tabs):
                             with tab:
                                 if i == 0:
@@ -1018,7 +1055,6 @@ def admin_view():
                                     cols_sum[4].metric(get_text("metric_activations"), daily_total_activations)
                                     cols_sum[5].metric(get_text("metric_hup"), daily_hup_count)
                                 else:
-                                    # --- SZCZEGÓŁY POJEDYNCZEGO RAPORTU ---
                                     row_idx = report_indices[i-1]
                                     row = team_data.loc[row_idx]
                                     
@@ -1040,9 +1076,10 @@ def admin_view():
                                     r_gfta = row['gfta_sum']
                                     r_we = row['we_count']
                                     r_tech = row['technology_type']
-                                    r_hup_stat = row.get('hup_status', '-')
                                     
-                                    # Logika wyświetlania głównego materiału (Kanal vs Srv)
+                                    # TUTAJ UŻYWAMY NOWEJ FUNKCJI TŁUMACZĄCEJ
+                                    r_hup_stat = get_localized_hup_status(row.get('hup_status', '-'))
+                                    
                                     metric_label_mat = get_text("metric_kanal")
                                     metric_unit_mat = "m"
                                     target_key = "Metalikanal 30x30"
@@ -1094,7 +1131,6 @@ def admin_view():
                                     if active_flats:
                                         st.write(f"**{get_text('lbl_activated_list')}** {', '.join(active_flats)}")
                                         
-                                    # Statusy i materiały w tabelce
                                     def format_status(status, reason, yes_val, no_val):
                                         if status == yes_val: return "✅"
                                         elif status == no_val: return f"❌ {reason}"
