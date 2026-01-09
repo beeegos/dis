@@ -648,22 +648,186 @@ def admin_view():
     if st.sidebar.button(get_text("logout_btn")): logout()
     st.title(get_text("dash_title"))
     df = load_all_data()
-    t1, t2, t3, t4, t5, t6 = st.tabs([get_text("tab_day"), get_text("tab_month"), get_text("tab_emp"), get_text("tab_db"), get_text("tab_users"), get_text("tab_pdf")])
+    t1, t2, t3, t4, t5, t6 = st.tabs([
+        get_text("tab_day"), get_text("tab_month"), get_text("tab_emp"), 
+        get_text("tab_db"), get_text("tab_users"), get_text("tab_pdf")
+    ])
 
-    # --- TAB 1: DZIENNY ---
+    # --- TAB 1: DZIENNY (NAPRAWIONY) ---
     with t1:
-        if df.empty: st.info(get_text("no_data"))
+        if df.empty:
+            st.info(get_text("no_data"))
         else:
             df['date'] = pd.to_datetime(df['date'])
+            st.header(get_text("day_summary_header"))
             sel_day = st.date_input(get_text("pick_day"), datetime.now())
             d_df = df[df['date'].dt.date == sel_day]
-            if d_df.empty: st.info(get_text("no_reports_day"))
+            
+            if d_df.empty:
+                st.info(get_text("no_reports_day"))
             else:
+                # Iteracja po zespołach
                 for team in d_df['team_name'].unique():
-                    t_data = d_df[d_df['team_name'] == team]
+                    team_data = d_df[d_df['team_name'] == team]
                     with st.container(border=True):
                         st.subheader(f"{get_text('team_header')} {team.upper()}")
-                        st.dataframe(t_data[["address","object_num","we_count","gfta_sum","activation_sum"]], hide_index=True)
+                        
+                        # Zmienne do sumowania dnia dla danego teamu
+                        daily_total_hours = 0
+                        daily_total_we = 0
+                        daily_total_gfta = 0
+                        daily_total_ont = 0
+                        daily_total_activations = 0
+                        daily_hup_count = 0
+                        
+                        # Obliczanie sum
+                        for idx, row in team_data.iterrows():
+                            if row['workers_json']:
+                                try:
+                                    workers = json.loads(row['workers_json'])
+                                    for w in workers:
+                                        daily_total_hours += w.get('calculated_hours', 0)
+                                except: pass
+                            
+                            daily_total_we += row['we_count']
+                            daily_total_gfta += row['gfta_sum']
+                            daily_total_ont += (row['ont_gpon_sum'] + row['ont_xgs_sum'])
+                            daily_total_activations += row['activation_sum']
+                            
+                            hs = row.get('hup_status')
+                            if hs and hs != get_text("opt_hup_no") and hs != "Nie":
+                                daily_hup_count += 1
+
+                        # Przygotowanie zakładek (Summary + Raporty indywidualne)
+                        report_indices = team_data.index.tolist()
+                        tab_labels = [get_text("lbl_tab_summary")] 
+                        for idx in report_indices:
+                            row = team_data.loc[idx]
+                            label = f"{row['address']} ({row['object_num']})"
+                            if not label or label == " ()": label = f"Raport #{idx}"
+                            tab_labels.append(label)
+                        
+                        tabs = st.tabs(tab_labels)
+                        
+                        # --- ZAKŁADKA PODSUMOWANIE ---
+                        for i, tab in enumerate(tabs):
+                            with tab:
+                                if i == 0:
+                                    st.caption(f"**{get_text('total_day_label')}**")
+                                    cols_sum = st.columns(6)
+                                    cols_sum[0].metric(get_text("metric_hours"), f"{daily_total_hours:.1f} h")
+                                    cols_sum[1].metric(get_text("metric_we"), daily_total_we)
+                                    cols_sum[2].metric(get_text("metric_gfta"), daily_total_gfta)
+                                    cols_sum[3].metric(get_text("metric_ont"), daily_total_ont)
+                                    cols_sum[4].metric(get_text("metric_activations"), daily_total_activations)
+                                    cols_sum[5].metric(get_text("metric_hup"), daily_hup_count)
+                                else:
+                                    # --- SZCZEGÓŁY POJEDYNCZEGO RAPORTU ---
+                                    row_idx = report_indices[i-1]
+                                    row = team_data.loc[row_idx]
+                                    
+                                    report_hours = 0
+                                    workers_details_list = []
+                                    if row['workers_json']:
+                                        try:
+                                            w_data = json.loads(row['workers_json'])
+                                            for w in w_data:
+                                                report_hours += w.get('calculated_hours', 0)
+                                                if 'display_start' in w and 'display_end' in w:
+                                                    workers_details_list.append(f"{w['name']} {w['display_start']} - {w['display_end']} ({w['break']} min)")
+                                                else:
+                                                    s_time = str(w['start'])[:5]
+                                                    e_time = str(w['end'])[:5]
+                                                    workers_details_list.append(f"{w['name']} {s_time}-{e_time} ({w['break']})")
+                                        except: pass
+                                    
+                                    r_gfta = row['gfta_sum']
+                                    r_we = row['we_count']
+                                    r_tech = row['technology_type']
+                                    r_hup_stat = row.get('hup_status', '-')
+                                    
+                                    # Logika wyświetlania głównego materiału (Kanal vs Srv)
+                                    metric_label_mat = get_text("metric_kanal")
+                                    metric_unit_mat = "m"
+                                    target_key = "Metalikanal 30x30"
+                                    if r_tech == "Srv":
+                                        metric_label_mat = get_text("metric_srv")
+                                        metric_unit_mat = "st."
+                                        target_key = "Serveschrank"
+                                    
+                                    r_mat_val = 0
+                                    mats = {}
+                                    if row['materials_json']:
+                                        try:
+                                            mats = json.loads(row['materials_json'])
+                                            r_mat_val = mats.get(target_key, 0)
+                                        except: pass
+                                        
+                                    c1, c2, c3, c4 = st.columns(4)
+                                    c1.metric(get_text("metric_hours"), f"{report_hours:.1f} h")
+                                    c2.metric(get_text("metric_we"), r_we)
+                                    c3.metric(metric_label_mat, f"{r_mat_val} {metric_unit_mat}")
+                                    c4.metric(get_text("metric_hup_status"), r_hup_stat)
+
+                                    st.divider()
+                                    st.caption(f"{get_text('metric_tech_used')}: **{r_tech}**")
+
+                                    if workers_details_list:
+                                        st.write(f"**{get_text('lbl_worker_hours')}**")
+                                        for w_det in workers_details_list:
+                                            st.write(f"• {w_det}") 
+
+                                    st.divider()
+
+                                    active_flats = []
+                                    gfta_flats = []
+                                    if row['work_table_json']:
+                                        try:
+                                            wtable = json.loads(row['work_table_json'])
+                                            for entry in wtable:
+                                                flat_num = str(entry.get('Wohnung', ''))
+                                                if entry.get('Activation'):
+                                                    active_flats.append(flat_num)
+                                                if entry.get('Gfta'):
+                                                    gfta_flats.append(flat_num)
+                                        except: pass
+
+                                    if gfta_flats:
+                                        st.write(f"**{get_text('lbl_gfta_list')}** {', '.join(gfta_flats)}")
+                                    
+                                    if active_flats:
+                                        st.write(f"**{get_text('lbl_activated_list')}** {', '.join(active_flats)}")
+                                        
+                                    # Statusy i materiały w tabelce
+                                    def format_status(status, reason, yes_val, no_val):
+                                        if status == yes_val: return "✅"
+                                        elif status == no_val: return f"❌ {reason}"
+                                        return str(status)
+                                    
+                                    mat_str = "-"
+                                    if mats:
+                                        items = [f"{k}: {v}" for k,v in mats.items() if v>0]
+                                        if items: mat_str = ", ".join(items)
+
+                                    st_addr = format_status(row['address_finished'], row['address_finished_reason'], "Tak", "Nie")
+                                    st_mfr = format_status(row['mfr_ready'], row['mfr_ready_reason'], "Tak", "Nie")
+
+                                    single_view = pd.DataFrame([{
+                                        "mat": mat_str,
+                                        "st_addr": st_addr,
+                                        "st_mfr": st_mfr
+                                    }])
+                                    
+                                    st.dataframe(
+                                        single_view,
+                                        column_config={
+                                            "mat": get_text("col_materials"),
+                                            "st_addr": get_text("col_status_addr"),
+                                            "st_mfr": get_text("col_status_mfr")
+                                        },
+                                        hide_index=True,
+                                        width='stretch'
+                                    )
 
     # --- TAB 2: MIESIĘCZNY ---
     with t2:
@@ -678,14 +842,16 @@ def admin_view():
             w_logs, tot_h = [], 0
             for _, row in m_df.iterrows():
                 if row['workers_json']:
-                    for w in json.loads(row['workers_json']):
-                        if w['name'] == sel_emp:
-                            w_logs.append({"Data": row['date'], "H": w['calculated_hours'], "Addr": row['address']})
-                            tot_h += w['calculated_hours']
+                    try:
+                        for w in json.loads(row['workers_json']):
+                            if w['name'] == sel_emp:
+                                w_logs.append({"Data": row['date'], "H": w['calculated_hours'], "Addr": row['address']})
+                                tot_h += w['calculated_hours']
+                    except: pass
             st.metric(f"{get_text('lbl_total_hours')}: {sel_emp}", f"{tot_h:.2f} h")
             if w_logs: st.dataframe(pd.DataFrame(w_logs))
 
-    # --- TAB 3: PRACOWNICY (POPRAWIONE) ---
+    # --- TAB 3: PRACOWNICY ---
     with t3:
         c_f, c_l = st.columns(2)
         with c_f.form("add_e"):
@@ -695,7 +861,6 @@ def admin_view():
                 if add_employee(nm, ct): st.success("OK"); st.rerun()
         
         with c_l:
-            # Tutaj była zmiana: używamy get_employees_map() zamiast get_employees()
             emp_map = get_employees_map()
             if emp_map:
                 for name, c_type in emp_map.items():
