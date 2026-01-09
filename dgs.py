@@ -986,7 +986,7 @@ def admin_view():
         get_text("tab_db"), get_text("tab_users"), get_text("tab_pdf")
     ])
 
-    # --- TAB 1: DZIENNY (POPRAWIONE TŁUMACZENIE HÜP) ---
+    # --- TAB 1: DZIENNY ---
     with t1:
         if df.empty:
             st.info(get_text("no_data"))
@@ -1011,7 +1011,6 @@ def admin_view():
                         daily_total_activations = 0
                         daily_hup_count = 0
                         
-                        # Obliczanie sum
                         for idx, row in team_data.iterrows():
                             if row['workers_json']:
                                 try:
@@ -1025,11 +1024,9 @@ def admin_view():
                             daily_total_ont += (row['ont_gpon_sum'] + row['ont_xgs_sum'])
                             daily_total_activations += row['activation_sum']
                             
-                            # Tłumaczymy status z bazy, aby sprawdzić czy jest "Nie" w obecnym języku
                             raw_hup = row.get('hup_status')
                             localized_hup = get_localized_hup_status(raw_hup)
                             
-                            # Jeśli status to nie "Nie" (w obecnym języku) i nie pusty, to liczymy jako zrobiony
                             if localized_hup and localized_hup != get_text("opt_hup_no") and localized_hup != "-":
                                 daily_hup_count += 1
 
@@ -1076,8 +1073,6 @@ def admin_view():
                                     r_gfta = row['gfta_sum']
                                     r_we = row['we_count']
                                     r_tech = row['technology_type']
-                                    
-                                    # TUTAJ UŻYWAMY NOWEJ FUNKCJI TŁUMACZĄCEJ
                                     r_hup_stat = get_localized_hup_status(row.get('hup_status', '-'))
                                     
                                     metric_label_mat = get_text("metric_kanal")
@@ -1161,27 +1156,73 @@ def admin_view():
                                         width='stretch'
                                     )
 
-    # --- TAB 2: MIESIĘCZNY ---
+    # --- TAB 2: MIESIĘCZNY (NAPRAWIONY) ---
     with t2:
-        if df.empty: st.info(get_text("no_data"))
+        if df.empty:
+            st.info(get_text("no_data"))
         else:
             df['month'] = pd.to_datetime(df['date']).dt.to_period('M').astype(str)
+            all_months = sorted(df['month'].unique(), reverse=True)
+            
             c1, c2 = st.columns(2)
             sel_emp = c1.selectbox(get_text("lbl_emp_select"), get_employees())
-            sel_mon = c2.selectbox(get_text("pick_month"), sorted(df['month'].unique(), reverse=True))
-            
+            sel_mon = c2.selectbox(get_text("pick_month"), all_months)
+
             m_df = df[df['month'] == sel_mon]
-            w_logs, tot_h = [], 0
-            for _, row in m_df.iterrows():
+            
+            worker_logs = []
+            total_month_hours = 0
+            
+            for idx, row in m_df.iterrows():
                 if row['workers_json']:
                     try:
-                        for w in json.loads(row['workers_json']):
-                            if w['name'] == sel_emp:
-                                w_logs.append({"Data": row['date'], "H": w['calculated_hours'], "Addr": row['address']})
-                                tot_h += w['calculated_hours']
-                    except: pass
-            st.metric(f"{get_text('lbl_total_hours')}: {sel_emp}", f"{tot_h:.2f} h")
-            if w_logs: st.dataframe(pd.DataFrame(w_logs))
+                        w_list = json.loads(row['workers_json'])
+                        # Szukamy konkretnego pracownika w liście
+                        target = next((w for w in w_list if w['name'] == sel_emp), None)
+                        if target:
+                            # Próba wyciągnięcia sformatowanych czasów (jeśli są) lub ucięcie sekund
+                            s_disp = target.get('display_start', str(target.get('start', ''))[:5])
+                            e_disp = target.get('display_end', str(target.get('end', ''))[:5])
+                            
+                            log_entry = {
+                                "Data": row['date'],
+                                "Start": s_disp,
+                                "Stop": e_disp,
+                                "Przerwa": target.get('break', 0),
+                                "Godziny": target.get('calculated_hours', 0),
+                                "Adres": f"{row['address']} ({row['object_num']})"
+                            }
+                            worker_logs.append(log_entry)
+                            total_month_hours += log_entry['Godziny']
+                    except:
+                        pass
+            
+            st.metric(f"{get_text('lbl_total_hours')}: {sel_emp} ({sel_mon})", f"{total_month_hours:.2f} h")
+            
+            if worker_logs:
+                log_df = pd.DataFrame(worker_logs)
+                # Sortowanie po dacie
+                log_df['Data'] = pd.to_datetime(log_df['Data'])
+                log_df = log_df.sort_values('Data')
+                log_df['Data'] = log_df['Data'].dt.strftime('%Y-%m-%d')
+                
+                st.dataframe(
+                    log_df,
+                    column_config={
+                        "Godziny": st.column_config.NumberColumn(get_text("metric_hours"), format="%.2f"),
+                        "Adres": st.column_config.TextColumn(get_text("lbl_addr_context"), width="medium")
+                    },
+                    hide_index=True,
+                    width='stretch'
+                )
+            else:
+                st.warning("Brak raportów pracy dla tego pracownika w wybranym miesiącu.")
+
+            st.divider()
+            st.subheader(get_text("chart_team"))
+            if not m_df.empty:
+                team_stats = m_df.groupby('team_name')[['gfta_sum', 'ont_gpon_sum', 'ont_xgs_sum']].sum().reset_index()
+                st.bar_chart(team_stats.set_index('team_name'))
 
     # --- TAB 3: PRACOWNICY ---
     with t3:
