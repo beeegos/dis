@@ -875,14 +875,76 @@ def monter_view():
     st.subheader(get_text("section_1_title"))
     we_count = st.number_input(get_text("lbl_we_count"), min_value=0, step=1, value=get_val('we_count', 0))
     
-    loaded_df = pd.DataFrame(json.loads(loaded_report['work_table_json'])) if (loaded_report and loaded_report['work_table_json']) else pd.DataFrame({
-        "Wohnung": [""] * 12, "Gfta": [False] * 12, "Ont gpon": [False] * 12, "Ont xgs": [False] * 12, "Patch Ont": [False] * 12, "Activation": [False] * 12, 
-    })
-    edited_df = st.data_editor(loaded_df, num_rows="dynamic", width='stretch', column_config={"Wohnung": st.column_config.TextColumn(get_text("col_flat"), width="small"), "Activation": st.column_config.CheckboxColumn(get_text("col_activation"), default=False)})
-    
-    st.info(get_text("tech_label"))
-    tech_idx = TECH_OPTIONS.index(loaded_report['technology_type']) if (loaded_report and loaded_report['technology_type'] in TECH_OPTIONS) else 0
-    selected_tech = st.selectbox(get_text("tech_label"), TECH_OPTIONS, index=tech_idx, label_visibility="collapsed")
+    # Inicjalizacja danych tabeli w session_state
+    if 'current_work_df' not in st.session_state or st.session_state.get('last_loaded_report_id') != current_edit_id:
+        if loaded_report and loaded_report['work_table_json']:
+            st.session_state['current_work_df'] = pd.DataFrame(json.loads(loaded_report['work_table_json']))
+        else:
+            # ZMIANA TUTAJ: Zwiększamy zakres z 12 na 20 mieszkań
+            st.session_state['current_work_df'] = pd.DataFrame({
+                "Wohnung": [str(i+1) for i in range(20)], # Numery 1-20
+                "Gfta": [False] * 20, "Ont gpon": [False] * 20, 
+                "Ont xgs": [False] * 20, "Patch Ont": [False] * 20, "Activation": [False] * 20, 
+            })
+        st.session_state['last_loaded_report_id'] = current_edit_id
+
+    # Przełącznik trybu
+    use_mobile_view = st.toggle("📱 Tryb mobilny (Duże przyciski)", value=True)
+
+    if use_mobile_view:
+        # --- WIDOK MOBILNY ---
+        df = st.session_state['current_work_df']
+        
+        # Lista teraz będzie zawierać 20 pozycji
+        flat_options = df.index.tolist()
+        flat_labels = [f"Poz: {i+1} | Nr: {row['Wohnung']}" for i, row in df.iterrows()]
+        
+        selected_idx = st.selectbox("Wybierz mieszkanie do edycji:", flat_options, format_func=lambda x: flat_labels[x])
+        
+        st.info(f"Edytujesz: **{df.at[selected_idx, 'Wohnung']}**")
+        
+        col_m1, col_m2 = st.columns(2)
+        
+        new_flat_num = col_m1.text_input("Numer mieszkania (Wohnung)", value=df.at[selected_idx, 'Wohnung'])
+        if new_flat_num != df.at[selected_idx, 'Wohnung']:
+            df.at[selected_idx, 'Wohnung'] = new_flat_num
+            st.rerun()
+
+        st.write("---")
+        c_t1, c_t2 = st.columns(2)
+        
+        def update_val(col_name):
+            val = st.session_state[f"mob_{selected_idx}_{col_name}"]
+            st.session_state['current_work_df'].at[selected_idx, col_name] = val
+
+        with c_t1:
+            st.toggle("Gf-TA", value=df.at[selected_idx, 'Gfta'], key=f"mob_{selected_idx}_Gfta", on_change=update_val, args=("Gfta",))
+            st.toggle("ONT GPON", value=df.at[selected_idx, 'Ont gpon'], key=f"mob_{selected_idx}_Ont gpon", on_change=update_val, args=("Ont gpon",))
+            st.toggle("Activation", value=df.at[selected_idx, 'Activation'], key=f"mob_{selected_idx}_Activation", on_change=update_val, args=("Activation",))
+        
+        with c_t2:
+            st.toggle("Patch ONT", value=df.at[selected_idx, 'Patch Ont'], key=f"mob_{selected_idx}_Patch Ont", on_change=update_val, args=("Patch Ont",))
+            st.toggle("ONT XGS", value=df.at[selected_idx, 'Ont xgs'], key=f"mob_{selected_idx}_Ont xgs", on_change=update_val, args=("Ont xgs",))
+        
+        st.write("---")
+        with st.expander("Podgląd całej listy"):
+            st.dataframe(df, hide_index=True)
+            
+        edited_df = df
+
+    else:
+        # --- WIDOK DESKTOPOWY ---
+        edited_df = st.data_editor(
+            st.session_state['current_work_df'],
+            num_rows="dynamic",
+            width='stretch',
+            column_config={
+                "Wohnung": st.column_config.TextColumn(get_text("col_flat"), width="small"),
+                "Activation": st.column_config.CheckboxColumn(get_text("col_activation"), default=False)
+            },
+            key="desktop_editor"
+        )
+        st.session_state['current_work_df'] = edited_df
 
     st.subheader(get_text("section_2_title"))
     hup_status_val = loaded_report.get('hup_status', get_text("opt_hup_no")) if loaded_report else get_text("opt_hup_no")
