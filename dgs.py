@@ -63,6 +63,14 @@ TRANSLATIONS = {
         "lbl_we_count": "Liczba WE",
         "err_we_count": "Uzupełnij liczbę WE i przejdź dalej.",
         
+        # Mobile View Translations
+        "mobile_mode_toggle": "📱 Tryb mobilny (Duże przyciski)",
+        "select_flat_label": "Wybierz mieszkanie do edycji:",
+        "flat_pos_label": "Poz",
+        "editing_info": "Edytujesz:",
+        "flat_number_input": "Numer mieszkania (Wohnung)",
+        "preview_full_list": "Podgląd całej listy",
+
         "section_2_title": "2. Zużyte Materiały",
         "section_3_title": "3. Status Zakończenia",
         
@@ -159,7 +167,7 @@ TRANSLATIONS = {
         "lbl_emp_select": "Wybierz Pracownika",
         "lbl_total_hours": "Suma Godzin",
         "lbl_addr_context": "Adres / Zlecenie",
-        "chart_team": "Instalacje (Team)",
+        "chart_team": "Installationen (Team)",
         "db_header": "Pełny zrzut bazy danych"
     },
     "DE": {
@@ -211,6 +219,14 @@ TRANSLATIONS = {
         "section_1_title": "1. Wohnungsliste",
         "lbl_we_count": "Anzahl WE",
         "err_we_count": "Bitte Anzahl WE ausfüllen und fortfahren.",
+
+        # Mobile View Translations (DE)
+        "mobile_mode_toggle": "📱 Mobiler Modus (Große Tasten)",
+        "select_flat_label": "Wohnung zur Bearbeitung wählen:",
+        "flat_pos_label": "Pos.",
+        "editing_info": "Bearbeitung:",
+        "flat_number_input": "Wohnungsnummer",
+        "preview_full_list": "Vorschau der gesamten Liste",
         
         "section_2_title": "2. Materialverbrauch",
         "section_3_title": "3. Fertigstellungsstatus",
@@ -355,6 +371,14 @@ TRANSLATIONS = {
         "section_1_title": "1. Work List (Apartments)",
         "lbl_we_count": "WE Count",
         "err_we_count": "Fill in WE count and proceed.",
+
+        # Mobile View Translations (ENG)
+        "mobile_mode_toggle": "📱 Mobile Mode (Large Buttons)",
+        "select_flat_label": "Select Apartment to Edit:",
+        "flat_pos_label": "Pos",
+        "editing_info": "Editing:",
+        "flat_number_input": "Apartment Number",
+        "preview_full_list": "Full List Preview",
         
         "section_2_title": "2. Used Materials",
         "section_3_title": "3. Completion Status",
@@ -880,32 +904,32 @@ def monter_view():
         if loaded_report and loaded_report['work_table_json']:
             st.session_state['current_work_df'] = pd.DataFrame(json.loads(loaded_report['work_table_json']))
         else:
-            # ZMIANA TUTAJ: Zwiększamy zakres z 12 na 20 mieszkań
+            # Tabela na 20 mieszkań
             st.session_state['current_work_df'] = pd.DataFrame({
-                "Wohnung": [str(i+1) for i in range(20)], # Numery 1-20
+                "Wohnung": [str(i+1) for i in range(20)], 
                 "Gfta": [False] * 20, "Ont gpon": [False] * 20, 
                 "Ont xgs": [False] * 20, "Patch Ont": [False] * 20, "Activation": [False] * 20, 
             })
         st.session_state['last_loaded_report_id'] = current_edit_id
 
-    # Przełącznik trybu
-    use_mobile_view = st.toggle("📱 Tryb mobilny (Duże przyciski)", value=True)
+    # Przełącznik trybu (TŁUMACZONY)
+    use_mobile_view = st.toggle(get_text("mobile_mode_toggle"), value=True)
 
     if use_mobile_view:
         # --- WIDOK MOBILNY ---
         df = st.session_state['current_work_df']
         
-        # Lista teraz będzie zawierać 20 pozycji
         flat_options = df.index.tolist()
-        flat_labels = [f"Poz: {i+1} | Nr: {row['Wohnung']}" for i, row in df.iterrows()]
+        # Etykiety tłumaczone (Poz / Pos)
+        flat_labels = [f"{get_text('flat_pos_label')}: {i+1} | Nr: {row['Wohnung']}" for i, row in df.iterrows()]
         
-        selected_idx = st.selectbox("Wybierz mieszkanie do edycji:", flat_options, format_func=lambda x: flat_labels[x])
+        selected_idx = st.selectbox(get_text("select_flat_label"), flat_options, format_func=lambda x: flat_labels[x])
         
-        st.info(f"Edytujesz: **{df.at[selected_idx, 'Wohnung']}**")
+        st.info(f"{get_text('editing_info')} **{df.at[selected_idx, 'Wohnung']}**")
         
         col_m1, col_m2 = st.columns(2)
         
-        new_flat_num = col_m1.text_input("Numer mieszkania (Wohnung)", value=df.at[selected_idx, 'Wohnung'])
+        new_flat_num = col_m1.text_input(get_text("flat_number_input"), value=df.at[selected_idx, 'Wohnung'])
         if new_flat_num != df.at[selected_idx, 'Wohnung']:
             df.at[selected_idx, 'Wohnung'] = new_flat_num
             st.rerun()
@@ -927,7 +951,7 @@ def monter_view():
             st.toggle("ONT XGS", value=df.at[selected_idx, 'Ont xgs'], key=f"mob_{selected_idx}_Ont xgs", on_change=update_val, args=("Ont xgs",))
         
         st.write("---")
-        with st.expander("Podgląd całej listy"):
+        with st.expander(get_text("preview_full_list")):
             st.dataframe(df, hide_index=True)
             
         edited_df = df
