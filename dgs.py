@@ -660,7 +660,13 @@ def get_reports_by_team_and_date(team, date_str):
 def get_report_by_id(report_id):
     return run_query("SELECT * FROM reports WHERE id=%s", (report_id,), fetch="one")
 
+# Dodajemy dekorator cache_data
+# ttl=60 oznacza: "pamiętaj te dane przez 60 sekund, potem pobierz świeże"
+@st.cache_data(ttl=60)
 def load_all_data():
+    # To zapytanie pobiera teraz wszystko.
+    # W przyszłości warto zmienić "SELECT *" na konkretne kolumny, 
+    # albo pobierać tylko ostatnie 30 dni (WHERE date > ...)
     data = run_query("SELECT * FROM reports", fetch="all")
     return pd.DataFrame(data) if data else pd.DataFrame()
 
