@@ -1252,14 +1252,15 @@ def admin_view():
             else:
                 st.info("Brak pracowników.")
 
-    # --- TAB 4: BAZA DANYCH ---
+# --- TAB 4: BAZA DANYCH ---
     with t4:
-    st.dataframe(df)
-    st.divider()
-    # Przycisk "ratunkowy" do inicjalizacji tabel (użyj raz i zapomnij)
-    if st.button("🔧 Wymuś inicjalizację bazy (init_db)"):
-        init_db()
-        st.success("Baza zainicjalizowana!")
+        # Tu muszą być wcięcia (4 spacje lub 1 tabulator)
+        st.dataframe(df)
+        
+        st.divider()
+        if st.button("🔧 Wymuś inicjalizację bazy (init_db)"):
+            init_db()
+            st.success("Baza zainicjalizowana!")
 
     # --- TAB 5: UŻYTKOWNICY SYSTEMU ---
     with t5:
