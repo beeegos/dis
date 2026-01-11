@@ -995,6 +995,22 @@ def monter_view():
             key="desktop_editor"
         )
         st.session_state['current_work_df'] = edited_df
+        # --- PRZYWRÓCONY FRAGMENT: WYBÓR TECHNOLOGII ---
+    st.divider()
+    st.info(get_text("tech_label"))
+    
+    # Ustalanie domyślnej wartości (jeśli edycja)
+    tech_idx = 0
+    if loaded_report and loaded_report.get('technology_type') in TECH_OPTIONS:
+        tech_idx = TECH_OPTIONS.index(loaded_report['technology_type'])
+        
+    selected_tech = st.selectbox(
+        get_text("tech_label"), 
+        TECH_OPTIONS, 
+        index=tech_idx, 
+        label_visibility="collapsed"
+    )
+    # -----------------------------------------------
 
     st.subheader(get_text("section_2_title"))
     hup_status_val = loaded_report.get('hup_status', get_text("opt_hup_no")) if loaded_report else get_text("opt_hup_no")
