@@ -65,6 +65,7 @@ TRANSLATIONS = {
         
         # Mobile View Translations
         "mobile_mode_toggle": "📱 Tryb mobilny (Duże przyciski)",
+        "btn_auto_fill": "⚡ Auto-uzupełnij numery mieszkań (z Nr Obiektu)",
         "select_flat_label": "Wybierz mieszkanie do edycji:",
         "flat_pos_label": "Poz",
         "editing_info": "Edytujesz:",
@@ -222,6 +223,7 @@ TRANSLATIONS = {
 
         # Mobile View Translations (DE)
         "mobile_mode_toggle": "📱 Mobiler Modus (Große Tasten)",
+        "btn_auto_fill": "⚡ Wohnungsnummern automatisch ausfüllen",
         "select_flat_label": "Wohnung zur Bearbeitung wählen:",
         "flat_pos_label": "Pos.",
         "editing_info": "Bearbeitung:",
@@ -374,6 +376,7 @@ TRANSLATIONS = {
 
         # Mobile View Translations (ENG)
         "mobile_mode_toggle": "📱 Mobile Mode (Large Buttons)",
+        "btn_auto_fill": "⚡ Auto-fill apartment numbers",
         "select_flat_label": "Select Apartment to Edit:",
         "flat_pos_label": "Pos",
         "editing_info": "Editing:",
@@ -911,6 +914,29 @@ def monter_view():
                 "Ont xgs": [False] * 20, "Patch Ont": [False] * 20, "Activation": [False] * 20, 
             })
         st.session_state['last_loaded_report_id'] = current_edit_id
+
+    # --- NOWA FUNKCJA: AUTO-UZUPEŁNIANIE ---
+    # Sprawdzamy, czy mamy dane do generowania
+    if st.button(get_text("btn_auto_fill")):
+        if obj_num and we_count > 0:
+            df = st.session_state['current_work_df']
+            
+            # Iterujemy od 1 do liczby WE (max 20, bo tyle ma tabela)
+            limit = min(we_count, 20)
+            
+            for i in range(limit):
+                # Generujemy numer: NUMER_OBIEKTU + ITERATOR (np. 73265AAS-163- + 1)
+                # i + 1 ponieważ range startuje od 0
+                generated_num = f"{obj_num}{i+1}"
+                df.at[i, 'Wohnung'] = generated_num
+            
+            # Zapisujemy zmiany i odświeżamy
+            st.session_state['current_work_df'] = df
+            st.success(f"Zaktualizowano {limit} numerów mieszkań!")
+            st.rerun()
+        else:
+            st.warning("Uzupełnij 'Numer Obiektu' (u góry) i 'Liczbę WE', aby użyć tej funkcji.")
+    # ----------------------------------------    
 
     # Przełącznik trybu (TŁUMACZONY)
     use_mobile_view = st.toggle(get_text("mobile_mode_toggle"), value=True)
