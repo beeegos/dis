@@ -1120,7 +1120,7 @@ def admin_view():
         get_text("tab_db"), get_text("tab_users"), get_text("tab_pdf")
     ])
 
-    # --- TAB 1: DZIENNY ---
+    # --- TAB 1: DZIENNY (Z AKTUALIZACJĄ WE/GFTA) ---
     with t1:
         if df.empty:
             st.info(get_text("no_data"))
@@ -1227,7 +1227,12 @@ def admin_view():
                                         
                                     c1, c2, c3, c4 = st.columns(4)
                                     c1.metric(get_text("metric_hours"), f"{report_hours:.1f} h")
-                                    c2.metric(get_text("metric_we"), r_we)
+                                    
+                                    # --- ZMIANA TUTAJ: Wyświetlamy WE i Gf-TA razem ---
+                                    we_label = get_text("metric_we")
+                                    c2.metric(f"{we_label} / Gf-TA", f"{r_we} / {r_gfta}")
+                                    # --------------------------------------------------
+                                    
                                     c3.metric(metric_label_mat, f"{r_mat_val} {metric_unit_mat}")
                                     c4.metric(get_text("metric_hup_status"), r_hup_stat)
 
@@ -1290,7 +1295,7 @@ def admin_view():
                                         width='stretch'
                                     )
 
-    # --- TAB 2: MIESIĘCZNY (NAPRAWIONY) ---
+    # --- TAB 2: MIESIĘCZNY ---
     with t2:
         if df.empty:
             st.info(get_text("no_data"))
@@ -1311,10 +1316,8 @@ def admin_view():
                 if row['workers_json']:
                     try:
                         w_list = json.loads(row['workers_json'])
-                        # Szukamy konkretnego pracownika w liście
                         target = next((w for w in w_list if w['name'] == sel_emp), None)
                         if target:
-                            # Próba wyciągnięcia sformatowanych czasów (jeśli są) lub ucięcie sekund
                             s_disp = target.get('display_start', str(target.get('start', ''))[:5])
                             e_disp = target.get('display_end', str(target.get('end', ''))[:5])
                             
@@ -1335,7 +1338,6 @@ def admin_view():
             
             if worker_logs:
                 log_df = pd.DataFrame(worker_logs)
-                # Sortowanie po dacie
                 log_df['Data'] = pd.to_datetime(log_df['Data'])
                 log_df = log_df.sort_values('Data')
                 log_df['Data'] = log_df['Data'].dt.strftime('%Y-%m-%d')
@@ -1343,6 +1345,10 @@ def admin_view():
                 st.dataframe(
                     log_df,
                     column_config={
+                        "Data": st.column_config.DateColumn(get_text("date_label"), format="YYYY-MM-DD"),
+                        "Start": st.column_config.TextColumn(get_text("start_label")),
+                        "Stop": st.column_config.TextColumn(get_text("end_label")),
+                        "Przerwa": st.column_config.TextColumn(get_text("break_label")),
                         "Godziny": st.column_config.NumberColumn(get_text("metric_hours"), format="%.2f"),
                         "Adres": st.column_config.TextColumn(get_text("lbl_addr_context"), width="medium")
                     },
@@ -1380,11 +1386,9 @@ def admin_view():
             else:
                 st.info("Brak pracowników.")
 
-# --- TAB 4: BAZA DANYCH ---
+    # --- TAB 4: BAZA DANYCH ---
     with t4:
-        # Tu muszą być wcięcia (4 spacje lub 1 tabulator)
         st.dataframe(df)
-        
         st.divider()
         if st.button("🔧 Wymuś inicjalizację bazy (init_db)"):
             init_db()
