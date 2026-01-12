@@ -759,6 +759,103 @@ def create_pdf_report(df, start_date, end_date):
     add_line("Hup", total_hup, "st.")
     return pdf.output(dest='S').encode('latin-1', 'replace')
 
+def generate_custom_csv(df):
+    """
+    Generuje plik CSV zgodny z przesłanym wzorem (Table 1).
+    Separator: średnik (;).
+    Struktura: Wiersz główny z danymi adresu + wiersze dla każdego pracownika.
+    """
+    # Definicja kolumn zgodnie ze wzorem
+    columns = [
+        'ALT', 'Team', 'Adresse', 'We', 'Gfta', 'V', 'von', 'bis', 
+        'LSK', 'W-S', 'AF', 'L', 'Srv-GFTA', 'K', 'M-H', 'H', 
+        'Ont', 'M-K ', 'G-A', 'Serverschrank', 'MultiHUP'
+    ]
+    
+    output_data = []
+
+    for _, row in df.iterrows():
+        # Pobieramy pracowników
+        workers = []
+        if row['workers_json']:
+            try:
+                workers = json.loads(row['workers_json'])
+            except: pass
+            
+        # Jeśli brak pracowników, tworzymy jednego "pustego", żeby raport się wygenerował
+        if not workers:
+            workers = [{"name": "Nieznany", "start": "", "end": "", "calculated_hours": 0}]
+
+        # Dane wspólne dla raportu (Projektowe)
+        r_we = row['we_count']
+        r_activations = row['activation_sum']
+        r_ont = row['ont_gpon_sum'] + row['ont_xgs_sum']
+        r_tech = row['technology_type']
+        
+        # Logika Gf-TA vs Srv-GFTA
+        raw_gfta = row['gfta_sum']
+        val_gfta = raw_gfta if r_tech != "Srv" else ""
+        val_srv_gfta = raw_gfta if r_tech == "Srv" else ""
+
+        # Materiały
+        mk_val = 0
+        srv_val = 0
+        if row['materials_json']:
+            try:
+                mats = json.loads(row['materials_json'])
+                mk_val = mats.get("Metalikanal 30x30", 0)
+                srv_val = mats.get("Serveschrank", 0)
+            except: pass
+            
+        # Status HUP
+        raw_hup = row.get('hup_status', '')
+        val_h = 1 if raw_hup in ['Tak', 'Yes', 'Ja', 'Hüp', 'Hup'] else ""
+        val_mh = 1 if raw_hup in ['M-Hüp', 'Wymiana na M-Hüp', 'Exchange to M-Hüp'] else ""
+        # Jeśli status to "Nie", zostawiamy puste
+
+        # Iterujemy po pracownikach (jeden wiersz na pracownika)
+        for i, w in enumerate(workers):
+            csv_row = {col: "" for col in columns}
+            
+            # Dane pracownika
+            w_name = w.get('name', '')
+            # Dodajemy prefix (BW) jeśli go nie ma
+            if not w_name.startswith("(BW)"):
+                w_name = f"(BW) {w_name}"
+            
+            csv_row['Team'] = w_name
+            # Czas pracy
+            s_disp = w.get('display_start', str(w.get('start', ''))[:5])
+            e_disp = w.get('display_end', str(w.get('end', ''))[:5])
+            csv_row['von'] = s_disp
+            csv_row['bis'] = e_disp
+            csv_row['LSK'] = w.get('calculated_hours', 0)
+
+            # Dane projektowe WYPEŁNIAMY TYLKO W PIERWSZYM WIERSZU (dla pierwszego pracownika)
+            if i == 0:
+                csv_row['ALT'] = row['team_name']
+                csv_row['Adresse'] = f"{row['address']} {row['object_num']}"
+                csv_row['We'] = r_we
+                csv_row['Gfta'] = val_gfta
+                csv_row['Srv-GFTA'] = val_srv_gfta
+                csv_row['V'] = r_activations
+                csv_row['Ont'] = r_ont
+                csv_row['M-K '] = mk_val if mk_val > 0 else ""
+                csv_row['Serverschrank'] = srv_val if srv_val > 0 else ""
+                csv_row['H'] = val_h
+                csv_row['M-H'] = val_mh
+
+            output_data.append(csv_row)
+            
+        # Dodajemy pusty wiersz odstępu między raportami (opcjonalne, dla czytelności jak w Excelu)
+        # output_data.append({col: "" for col in columns})
+
+    # Tworzymy DataFrame
+    export_df = pd.DataFrame(output_data, columns=columns)
+    
+    # Zwracamy jako CSV z separatorem ";" (standard w Excelu w PL/DE)
+    return export_df.to_csv(index=False, sep=';').encode('utf-8-sig')
+
 # --- UI START ---
 # init_db()
 
@@ -1120,19 +1217,37 @@ def admin_view():
         get_text("tab_db"), get_text("tab_users"), get_text("tab_pdf")
     ])
 
-    # --- TAB 1: DZIENNY (Z AKTUALIZACJĄ WE/GFTA) ---
+    # --- TAB 1: DZIENNY ---
     with t1:
         if df.empty:
             st.info(get_text("no_data"))
         else:
             df['date'] = pd.to_datetime(df['date'])
             st.header(get_text("day_summary_header"))
-            sel_day = st.date_input(get_text("pick_day"), datetime.now())
+            
+            # Wybór daty i przycisk CSV w jednym rzędzie
+            c_date, c_csv = st.columns([3, 1])
+            sel_day = c_date.date_input(get_text("pick_day"), datetime.now())
+            
+            # Filtrowanie danych dla wybranego dnia
             d_df = df[df['date'].dt.date == sel_day]
+
+            # Przycisk pobierania CSV (widoczny tylko gdy są dane)
+            if not d_df.empty:
+                csv_data = generate_custom_csv(d_df)
+                file_name = f"Raport_{sel_day}.csv"
+                c_csv.download_button(
+                    label="📥 Pobierz CSV (Tabela 1)",
+                    data=csv_data,
+                    file_name=file_name,
+                    mime="text/csv",
+                    key="download_csv_day"
+                )
             
             if d_df.empty:
                 st.info(get_text("no_reports_day"))
             else:
+                # Iteracja po zespołach
                 for team in d_df['team_name'].unique():
                     team_data = d_df[d_df['team_name'] == team]
                     with st.container(border=True):
@@ -1145,6 +1260,7 @@ def admin_view():
                         daily_total_activations = 0
                         daily_hup_count = 0
                         
+                        # Obliczanie sum dziennych dla zespołu
                         for idx, row in team_data.iterrows():
                             if row['workers_json']:
                                 try:
@@ -1164,12 +1280,13 @@ def admin_view():
                             if localized_hup and localized_hup != get_text("opt_hup_no") and localized_hup != "-":
                                 daily_hup_count += 1
 
+                        # Przygotowanie zakładek
                         report_indices = team_data.index.tolist()
                         tab_labels = [get_text("lbl_tab_summary")] 
                         for idx in report_indices:
                             row = team_data.loc[idx]
                             label = f"{row['address']} ({row['object_num']})"
-                            if not label or label == " ()": label = f"Raport #{idx}"
+                            if not label or label == " ()": label = f"Raport #{row['id']}"
                             tab_labels.append(label)
                         
                         tabs = st.tabs(tab_labels)
@@ -1177,6 +1294,7 @@ def admin_view():
                         for i, tab in enumerate(tabs):
                             with tab:
                                 if i == 0:
+                                    # PODSUMOWANIE ZESPOŁU
                                     st.caption(f"**{get_text('total_day_label')}**")
                                     cols_sum = st.columns(6)
                                     cols_sum[0].metric(get_text("metric_hours"), f"{daily_total_hours:.1f} h")
@@ -1186,8 +1304,10 @@ def admin_view():
                                     cols_sum[4].metric(get_text("metric_activations"), daily_total_activations)
                                     cols_sum[5].metric(get_text("metric_hup"), daily_hup_count)
                                 else:
+                                    # SZCZEGÓŁY POJEDYNCZEGO RAPORTU
                                     row_idx = report_indices[i-1]
                                     row = team_data.loc[row_idx]
+                                    report_db_id = row['id']
                                     
                                     report_hours = 0
                                     workers_details_list = []
@@ -1227,11 +1347,9 @@ def admin_view():
                                         
                                     c1, c2, c3, c4 = st.columns(4)
                                     c1.metric(get_text("metric_hours"), f"{report_hours:.1f} h")
-                                    
-                                    # --- ZMIANA TUTAJ: Wyświetlamy WE i Gf-TA razem ---
+                                    # Łączone WE / Gf-TA
                                     we_label = get_text("metric_we")
                                     c2.metric(f"{we_label} / Gf-TA", f"{r_we} / {r_gfta}")
-                                    # --------------------------------------------------
                                     
                                     c3.metric(metric_label_mat, f"{r_mat_val} {metric_unit_mat}")
                                     c4.metric(get_text("metric_hup_status"), r_hup_stat)
@@ -1246,6 +1364,7 @@ def admin_view():
 
                                     st.divider()
 
+                                    # Listy mieszkań (Aktywacje i Gf-TA)
                                     active_flats = []
                                     gfta_flats = []
                                     if row['work_table_json']:
@@ -1265,6 +1384,7 @@ def admin_view():
                                     if active_flats:
                                         st.write(f"**{get_text('lbl_activated_list')}** {', '.join(active_flats)}")
                                         
+                                    # Tabelka ze statusami
                                     def format_status(status, reason, yes_val, no_val):
                                         if status == yes_val: return "✅"
                                         elif status == no_val: return f"❌ {reason}"
@@ -1294,6 +1414,13 @@ def admin_view():
                                         hide_index=True,
                                         width='stretch'
                                     )
+                                    
+                                    # PRZYCISK USUWANIA RAPORTU
+                                    st.write("---")
+                                    if st.button(get_text("btn_delete_report"), key=f"del_btn_{report_db_id}", type="primary"):
+                                        delete_report(report_db_id)
+                                        st.warning("Raport usunięty / Bericht gelöscht / Report deleted")
+                                        st.rerun()
 
     # --- TAB 2: MIESIĘCZNY ---
     with t2:
