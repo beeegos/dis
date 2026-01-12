@@ -3,3 +3,4 @@ pandas
 fpdf
 bcrypt
 psycopg2-binary
+XlsxWriter
