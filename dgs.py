@@ -63,14 +63,15 @@ TRANSLATIONS = {
         "lbl_we_count": "Liczba WE",
         "err_we_count": "Uzupełnij liczbę WE i przejdź dalej.",
         
-        # Mobile View Translations
+        # Mobile View Translations & New Features
         "mobile_mode_toggle": "📱 Tryb mobilny (Duże przyciski)",
-        "btn_auto_fill": "⚡ Auto-uzupełnij numery mieszkań (z Nr Obiektu)",
         "select_flat_label": "Wybierz mieszkanie do edycji:",
         "flat_pos_label": "Poz",
         "editing_info": "Edytujesz:",
         "flat_number_input": "Numer mieszkania (Wohnung)",
         "preview_full_list": "Podgląd całej listy",
+        "btn_auto_fill": "⚡ Auto-uzupełnij numery mieszkań (z Nr Obiektu)",
+        "btn_delete_report": "🗑️ Usuń ten raport (Bezpowrotnie!)",
 
         "section_2_title": "2. Zużyte Materiały",
         "section_3_title": "3. Status Zakończenia",
@@ -168,7 +169,7 @@ TRANSLATIONS = {
         "lbl_emp_select": "Wybierz Pracownika",
         "lbl_total_hours": "Suma Godzin",
         "lbl_addr_context": "Adres / Zlecenie",
-        "chart_team": "Installationen (Team)",
+        "chart_team": "Instalacje (Team)",
         "db_header": "Pełny zrzut bazy danych"
     },
     "DE": {
@@ -223,12 +224,13 @@ TRANSLATIONS = {
 
         # Mobile View Translations (DE)
         "mobile_mode_toggle": "📱 Mobiler Modus (Große Tasten)",
-        "btn_auto_fill": "⚡ Wohnungsnummern automatisch ausfüllen",
         "select_flat_label": "Wohnung zur Bearbeitung wählen:",
         "flat_pos_label": "Pos.",
         "editing_info": "Bearbeitung:",
         "flat_number_input": "Wohnungsnummer",
         "preview_full_list": "Vorschau der gesamten Liste",
+        "btn_auto_fill": "⚡ Wohnungsnummern automatisch ausfüllen",
+        "btn_delete_report": "🗑️ Diesen Bericht löschen (Endgültig!)",
         
         "section_2_title": "2. Materialverbrauch",
         "section_3_title": "3. Fertigstellungsstatus",
@@ -376,12 +378,13 @@ TRANSLATIONS = {
 
         # Mobile View Translations (ENG)
         "mobile_mode_toggle": "📱 Mobile Mode (Large Buttons)",
-        "btn_auto_fill": "⚡ Auto-fill apartment numbers",
         "select_flat_label": "Select Apartment to Edit:",
         "flat_pos_label": "Pos",
         "editing_info": "Editing:",
         "flat_number_input": "Apartment Number",
         "preview_full_list": "Full List Preview",
+        "btn_auto_fill": "⚡ Auto-fill apartment numbers",
+        "btn_delete_report": "🗑️ Delete this report (Permanently!)",
         
         "section_2_title": "2. Used Materials",
         "section_3_title": "3. Completion Status",
