@@ -1071,8 +1071,17 @@ def monter_view():
         obj_num = col2.text_input(get_text("obj_num_label"), value=loaded_report['object_num'] if loaded_report is not None else "")
         address = st.text_input(get_text("addr_label"), value=loaded_report['address'] if loaded_report is not None else "")
         
-        team_name = st.session_state.get('display_name') or st.session_state['username']
-        st.caption(f"Team: {team_name}")
+        # --- ZMIANA: MOŻLIWOŚĆ EDYCJI TEAMU ---
+        # Domyślnie zalogowany user
+        current_user = st.session_state.get('display_name') or st.session_state['username']
+        
+        # Jeśli edytujemy raport, wczytaj team z raportu, w przeciwnym razie użyj zalogowanego
+        val_team = current_user
+        if loaded_report is not None:
+            val_team = loaded_report['team_name']
+            
+        team_name = st.text_input("Team / Zespół", value=val_team)
+        # --------------------------------------
 
     # --- PRACOWNICY ---
     st.subheader(get_text("worker_header"))
