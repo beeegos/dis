@@ -1007,6 +1007,11 @@ def logout():
     st.session_state['display_name'] = None
     st.rerun()
 
+# --- FUNKCJA POMOCNICZA (WKLEJ TO NAD MONTER_VIEW) ---
+def get_val(key, default=None):
+    """Bezpieczne pobieranie wartości z st.session_state"""
+    return st.session_state.get(key, default)
+
 def monter_view():
     disp = st.session_state.get('display_name') or st.session_state['username']
     st.sidebar.info(f"{get_text('sidebar_login_info')} {disp}")
