@@ -174,177 +174,18 @@ TRANSLATIONS = {
         "btn_del_user": "Usuń konto",
         "user_deleted": "Usunięto konto: {}",
 
-        # Admin PDF
         "pdf_header": "Generator Raportów Okresowych",
         "pdf_date_range": "Wybierz zakres dat",
         "pdf_gen_btn": "Generuj PDF",
         "pdf_download": "Pobierz Raport PDF",
         "pdf_no_data": "Brak danych w wybranym okresie.",
         
-        # Admin Metrics
         "day_summary_header": "Podsumowanie dnia - wg Teamów",
         "pick_day": "Wybierz dzień",
         "no_reports_day": "Brak raportów z tego dnia.",
         "team_header": "👷 TEAM",
         
         "lbl_tab_summary": "📌 Podsumowanie",
-        "total_day_label": "∑ SUMA DNIA (Wszystkie zlecenia)",
-        
-        "metric_hours": "🕒 Godziny",
-        "metric_we": "🏠 WE",
-        "metric_gfta": "📦 Gf-TA",
-        "metric_ont": "modem ONT",
-        "metric_activations": "⚡ Aktywacje",
-        "metric_hup": "🔧 HÜP (Ilość)",
-        "metric_hup_status": "Status HÜP",
-        "lbl_activated_list": "Aktywowane ONT (nr mieszkań):",
-        "lbl_gfta_list": "Zamontowane Gf-TA (nr mieszkań):",
-        "metric_kanal": "📏 Metalikanal 30x30",
-        "metric_srv": "🖥️ Serveschrank",
-        "metric_tech_used": "⚙️ Technologia",
-        "details_expander": "Szczegóły raportu",
-        
-        "col_materials": "Zużyte Materiały",
-        "col_status_addr": "Status Adres",
-        "col_status_mfr": "Status MFR",
-        "lbl_workers": "Pracownicy:",
-        "lbl_worker_hours": "Godziny Pracy:",
-        
-        "month_header": "Analiza Miesięczna",
-        "pick_month": "Wybierz miesiąc",
-        "lbl_emp_select": "Wybierz Pracownika",
-        "lbl_total_hours": "Suma Godzin",
-        "lbl_addr_context": "Adresse / Auftrag",
-        "chart_team": "Installacje (Team)",
-        "db_header": "Pełny zrzut bazy danych"
-    },
-    "DE": {
-        "login_title": "🔐 Anmeldung - Fiber System",
-        "user_label": "Benutzername",
-        "pass_label": "Passwort",
-        "login_btn": "Anmelden",
-        "login_error": "Falscher Benutzername oder Passwort",
-        "logout_btn": "Abmelden",
-        "sidebar_login_info": "Angemeldet als:",
-        "sidebar_admin_warning": "Administrator-Panel",
-        
-        "form_title": "🛠️ Arbeitsbericht (DG)",
-        "mode_select_label": "Modus wählen:",
-        "mode_new": "📝 Neuer Bericht",
-        "mode_edit": "✏️ Bericht korrigieren",
-        "select_report_label": "Bericht zur Bearbeitung wählen",
-        "no_reports_to_edit": "Keine Berichte Ihres Teams für diesen Tag.",
-        "edit_loaded_info": "Bericht bearbeiten ID: {}",
-        
-        "expander_data": "📍 Auftragsdaten",
-        "date_label": "Berichtsdatum",
-        "obj_num_label": "Objektnummer",
-        "addr_label": "Adresse",
-        "worker_header": "👤 Team und Arbeitszeit",
-        "worker_select_label": "Mitarbeiter wählen",
-        "add_worker_btn": "➕ Nächsten Mitarbeiter hinzufügen",
-        "remove_worker_btn": "Letzten entfernen",
-        "start_label": "Beginn",
-        "break_label": "Pause (Min)",
-        "end_label": "Ende",
-        
-        "err_start_time": "⚠️ Arbeitsbeginn nicht vor 06:00 Uhr!",
-        "err_end_time": "⚠️ Arbeitsende am nächsten Tag nicht später als 05:00 Uhr!",
-        "lbl_next_day_info": "ℹ️ Arbeit endet am nächsten Tag: {} ({}h)",
-        
-        "lbl_hup_question": "Haben Sie den HÜP installiert?",
-        "lbl_hup_type_select": "HÜP Typ wählen:",
-        "opt_hup_yes": "Ja",
-        "opt_hup_no": "Nein",
-        
-        "opt_hup_std": "Hüp",
-        "opt_hup_multi": "MultiHüp",
-        "opt_hup_change": "Austausch gegen MHüp",
-        "opt_hup_rebuild": "Umbau MHüp",
-
-        "err_break_b2b": "⚠️ B2B: Über 6h Arbeit sind min. 30 Min Pause erforderlich!",
-        "err_break_std_6h": "⚠️ ArbZG: Über 6h Arbeit sind min. 30 Min Pause erforderlich!",
-        "err_break_std_9h": "⚠️ ArbZG: Über 9h Arbeit sind min. 45 Min Pause erforderlich!",
-        
-        "section_1_title": "1. Wohnungsliste",
-        "lbl_we_count": "Anzahl WE",
-        "err_we_count": "Bitte Anzahl WE ausfüllen und fortfahren.",
-
-        # Mobile View Translations (DE)
-        "mobile_mode_toggle": "📱 Mobiler Modus (Große Tasten)",
-        "select_flat_label": "Wohnung zur Bearbeitung wählen:",
-        "flat_pos_label": "Pos.",
-        "editing_info": "Bearbeitung:",
-        "flat_number_input": "Wohnungsnummer",
-        "preview_full_list": "Vorschau der gesamten Liste",
-        "btn_auto_fill": "⚡ Wohnungsnummern automatisch ausfüllen",
-        "btn_delete_report": "🗑️ Diesen Bericht löschen (Endgültig!)",
-        "btn_download_excel": "📥 Excel-Bericht herunterladen (Farbig)",
-        
-        "section_2_title": "2. Materialverbrauch",
-        "section_3_title": "3. Fertigstellungsstatus",
-        
-        "lbl_addr_finished": "Ist die Adresse fertig?",
-        "lbl_mfr_ready": "Ist MFR fertig?",
-        "lbl_reason": "Grund angeben (Erforderlich):",
-        "opt_yes": "Ja",
-        "opt_no": "Nein",
-        
-        "save_btn": "💾 Bericht Speichern",
-        "update_btn": "💾 Bericht Aktualisieren",
-        "save_success": "Gespeichert! Team: {}. Gf-TA installiert: {}",
-        "update_success": "Bericht erfolgreich aktualisiert!",
-        "save_error": "Fehler beim Speichern! Überprüfen Sie die Zeiten/Felder.",
-        
-        "col_flat": "Wohnung (Nr)",
-        "col_activation": "Aktivierung",
-        "tech_label": "Technologieart",
-        
-        "dash_title": "📊 Management-Dashboard",
-        "tab_day": "📅 Tagesbericht",
-        "tab_month": "📈 Monatsstatistik",
-        "tab_emp": "👥 Mitarbeiter",
-        "tab_db": "🗄️ Datenbank",
-        "tab_users": "🔑 Konten / Users",
-        "tab_pdf": "📄 PDF Berichte",
-        "no_data": "Keine Daten in der Datenbank.",
-        
-        "emp_header": "Mitarbeiterverwaltung",
-        "add_emp_label": "Neuen Mitarbeiter hinzufügen",
-        "lbl_contract_type": "Vertragsart",
-        "opt_contract_b2b": "B2B (Selbstständig)",
-        "opt_contract_std": "Arbeitsvertrag (ArbZG)",
-        "add_emp_btn": "Hinzufügen",
-        "del_emp_btn": "Entfernen",
-        "current_emp_list": "Aktuelle Mitarbeiterliste:",
-        "emp_added": "Mitarbeiter hinzugefügt: {} ({})",
-        "emp_deleted": "Mitarbeiter entfernt: {}",
-        
-        "user_header": "Systemkonten verwalten",
-        "add_user_header": "Neues Konto hinzufügen",
-        "lbl_u_name": "Name (z.B. Team 1)",
-        "lbl_u_login": "Login",
-        "lbl_u_pass": "Passwort",
-        "lbl_u_role": "Rolle",
-        "btn_add_user": "Konto erstellen",
-        "user_added_success": "Konto '{}' erstellt.",
-        "user_exists_error": "Login '{}' ist bereits vergeben.",
-        "list_users_header": "Vorhandene Konten:",
-        "btn_del_user": "Entfernen",
-        "user_deleted": "Konto gelöscht: {}",
-
-        "pdf_header": "Periodischer Berichtsgenerator",
-        "pdf_date_range": "Datumsbereich auswählen",
-        "pdf_gen_btn": "PDF generieren",
-        "pdf_download": "PDF-Bericht herunterladen",
-        "pdf_no_data": "Keine Daten im ausgewählten Zeitraum.",
-        
-        "day_summary_header": "Tageszusammenfassung - nach Teams",
-        "pick_day": "Tag wählen",
-        "no_reports_day": "Keine Berichte für diesen Tag.",
-        "team_header": "👷 TEAM",
-        
-        "lbl_tab_summary": "📌 Zusammenfassung",
         "total_day_label": "∑ TAGES-SUMME:",
 
         "metric_hours": "🕒 Stunden",
@@ -372,6 +213,163 @@ TRANSLATIONS = {
         "lbl_emp_select": "Mitarbeiter wählen",
         "lbl_total_hours": "Gesamtstunden",
         "lbl_addr_context": "Adresse / Auftrag",
+        "chart_team": "Installations (Team)",
+        "db_header": "Vollständiger Datenbankauszug"
+    },
+    "ENG": {
+        "login_title": "🔐 Login - Fiber System",
+        "user_label": "Username",
+        "pass_label": "Password",
+        "login_btn": "Login",
+        "login_error": "Invalid username or password",
+        "logout_btn": "Logout",
+        "sidebar_login_info": "Logged in as:",
+        "sidebar_admin_warning": "Admin Panel",
+        
+        "form_title": "🛠️ Work Report (DG)",
+        "mode_select_label": "Select Mode:",
+        "mode_new": "📝 New Report",
+        "mode_edit": "✏️ Correct Report",
+        "select_report_label": "Select Report to Edit",
+        "no_reports_to_edit": "No reports for your team on this day.",
+        "edit_loaded_info": "Editing Report ID: {}",
+        
+        "expander_data": "📍 Order Data",
+        "date_label": "Report Date",
+        "obj_num_label": "Object Number",
+        "addr_label": "Address",
+        "worker_header": "👤 Team & Working Time",
+        "worker_select_label": "Select Worker",
+        "add_worker_btn": "➕ Add Next Worker",
+        "remove_worker_btn": "Remove Last",
+        "start_label": "Start Time",
+        "break_label": "Break (min)",
+        "end_label": "End Time",
+        
+        "err_start_time": "⚠️ Start time cannot be earlier than 6:00!",
+        "err_end_time": "⚠️ End time next day cannot be later than 5:00 AM!",
+        "lbl_next_day_info": "ℹ️ Work ends next day: {} ({}h)",
+        
+        "lbl_hup_question": "Did you install HÜP?",
+        "lbl_hup_type_select": "Select HÜP Type:",
+        "opt_hup_yes": "Yes",
+        "opt_hup_no": "No",
+        
+        "opt_hup_std": "Hüp",
+        "opt_hup_multi": "MultiHüp",
+        "opt_hup_change": "Exchange to MHüp",
+        "opt_hup_rebuild": "Rebuild MHüp",
+
+        "err_break_b2b": "⚠️ B2B: Over 6h work requires min. 30 min break!",
+        "err_break_std_6h": "⚠️ Contract: Over 6h work requires min. 30 min break!",
+        "err_break_std_9h": "⚠️ Contract: Over 9h work requires min. 45 min break!",
+        
+        "section_1_title": "1. Work List (Apartments)",
+        "lbl_we_count": "WE Count",
+        "err_we_count": "Fill in WE count and proceed.",
+
+        # Mobile View Translations (ENG)
+        "mobile_mode_toggle": "📱 Mobile Mode (Large Buttons)",
+        "select_flat_label": "Select Apartment to Edit:",
+        "flat_pos_label": "Pos",
+        "editing_info": "Editing:",
+        "flat_number_input": "Apartment Number",
+        "preview_full_list": "Full List Preview",
+        "btn_auto_fill": "⚡ Auto-fill apartment numbers",
+        "btn_delete_report": "🗑️ Delete this report (Permanently!)",
+        "btn_download_excel": "📥 Download Excel Report (Colored)",
+        
+        "section_2_title": "2. Used Materials",
+        "section_3_title": "3. Completion Status",
+        
+        "lbl_addr_finished": "Is address finished?",
+        "lbl_mfr_ready": "Is MFR ready?",
+        "lbl_reason": "Provide reason (Required):",
+        "opt_yes": "Yes",
+        "opt_no": "No",
+        
+        "save_btn": "💾 Save Report",
+        "update_btn": "💾 Update Report",
+        "save_success": "Report saved! Team: {}. Gf-TA installed: {}",
+        "update_success": "Report updated successfully!",
+        "save_error": "Save failed! Check hours or required fields.",
+        
+        "col_flat": "Flat (No)",
+        "col_activation": "Activation",
+        "tech_label": "Technology Type",
+        
+        "dash_title": "📊 Management Dashboard",
+        "tab_day": "📅 Daily Report",
+        "tab_month": "📈 Monthly Stats",
+        "tab_emp": "👥 Employees",
+        "tab_db": "🗄️ Full Database",
+        "tab_users": "🔑 Accounts / Users",
+        "tab_pdf": "📄 PDF Reports",
+        "no_data": "No data in database.",
+        
+        "emp_header": "Employee Management",
+        "add_emp_label": "Add New Employee",
+        "lbl_contract_type": "Contract Type",
+        "opt_contract_b2b": "B2B (Self-employed)",
+        "opt_contract_std": "Employment Contract",
+        "add_emp_btn": "Add to List",
+        "del_emp_btn": "Remove",
+        "current_emp_list": "Current Employee List:",
+        "emp_added": "Added employee: {} ({})",
+        "emp_deleted": "Removed employee: {}",
+        
+        "user_header": "System Account Management",
+        "add_user_header": "Add New Account",
+        "lbl_u_name": "Name (e.g. Team 1)",
+        "lbl_u_login": "Login",
+        "lbl_u_pass": "Password",
+        "lbl_u_role": "Rolle",
+        "btn_add_user": "Create Account",
+        "user_added_success": "Account '{}' created.",
+        "user_exists_error": "Login '{}' is already taken.",
+        "list_users_header": "Existing Accounts:",
+        "btn_del_user": "Delete",
+        "user_deleted": "Deleted account: {}",
+
+        "pdf_header": "Periodic Report Generator",
+        "pdf_date_range": "Select Date Range",
+        "pdf_gen_btn": "Generate PDF",
+        "pdf_download": "Download PDF Report",
+        "pdf_no_data": "No data in selected period.",
+        
+        "day_summary_header": "Daily Summary - by Teams",
+        "pick_day": "Select Day",
+        "no_reports_day": "No reports for this day.",
+        "team_header": "👷 TEAM",
+        
+        "lbl_tab_summary": "📌 Summary",
+        "total_day_label": "∑ DAILY TOTAL:",
+
+        "metric_hours": "🕒 Hours",
+        "metric_we": "🏠 WE",
+        "metric_gfta": "📦 Gf-TA",
+        "metric_ont": "modem ONT",
+        "metric_activations": "⚡ Activations",
+        "metric_hup": "🔧 HÜP (Count)",
+        "metric_hup_status": "HÜP Status",
+        "lbl_activated_list": "Activated ONT (Flat No):", 
+        "lbl_gfta_list": "Installed Gf-TA (List):",
+        "metric_kanal": "📏 Metalikanal 30x30",
+        "metric_srv": "🖥️ Serveschrank",
+        "metric_tech_used": "⚙️ Technology",
+        "details_expander": "Report Details",
+        
+        "col_materials": "Materials",
+        "col_status_addr": "Status Address",
+        "col_status_mfr": "Status MFR",
+        "lbl_workers": "Workers:",
+        "lbl_worker_hours": "Working Hours:",
+        
+        "month_header": "Monthly Analysis",
+        "pick_month": "Select Month",
+        "lbl_emp_select": "Select Worker",
+        "lbl_total_hours": "Total Hours",
+        "lbl_addr_context": "Address / Order",
         "chart_team": "Installations (Team)",
         "db_header": "Full Database Dump"
     }
@@ -541,12 +539,8 @@ def get_reports_for_editor(team_name, date_obj):
     # Pobiera raporty danego teamu z danej daty (do edycji przez montera)
     d_str = date_obj.strftime("%Y-%m-%d") if isinstance(date_obj, (datetime, pd.Timestamp)) else str(date_obj)
     
-    # ZMIANA: Pobieramy raporty pasujące do teamu LUB (jeśli team_name jest pusty/None) wszystkie z tego dnia
-    if team_name:
-        # Używamy ILIKE dla mniejszej wrażliwości na wielkość liter
-        data = run_query("SELECT * FROM reports WHERE team_name ILIKE %s AND date=%s", (team_name, d_str), fetch="all")
-    else:
-        data = run_query("SELECT * FROM reports WHERE date=%s", (d_str,), fetch="all")
+    # PRZYWRÓCONA ORYGINALNA LOGIKA: Filtrujemy tylko po zespole
+    data = run_query("SELECT * FROM reports WHERE team_name=%s AND date=%s", (team_name, d_str), fetch="all")
         
     return pd.DataFrame(data) if data else pd.DataFrame()
 
@@ -896,27 +890,25 @@ def monter_view():
 
     # --- ŁADOWANIE DO EDYCJI ---
     if mode == get_text("mode_edit"):
-        # Najpierw pytamy o datę, żeby wiedzieć czego szukać
+        # PRZYWRÓCONY MECHANIZM WYBORU: DATA -> ADRES Z LISTY
+        
+        # 1. Wybór daty
         edit_date = st.date_input("Wybierz datę raportu do edycji", datetime.now())
         
-        # Pytamy o nazwę zespołu, żeby przefiltrować (domyślnie zalogowany user)
-        # Jeśli chcesz widzieć raporty wszystkich, możesz wyczyścić to pole
-        filter_team = st.text_input("Szukaj raportu dla zespołu (pozostaw puste dla wszystkich):", value=disp)
-        
-        # Pobieramy raporty
-        reports = get_reports_for_editor(filter_team if filter_team.strip() else None, edit_date)
+        # 2. Pobieramy raporty TYLKO dla tego usera/teamu
+        reports = get_reports_for_editor(disp, edit_date)
         
         if not reports.empty:
             opts = reports.index.tolist()
-            # Wyświetlamy w liście: Adres (Team)
-            labels = [f"{row['address']} ({row['team_name']})" for i, row in reports.iterrows()]
+            # Wyświetlamy w liście: Adres (Nr Obiektu)
+            labels = [f"{row['address']} ({row['object_num']})" for i, row in reports.iterrows()]
             sel_idx = st.selectbox(get_text("select_report_label"), opts, format_func=lambda x: labels[opts.index(x)])
             loaded_report = reports.loc[sel_idx]
             current_edit_id = loaded_report['id']
             st.info(get_text("edit_loaded_info").format(current_edit_id))
         else:
-            st.warning("Brak raportów spełniających kryteria.")
-            # Nie robimy return, żeby pozwolić zobaczyć resztę interfejsu (choć pustego)
+            st.warning(get_text("no_reports_to_edit"))
+            return
 
     # --- DANE ZLECENIA ---
     with st.expander(get_text("expander_data"), expanded=True):
@@ -929,17 +921,11 @@ def monter_view():
         obj_num = col2.text_input(get_text("obj_num_label"), value=loaded_report['object_num'] if loaded_report is not None else "")
         address = st.text_input(get_text("addr_label"), value=loaded_report['address'] if loaded_report is not None else "")
         
-        # --- ZMIANA: MOŻLIWOŚĆ EDYCJI TEAMU ---
-        # Domyślnie zalogowany user
-        current_user = st.session_state.get('display_name') or st.session_state['username']
-        
-        # Jeśli edytujemy raport, wczytaj team z raportu, w przeciwnym razie użyj zalogowanego
-        val_team = current_user
-        if loaded_report is not None:
-            val_team = loaded_report['team_name']
-            
-        team_name = st.text_input("Team / Zespół", value=val_team)
-        # --------------------------------------
+        # --- POWRÓT DO STATYCZNEGO PODPISU TEAMU ---
+        # Nie pozwalamy zmieniać teamu, bo to powoduje zamieszanie. System wie kim jesteś.
+        team_name = st.session_state.get('display_name') or st.session_state['username']
+        st.caption(f"Team: {team_name}")
+        # -------------------------------------------
 
     # --- PRACOWNICY ---
     st.subheader(get_text("worker_header"))
