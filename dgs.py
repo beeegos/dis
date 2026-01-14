@@ -7,6 +7,7 @@ import json
 from fpdf import FPDF
 import bcrypt
 import io
+import time as time_lib
 
 # --- KONFIGURACJA MATERIAŁÓW ---
 MATERIALS = [
@@ -70,8 +71,9 @@ TRANSLATIONS = {
         "mode_new": "📝 Nowy Raport",
         "mode_edit": "✏️ Popraw Raport",
         "select_report_label": "Wybierz raport do edycji (Adres)",
-        "no_reports_to_edit": "Brak raportów twojego zespołu z tego dnia.",
+        "no_reports_to_edit": "Brak raportów dla podanej nazwy zespołu w tym dniu.",
         "edit_loaded_info": "Edytujesz raport ID: {}",
+        "search_team_label": "Szukaj raportów dla zespołu (nazwa):",
         
         "expander_data": "📍 Dane Zlecenia",
         "date_label": "Data Raportu",
@@ -84,6 +86,7 @@ TRANSLATIONS = {
         "start_label": "Początek",
         "break_label": "Przerwa (min)",
         "end_label": "Koniec",
+        "clean_form_btn": "🧹 Wyczyść formularz",
         
         "err_start_time": "⚠️ Start pracy nie może być wcześniejszy niż 6:00!",
         "err_end_time": "⚠️ Koniec pracy następnego dnia nie może być później niż 5:00 rano!",
@@ -245,6 +248,7 @@ TRANSLATIONS = {
         "start_label": "Beginn",
         "break_label": "Pause (Min)",
         "end_label": "Ende",
+        "clean_form_btn": "🧹 Formular leeren",
         
         "err_start_time": "⚠️ Arbeitsbeginn nicht vor 06:00 Uhr!",
         "err_end_time": "⚠️ Arbeitsende am nächsten Tag nicht später als 05:00 Uhr!",
@@ -882,6 +886,23 @@ def get_val(key, default=None):
     """Bezpieczne pobieranie wartości z st.session_state"""
     return st.session_state.get(key, default)
 
+# --- FIX: Funkcja do czyszczenia stanu formularza ---
+def reset_form_state():
+    """Czyści zmienne sesyjne formularza"""
+    st.session_state['workers'] = []
+    if 'current_work_df' in st.session_state:
+        del st.session_state['current_work_df']
+    if 'last_loaded_id' in st.session_state:
+        del st.session_state['last_loaded_id']
+    if 'last_loaded_report_id' in st.session_state:
+        del st.session_state['last_loaded_report_id']
+    
+    # Czyścimy materiały
+    for m in MATERIALS:
+        k = f"mat_{m}"
+        if k in st.session_state:
+            del st.session_state[k]
+
 def monter_view():
     disp = st.session_state.get('display_name') or st.session_state['username']
     user_role = st.session_state.get('role') # Pobieramy rolę (monter/admin)
@@ -894,20 +915,41 @@ def monter_view():
     # Wybór trybu
     mode = st.radio(get_text("mode_select_label"), [get_text("mode_new"), get_text("mode_edit")], horizontal=True)
     
+    # --- FIX: Obsługa czyszczenia przy zmianie trybu ---
+    if 'last_mode' not in st.session_state:
+        st.session_state['last_mode'] = mode
+    
+    if st.session_state['last_mode'] != mode:
+        reset_form_state()
+        st.session_state['last_mode'] = mode
+        st.rerun()
+    # ---------------------------------------------------
+
     loaded_report = None
     current_edit_id = None
 
     # --- ŁADOWANIE DO EDYCJI ---
     if mode == get_text("mode_edit"):
-        # PRZYWRÓCONY MECHANIZM WYBORU: DATA -> ADRES Z LISTY
         
         # 1. Wybór daty
         edit_date = st.date_input("Wybierz datę raportu do edycji", datetime.now())
         
+        # FIX: Domyślna wartość wyszukiwania (Automagiczna zamiana Team X -> dg_teamX)
+        default_search_val = disp
+        if "Team" in disp and "dg_" not in disp:
+            # Próba konwersji "Team 1" -> "dg_team1"
+            # Usuwamy spacje i dodajemy prefix dg_
+            clean_name = disp.lower().replace(" ", "")
+            if clean_name.startswith("team"):
+                default_search_val = "dg_" + clean_name
+        
+        # Pole wyszukiwania (domyślnie wypełnione)
+        search_team = st.text_input(get_text("search_team_label"), value=default_search_val)
+        
         # 2. Pobieramy raporty - przekazujemy rolę
         # Jeśli jesteś adminem -> zobaczysz wszystko
-        # Jeśli monterem -> zobaczysz swoje (z ignorowaniem wielkości liter)
-        reports = get_reports_for_editor(disp, edit_date, role=user_role)
+        # Jeśli monterem -> zobaczysz wg search_team (z ignorowaniem wielkości liter)
+        reports = get_reports_for_editor(search_team, edit_date, role=user_role)
         
         if not reports.empty:
             opts = reports.index.tolist()
@@ -955,6 +997,11 @@ def monter_view():
             st.session_state['last_loaded_id'] = current_edit_id
         elif 'workers' not in st.session_state:
             st.session_state['workers'] = []
+            
+    # Przycisk awaryjnego czyszczenia
+    if st.button(get_text("clean_form_btn"), type="secondary"):
+        reset_form_state()
+        st.rerun()
 
     for i, w in enumerate(st.session_state['workers']):
         with st.expander(f"👷 {w['name']}", expanded=True):
@@ -1249,12 +1296,22 @@ def monter_view():
                 if mode == get_text("mode_new"):
                     save_report_to_db(report_date, obj_num, address, team_name_to_save, we_count, w_json, m_json, wt_json, af_db, addr_reason, mf_db, mfr_reason, int(ont_gpon_sum), int(ont_xgs_sum), int(gfta_sum), int(activation_sum), technology_type, hup_s)
                     st.success(get_text("save_success").format(team_name_to_save, int(gfta_sum)))
-                    time.sleep(1)
+                    
+                    # --- FIX: CZYSZCZENIE PO ZAPISIE ---
+                    reset_form_state()
+                    # -----------------------------------
+                    
+                    time_lib.sleep(1)
                     st.rerun()
                 else:
                     update_report_in_db(current_edit_id, report_date, obj_num, address, team_name_to_save, we_count, w_json, m_json, wt_json, af_db, addr_reason, mf_db, mfr_reason, int(ont_gpon_sum), int(ont_xgs_sum), int(gfta_sum), int(activation_sum), technology_type, hup_s)
                     st.success(get_text("update_success"))
-                    time.sleep(1)
+                    
+                    # --- FIX: CZYSZCZENIE PO AKTUALIZACJI ---
+                    reset_form_state()
+                    # ----------------------------------------
+                    
+                    time_lib.sleep(1)
                     st.rerun()
 
 def admin_view():
