@@ -8,6 +8,37 @@ from fpdf import FPDF
 import bcrypt
 import io
 
+# --- KONFIGURACJA MATERIAŁÓW ---
+MATERIALS = [
+    "FTTP 4 faser kabel",
+    "MultiHüp",
+    "Hüp",
+    "T-stücke",
+    "Instalacionsrohr",
+    "Muffe M 20",
+    "Quick Schellen M 20",
+    "Schutzrohr",
+    "Metalikanal 30x30",
+    "Plastik kanal 15x15",
+    "Plombe",
+    "Serveschrank"
+]
+
+MATERIALS_UNITS = {
+    "FTTP 4 faser kabel": "m",
+    "MultiHüp": "st.",
+    "Hüp": "st.",
+    "T-stücke": "st.",
+    "Instalacionsrohr": "m",
+    "Muffe M 20": "st.",
+    "Quick Schellen M 20": "st.",
+    "Schutzrohr": "m",
+    "Metalikanal 30x30": "m",
+    "Plastik kanal 15x15": "m",
+    "Plombe": "st.",
+    "Serveschrank": "st."
+}
+
 # --- KONFIGURACJA STRONY ---
 st.set_page_config(page_title="Fiber System", layout="wide")
 
@@ -976,111 +1007,151 @@ def logout():
     st.session_state['display_name'] = None
     st.rerun()
 
-def monter_view():
+ def monter_view():
     disp = st.session_state.get('display_name') or st.session_state['username']
     st.sidebar.info(f"{get_text('sidebar_login_info')} {disp}")
     if st.sidebar.button(get_text("logout_btn")): logout()
+    
     st.title(get_text("form_title"))
+
+    # Wybór trybu: Nowy vs Edycja
+    mode = st.radio(get_text("mode_select_label"), [get_text("mode_new"), get_text("mode_edit")], horizontal=True)
     
-    emp_map = get_employees_map()
-    employee_list = list(emp_map.keys())
+    loaded_report = None
+    current_edit_id = None
 
-    if 'report_mode' not in st.session_state: st.session_state['report_mode'] = 'new'
-    st.session_state['report_mode'] = st.radio(get_text("mode_select_label"), ('new', 'edit'), format_func=lambda x: get_text("mode_new") if x == 'new' else get_text("mode_edit"), horizontal=True)
-
-    loaded_report, current_edit_id = None, None
-    if st.session_state['report_mode'] == 'edit':
-        st.info("Tryb edycji: Wybierz datę i adres.")
-        c_date, c_rep = st.columns(2)
-        edit_date = c_date.date_input("Data", datetime.now())
-        available_reports = get_reports_by_team_and_date(st.session_state['username'], edit_date.strftime("%Y-%m-%d"))
-        if not available_reports:
+    # --- TRYB EDYCJI: ŁADOWANIE DANYCH ---
+    if mode == get_text("mode_edit"):
+        user_team = st.session_state.get('display_name') or st.session_state['username']
+        # Pobieramy raporty z DZISIAJ dla TEGO TEAMU
+        reports = get_reports_for_editor(user_team, datetime.now().date())
+        
+        if not reports.empty:
+            opts = reports.index.tolist()
+            # Etykieta w selectboxie: Adres (Nr Obiektu)
+            labels = [f"{row['address']} ({row['object_num']})" for i, row in reports.iterrows()]
+            
+            sel_idx = st.selectbox(get_text("select_report_label"), opts, format_func=lambda x: labels[opts.index(x)])
+            
+            # Załaduj dane wybranego raportu
+            loaded_report = reports.loc[sel_idx]
+            current_edit_id = loaded_report['id']
+            st.info(get_text("edit_loaded_info").format(current_edit_id))
+        else:
             st.warning(get_text("no_reports_to_edit"))
-            return
-        report_options = {f"{r[1]} ({r[2]})": r[0] for r in available_reports}
-        selected_label = c_rep.selectbox(get_text("select_report_label"), list(report_options.keys()))
-        if selected_label:
-            current_edit_id = report_options[selected_label]
-            loaded_report = get_report_by_id(current_edit_id)
-            if loaded_report: st.success(get_text("edit_loaded_info").format(current_edit_id))
-    
-    def get_val(key, default): return loaded_report.get(key, default) if loaded_report else default
+            return # Przerywamy renderowanie, jeśli nie ma co edytować
 
+    # --- FORMULARZ DANYCH ---
     with st.expander(get_text("expander_data"), expanded=True):
         col1, col2 = st.columns(2)
-        default_date = datetime.strptime(loaded_report['date'], "%Y-%m-%d") if loaded_report else datetime.now()
-        date_rep = col1.date_input(get_text("date_label"), default_date)
-        obj_num = col2.text_input(get_text("obj_num_label"), value=get_val('object_num', ""))
-        address = st.text_input(get_text("addr_label"), value=get_val('address', ""))
-        st.divider()
-        st.write(f"**{get_text('worker_header')}**")
+        # Data raportu (w edycji zablokowana lub pobrana z bazy)
+        def_date = datetime.now()
+        if loaded_report is not None:
+            def_date = pd.to_datetime(loaded_report['date']).to_pydatetime()
+            
+        report_date = col1.date_input(get_text("date_label"), def_date)
+        obj_num = col2.text_input(get_text("obj_num_label"), value=loaded_report['object_num'] if loaded_report is not None else "")
+        address = st.text_input(get_text("addr_label"), value=loaded_report['address'] if loaded_report is not None else "")
         
-        loaded_workers_list = json.loads(loaded_report['workers_json']) if (loaded_report and loaded_report['workers_json']) else []
-        if st.session_state['report_mode'] == 'edit' and loaded_workers_list:
-             if 'last_edit_id' not in st.session_state or st.session_state['last_edit_id'] != current_edit_id:
-                 st.session_state.worker_count = len(loaded_workers_list)
-                 st.session_state['last_edit_id'] = current_edit_id
-        if 'worker_count' not in st.session_state: st.session_state.worker_count = 1
+        # Wybór Teamu (Automatyczny)
+        team_name = st.session_state.get('display_name') or st.session_state['username']
+        st.caption(f"Team: {team_name}")
 
-        workers_data, all_workers_valid = [], True
-        for i in range(st.session_state.worker_count):
-            st.markdown(f"**Pracownik #{i+1}**")
-            c1, c2, c3, c4 = st.columns([3, 2, 2, 2])
-            def_w_name, def_w_start, def_w_break, def_w_end = "", time(8,0), "0", time(16,0)
-            if loaded_workers_list and i < len(loaded_workers_list):
-                w = loaded_workers_list[i]
-                def_w_name = w['name']
-                try:
-                    def_w_start = datetime.strptime(w['start'][:5], "%H:%M").time()
-                    def_w_end = datetime.strptime(w['end'][:5], "%H:%M").time()
-                    def_w_break = w['break']
-                except: pass
-            
-            k_base = f"{i}_{st.session_state['report_mode']}_{current_edit_id}"
-            k_name, k_start, k_break, k_end = f"w_name_{k_base}", f"w_start_{k_base}", f"w_break_{k_base}", f"w_end_{k_base}"
-            
-            if k_name not in st.session_state: st.session_state[k_name] = def_w_name if def_w_name in employee_list else (employee_list[0] if employee_list else "")
-            if k_start not in st.session_state: st.session_state[k_start] = def_w_start
-            if k_break not in st.session_state: st.session_state[k_break] = def_w_break
-            if k_end not in st.session_state: st.session_state[k_end] = def_w_end
-
-            w_name = c1.selectbox(get_text("worker_select_label"), employee_list, key=k_name) if employee_list else c1.text_input(get_text("worker_select_label"), key=k_name)
-            w_start = c2.time_input(get_text("start_label"), key=k_start)
-            w_break = c3.text_input(get_text("break_label"), key=k_break)
-            w_end = c4.time_input(get_text("end_label"), key=k_end)
-            
-            hrs, s_str, e_str, valid, err_code, break_int = calculate_work_details(date_rep, w_start, w_end, w_break)
-            contract = emp_map.get(w_name, "Contract")
-            if not valid:
-                all_workers_valid = False
-                st.error(get_text("err_start_time") if err_code == "start_too_early" else get_text("err_end_time"))
-            else:
-                work_min_net = hrs * 60
-                if contract == "B2B" and work_min_net > 360 and break_int < 30:
-                    st.error(get_text("err_break_b2b"))
-                    all_workers_valid = False
-                elif contract != "B2B":
-                     if (work_min_net > 360 and work_min_net <= 540 and break_int < 30):
-                        st.error(get_text("err_break_std_6h"))
-                        all_workers_valid = False
-                     elif (work_min_net > 540 and break_int < 45):
-                        st.error(get_text("err_break_std_9h"))
-                        all_workers_valid = False
-            workers_data.append({"name": w_name, "start": str(w_start), "break": w_break, "end": str(w_end), "calculated_hours": hrs, "display_start": s_str, "display_end": e_str})
-        
-        bc1, bc2 = st.columns(2)
-        if bc1.button(get_text("add_worker_btn")): st.session_state.worker_count += 1; st.rerun()
-        if st.session_state.worker_count > 1 and bc2.button(get_text("remove_worker_btn")): st.session_state.worker_count -= 1; st.rerun()
-
-    st.subheader(get_text("section_1_title"))
-    we_count = st.number_input(get_text("lbl_we_count"), min_value=0, step=1, value=get_val('we_count', 0))
+    # --- ZARZĄDZANIE PRACOWNIKAMI ---
+    st.subheader(get_text("worker_header"))
     
-    # Inicjalizacja danych tabeli w session_state
+    # Inicjalizacja listy pracowników w sesji
+    if 'workers' not in st.session_state or (loaded_report is not None and st.session_state.get('last_loaded_id') != current_edit_id):
+        if loaded_report is not None and loaded_report['workers_json']:
+            st.session_state['workers'] = json.loads(loaded_report['workers_json'])
+            st.session_state['last_loaded_id'] = current_edit_id
+        elif 'workers' not in st.session_state:
+            st.session_state['workers'] = []
+
+    # Dynamiczne dodawanie pracowników
+    for i, w in enumerate(st.session_state['workers']):
+        with st.expander(f"👷 {w['name']}", expanded=True):
+            c1, c2, c3 = st.columns(3)
+            # Godziny pracy
+            w['start'] = c1.text_input(get_text("start_label"), value=w.get('start', '08:00'), key=f"s_{i}")
+            w['break'] = c2.number_input(get_text("break_label"), min_value=0, step=5, value=w.get('break', 0), key=f"b_{i}")
+            w['end'] = c3.text_input(get_text("end_label"), value=w.get('end', '16:00'), key=f"e_{i}")
+
+    # Przyciski dodawania/usuwania
+    c_add, c_rem = st.columns(2)
+    emp_map = get_employees_map() # Słownik {Nazwisko: TypUmowy}
+    
+    # Selectbox do wyboru nowego pracownika
+    new_worker_name = c_add.selectbox(get_text("worker_select_label"), [""] + list(emp_map.keys()))
+    
+    if c_add.button(get_text("add_worker_btn")) and new_worker_name:
+        # Dodajemy z domyślnymi godzinami
+        st.session_state['workers'].append({
+            "name": new_worker_name, 
+            "type": emp_map[new_worker_name], # B2B lub Contract
+            "start": "08:00", 
+            "end": "16:00", 
+            "break": 30
+        })
+        st.rerun()
+
+    if st.session_state['workers'] and c_rem.button(get_text("remove_worker_btn")):
+        st.session_state['workers'].pop()
+        st.rerun()
+
+    st.write("---")
+
+    # --- HÜP CHECK ---
+    st.write(f"**{get_text('lbl_hup_question')}**")
+    
+    # Ustalanie domyślnej wartości HUP
+    hup_idx = 1 # Domyślnie "Nie"
+    if loaded_report is not None:
+        raw_hup = loaded_report.get('hup_status', 'Nie')
+        # Mapowanie wsteczne z bazy na index (proste dopasowanie)
+        if raw_hup == "Tak": hup_idx = 0
+        elif raw_hup == "Nie": hup_idx = 1
+        elif raw_hup == "Hüp": hup_idx = 2
+        elif raw_hup == "M-Hüp": hup_idx = 3
+        elif raw_hup == "Wymiana na M-Hüp": hup_idx = 4
+
+    hup_val = st.radio(
+        get_text("lbl_hup_type"),
+        [
+            get_text("opt_hup_yes"), 
+            get_text("opt_hup_no"), 
+            get_text("opt_hup_std"), 
+            get_text("opt_hup_m"), 
+            get_text("opt_hup_change")
+        ],
+        index=hup_idx,
+        key="hup_radio",
+        horizontal=True
+    )
+    
+    st.write("---")
+
+    # --- SEKCJA 1: WYKAZ PRAC (MIESZKANIA) ---
+    st.subheader(get_text("section_1_title"))
+    we_count = st.number_input(get_text("lbl_we_count"), min_value=0, step=1, value=get_val('we_count', loaded_report['we_count'] if loaded_report is not None else 0))
+    
+    # Inicjalizacja tabeli w session_state (20 mieszkań)
     if 'current_work_df' not in st.session_state or st.session_state.get('last_loaded_report_id') != current_edit_id:
-        if loaded_report and loaded_report['work_table_json']:
-            st.session_state['current_work_df'] = pd.DataFrame(json.loads(loaded_report['work_table_json']))
+        if loaded_report is not None and loaded_report['work_table_json']:
+            # Ładujemy istniejącą tabelę
+            loaded_df = pd.DataFrame(json.loads(loaded_report['work_table_json']))
+            # Jeśli tabela z bazy jest krótsza niż 20, trzeba ją dopełnić, żeby pasowała do widoku
+            if len(loaded_df) < 20:
+                missing_rows = 20 - len(loaded_df)
+                extension = pd.DataFrame({
+                    "Wohnung": ["" for _ in range(missing_rows)],
+                    "Gfta": [False] * missing_rows, "Ont gpon": [False] * missing_rows, 
+                    "Ont xgs": [False] * missing_rows, "Patch Ont": [False] * missing_rows, "Activation": [False] * missing_rows, 
+                })
+                loaded_df = pd.concat([loaded_df, extension], ignore_index=True)
+            st.session_state['current_work_df'] = loaded_df
         else:
-            # Tabela na 20 mieszkań
+            # Pusta tabela na 20 mieszkań
             st.session_state['current_work_df'] = pd.DataFrame({
                 "Wohnung": [str(i+1) for i in range(20)], 
                 "Gfta": [False] * 20, "Ont gpon": [False] * 20, 
@@ -1088,30 +1159,21 @@ def monter_view():
             })
         st.session_state['last_loaded_report_id'] = current_edit_id
 
-    # --- NOWA FUNKCJA: AUTO-UZUPEŁNIANIE ---
-    # Sprawdzamy, czy mamy dane do generowania
+    # PRZYCISK: AUTO-UZUPEŁNIANIE
     if st.button(get_text("btn_auto_fill")):
         if obj_num and we_count > 0:
             df = st.session_state['current_work_df']
-            
-            # Iterujemy od 1 do liczby WE (max 20, bo tyle ma tabela)
             limit = min(we_count, 20)
-            
             for i in range(limit):
-                # Generujemy numer: NUMER_OBIEKTU + ITERATOR (np. 73265AAS-163- + 1)
-                # i + 1 ponieważ range startuje od 0
-                generated_num = f"{obj_num}{i+1}"
+                generated_num = f"{obj_num}-{i+1}" # Format: NR-OBIEKTU-1
                 df.at[i, 'Wohnung'] = generated_num
-            
-            # Zapisujemy zmiany i odświeżamy
             st.session_state['current_work_df'] = df
             st.success(f"Zaktualizowano {limit} numerów mieszkań!")
             st.rerun()
         else:
-            st.warning("Uzupełnij 'Numer Obiektu' (u góry) i 'Liczbę WE', aby użyć tej funkcji.")
-    # ----------------------------------------    
+            st.warning("Uzupełnij 'Numer Obiektu' i 'Liczbę WE'.")
 
-    # Przełącznik trybu (TŁUMACZONY)
+    # PRZEŁĄCZNIK WIDOKU MOBILNEGO
     use_mobile_view = st.toggle(get_text("mobile_mode_toggle"), value=True)
 
     if use_mobile_view:
@@ -1119,7 +1181,7 @@ def monter_view():
         df = st.session_state['current_work_df']
         
         flat_options = df.index.tolist()
-        # Etykiety tłumaczone (Poz / Pos)
+        # Etykieta w liscie wyboru
         flat_labels = [f"{get_text('flat_pos_label')}: {i+1} | Nr: {row['Wohnung']}" for i, row in df.iterrows()]
         
         selected_idx = st.selectbox(get_text("select_flat_label"), flat_options, format_func=lambda x: flat_labels[x])
@@ -1136,6 +1198,7 @@ def monter_view():
         st.write("---")
         c_t1, c_t2 = st.columns(2)
         
+        # Helper do aktualizacji toggli
         def update_val(col_name):
             val = st.session_state[f"mob_{selected_idx}_{col_name}"]
             st.session_state['current_work_df'].at[selected_idx, col_name] = val
@@ -1159,7 +1222,7 @@ def monter_view():
         # --- WIDOK DESKTOPOWY ---
         edited_df = st.data_editor(
             st.session_state['current_work_df'],
-            num_rows="dynamic",
+            num_rows="fixed", # Stała liczba wierszy (20)
             width='stretch',
             column_config={
                 "Wohnung": st.column_config.TextColumn(get_text("col_flat"), width="small"),
@@ -1168,119 +1231,187 @@ def monter_view():
             key="desktop_editor"
         )
         st.session_state['current_work_df'] = edited_df
-        # --- PRZYWRÓCONY FRAGMENT: WYBÓR TECHNOLOGII ---
-    st.divider()
-    st.info(get_text("tech_label"))
-    
-    # Ustalanie domyślnej wartości (jeśli edycja)
-    tech_idx = 0
-    if loaded_report and loaded_report.get('technology_type') in TECH_OPTIONS:
-        tech_idx = TECH_OPTIONS.index(loaded_report['technology_type'])
-        
-    selected_tech = st.selectbox(
-        get_text("tech_label"), 
-        TECH_OPTIONS, 
-        index=tech_idx, 
-        label_visibility="collapsed"
-    )
-    # -----------------------------------------------
 
+    # Obliczanie sum (automatycznie z tabeli)
+    gfta_sum = edited_df['Gfta'].sum()
+    ont_gpon_sum = edited_df['Ont gpon'].sum()
+    ont_xgs_sum = edited_df['Ont xgs'].sum()
+    activation_sum = edited_df['Activation'].sum()
+    
+    st.info(f"Podsumowanie: Gf-TA: {gfta_sum}, ONT: {ont_gpon_sum + ont_xgs_sum}, Akt: {activation_sum}")
+
+    # --- SEKCJA 2: MATERIAŁY (DYNAMICZNA) ---
     st.subheader(get_text("section_2_title"))
-    hup_status_val = loaded_report.get('hup_status', get_text("opt_hup_no")) if loaded_report else get_text("opt_hup_no")
-    st.markdown(f"**{get_text('lbl_hup_question')}**")
-    hup_yn = st.radio("hup_yn", [get_text("opt_hup_no"), get_text("opt_hup_yes")], index=1 if (hup_status_val != get_text("opt_hup_no") and hup_status_val != "Nie") else 0, horizontal=True, label_visibility="collapsed")
-    final_hup_status = get_text("opt_hup_no")
-    if hup_yn == get_text("opt_hup_yes"):
-        st.caption(get_text("lbl_hup_type"))
-        opts = [get_text("opt_hup_std"), get_text("opt_hup_m"), get_text("opt_hup_change")]
-        final_hup_status = st.radio("hup_type", opts, index=opts.index(hup_status_val) if hup_status_val in opts else 0, label_visibility="collapsed")
-    
-    st.divider()
-    loaded_mats = json.loads(loaded_report['materials_json']) if (loaded_report and loaded_report['materials_json']) else {}
-    materials_collected = {}
-    m_cols = st.columns(3)
-    for i, item in enumerate(MATERIALS_LIST):
-        with m_cols[i % 3]:
-            qty = st.number_input(f"{i+1}. {item['name']} ({item['unit']})", min_value=0, step=1, value=loaded_mats.get(item['name'], 0), key=f"mat_{i}_{current_edit_id}")
-            if qty > 0: materials_collected[item['name']] = qty
-    st.divider()
+    with st.container(border=True):
+        cols = st.columns(2)
+        # Przygotowanie słownika wartości początkowych (dla edycji)
+        loaded_mats = {}
+        if loaded_report is not None and loaded_report['materials_json']:
+            try:
+                loaded_mats = json.loads(loaded_report['materials_json'])
+            except: pass
 
+        for i, mat in enumerate(MATERIALS):
+            col = cols[i % 2]
+            unit = MATERIALS_UNITS.get(mat, "")
+            label = f"{mat} [{unit}]" if unit else mat
+            
+            # Pobierz wartość z załadowanego raportu lub z session_state lub 0
+            # Używamy session_state jako priorytet (jeśli użytkownik już coś zmienił)
+            init_val = loaded_mats.get(mat, 0)
+            
+            col.number_input(
+                label, 
+                min_value=0, 
+                step=1, 
+                key=f"mat_{mat}", 
+                value=get_val(f"mat_{mat}", init_val)
+            )
+
+    # --- SEKCJA 3: STATUS ---
     st.subheader(get_text("section_3_title"))
-    c_s1, c_s2 = st.columns(2)
-    def_addr_fin = 1 if (loaded_report and loaded_report['address_finished'] == get_text("opt_no")) else 0
-    def_mfr_fin = 1 if (loaded_report and loaded_report['mfr_ready'] == get_text("opt_no")) else 0
     
-    with c_s1:
-        st.write(f"**{get_text('lbl_addr_finished')}**")
-        addr_fin = st.radio("addr_fin", [get_text("opt_yes"), get_text("opt_no")], index=def_addr_fin, horizontal=True, label_visibility="collapsed")
-        addr_reason = st.text_input(get_text("lbl_reason"), value=get_val('address_finished_reason', ""), key="ar") if addr_fin == get_text("opt_no") else ""
-    with c_s2:
-        st.write(f"**{get_text('lbl_mfr_ready')}**")
-        mfr_fin = st.radio("mfr_fin", [get_text("opt_yes"), get_text("opt_no")], index=def_mfr_fin, horizontal=True, label_visibility="collapsed")
-        mfr_reason = st.text_input(get_text("lbl_reason"), value=get_val('mfr_ready_reason', ""), key="mr") if mfr_fin == get_text("opt_no") else ""
-
-    st.divider()
-    btn_txt = get_text("save_btn") if st.session_state['report_mode'] == 'new' else get_text("update_btn")
-    if st.button(btn_txt, type="primary"):
-        if we_count <= 0: st.error(get_text("err_we_count")); return
-        if not all_workers_valid: st.error(get_text("save_error")); return
-        if (addr_fin == get_text("opt_no") and not addr_reason.strip()) or (mfr_fin == get_text("opt_no") and not mfr_reason.strip()): st.error(get_text("save_error")); return
-
-        if address and len(workers_data) > 0:
-            payload = {
-                "date": date_rep.strftime("%Y-%m-%d"), "team": st.session_state['username'], "address": address, "object_num": obj_num,
-                "we_count": we_count, "tech": selected_tech, "workers": workers_data,
-                "gfta_sum": int(edited_df["Gfta"].sum()), "ont_gpon_sum": int(edited_df["Ont gpon"].sum()), 
-                "ont_xgs_sum": int(edited_df["Ont xgs"].sum()), "patch_ont_sum": int(edited_df["Patch Ont"].sum()), 
-                "act_sum": int(edited_df["Activation"].sum()), "addr_fin": addr_fin, "addr_reason": addr_reason,
-                "mfr_ready": mfr_fin, "mfr_reason": mfr_reason, "hup_status": final_hup_status,
-                "work_table": edited_df.to_dict(orient='records'), "materials": materials_collected
-            }
-            if st.session_state['report_mode'] == 'new':
-                save_report_to_db(payload)
-                st.session_state.worker_count = 1
-                st.success(get_text("save_success").format(st.session_state['username'], payload['gfta_sum']))
-            else:
-                update_report_in_db(current_edit_id, payload)
-                st.success(get_text("update_success"))
-        else: st.error(get_text("save_error"))
-
-def get_localized_hup_status(saved_status):
-    """
-    Tłumaczy zapisany w bazie status HÜP na aktualny język interfejsu.
-    Obsługuje przypadki, gdy w bazie jest zapisane po PL, a oglądamy po DE.
-    """
-    if not saved_status:
-        return "-"
+    def_tech_idx = 0
+    if loaded_report is not None:
+        if loaded_report['technology_type'] == "Gf-TA": def_tech_idx = 0
+        elif loaded_report['technology_type'] == "Srv": def_tech_idx = 1
         
-    # Lista wszystkich możliwych wariantów "NIE" (zapisanych w bazie)
-    no_variants = ["Nie", "Nein", "No"]
-    # Lista wariantów "WYMIANA"
-    change_variants = ["Wymiana na M-Hüp", "Austausch gegen M-Hüp", "Exchange to M-Hüp"]
-    # Warianty standardowe (są takie same w każdym języku, ale dla porządku)
-    std_variants = ["Hüp"]
-    m_variants = ["M-Hüp"]
+    technology_type = st.radio(get_text("tech_label"), ["Gf-TA", "Srv"], index=def_tech_idx, horizontal=True)
 
-    # Logika mapowania na klucz słownika TRANSLATIONS
-    target_key = None
+    # Statusy "Czy skończone?"
+    # Używamy pomocniczej zmiennej do obsługi selectboxów Tak/Nie
+    def bool_to_opt(val): return get_text("opt_yes") if val == "Tak" else get_text("opt_no")
     
-    if saved_status in no_variants:
-        target_key = "opt_hup_no"
-    elif saved_status in change_variants:
-        target_key = "opt_hup_change"
-    elif saved_status in std_variants:
-        target_key = "opt_hup_std"
-    elif saved_status in m_variants:
-        target_key = "opt_hup_m"
-    elif saved_status in ["Tak", "Ja", "Yes"]: 
-        target_key = "opt_hup_yes"
+    c3a, c3b = st.columns(2)
+    
+    # Init wartości statusów
+    addr_fin_val = loaded_report['address_finished'] if loaded_report is not None else "Nie"
+    mfr_fin_val = loaded_report['mfr_ready'] if loaded_report is not None else "Nie"
+    
+    addr_finished = c3a.selectbox(get_text("lbl_addr_finished"), [get_text("opt_yes"), get_text("opt_no")], index=0 if addr_fin_val == "Tak" else 1)
+    addr_reason = ""
+    if addr_finished == get_text("opt_no"):
+        addr_reason = c3a.text_input(get_text("lbl_reason"), value=loaded_report['address_finished_reason'] if loaded_report is not None else "", key="ar")
 
-    # Jeśli znaleźliśmy klucz, zwracamy tłumaczenie w obecnym języku
-    if target_key:
-        return get_text(target_key)
+    mfr_ready = c3b.selectbox(get_text("lbl_mfr_ready"), [get_text("opt_yes"), get_text("opt_no")], index=0 if mfr_fin_val == "Tak" else 1)
+    mfr_reason = ""
+    if mfr_ready == get_text("opt_no"):
+        mfr_reason = c3b.text_input(get_text("lbl_reason"), value=loaded_report['mfr_ready_reason'] if loaded_report is not None else "", key="mr")
+
+    st.write("---")
     
-    # Jeśli to coś innego (np. pusty string), zwracamy oryginał
-    return saved_status
+    # --- ZAPIS / AKTUALIZACJA ---
+    btn_label = get_text("update_btn") if mode == get_text("mode_edit") else get_text("save_btn")
+    
+    if st.button(btn_label, type="primary"):
+        # Walidacja podstawowa
+        if not st.session_state['workers']:
+            st.error("Dodaj przynajmniej jednego pracownika!")
+        # Dla nowego raportu wymagamy WE (chyba że to pusty przelot)
+        # elif not we_count and mode == get_text("mode_new"):
+        #      pass 
+        else:
+            can_save = True
+            final_workers = []
+            
+            # Walidacja pracowników
+            for w in st.session_state['workers']:
+                try:
+                    s = datetime.strptime(w['start'], "%H:%M")
+                    e = datetime.strptime(w['end'], "%H:%M")
+                    
+                    if e < s: e += timedelta(days=1)
+                        
+                    diff = (e - s).total_seconds() / 3600.0
+                    break_time = w['break']
+                    calc_hours = diff - (break_time / 60.0)
+                    
+                    # Błędy krytyczne
+                    if calc_hours <= 0:
+                        st.error(f"❌ {w['name']}: Czas pracy ujemny lub zerowy!")
+                        can_save = False
+                    
+                    # Ostrzeżenia (Warnings) - nie blokują zapisu
+                    if w['type'] == 'Contract':
+                        if diff > 6 and diff <= 9 and break_time < 30:
+                            st.warning(f"⚠️ {w['name']} (ArbZG): >6h pracy = min 30min przerwy.")
+                        elif diff > 9 and break_time < 45:
+                            st.warning(f"⚠️ {w['name']} (ArbZG): >9h pracy = min 45min przerwy.")
+                    elif w['type'] == 'B2B':
+                        if diff > 6 and break_time < 30:
+                            st.warning(f"⚠️ {w['name']} (B2B): >6h pracy, zalecana przerwa.")
+
+                    w_data = w.copy()
+                    w_data['calculated_hours'] = round(calc_hours, 2)
+                    
+                    s_str = w['start']
+                    e_str = w['end']
+                    if e.date() > s.date(): e_str = f"{e_str} (+1)"
+                        
+                    w_data['display_start'] = s_str
+                    w_data['display_end'] = e_str
+                    final_workers.append(w_data)
+
+                except Exception as e:
+                    st.error(f"Błąd danych: {e}")
+                    can_save = False
+
+            if can_save:
+                w_json = json.dumps(final_workers)
+                
+                # Zbieranie materiałów (DYNAMICZNIE)
+                mats = {}
+                for m in MATERIALS:
+                    val = st.session_state.get(f"mat_{m}", 0)
+                    if val > 0:
+                        mats[m] = val
+                m_json = json.dumps(mats)
+                
+                # Zbieranie tabeli mieszkań
+                wt_json = "[]"
+                if 'current_work_df' in st.session_state:
+                    wt_json = st.session_state['current_work_df'].to_json(orient="records")
+
+                # HUP
+                hup_s = "Nie"
+                if 'hup_radio' in st.session_state:
+                    hup_val = st.session_state['hup_radio']
+                    map_hup = {
+                        get_text("opt_hup_yes"): "Tak",
+                        get_text("opt_hup_no"): "Nie",
+                        get_text("opt_hup_std"): "Hüp",
+                        get_text("opt_hup_m"): "M-Hüp",
+                        get_text("opt_hup_change"): "Wymiana na M-Hüp"
+                    }
+                    hup_s = map_hup.get(hup_val, hup_val)
+
+                # Mapowanie selectboxów Tak/Nie na stringi bazy
+                af_db = "Tak" if addr_finished == get_text("opt_yes") else "Nie"
+                mf_db = "Tak" if mfr_ready == get_text("opt_yes") else "Nie"
+
+                if mode == get_text("mode_new"):
+                    save_report_to_db(
+                        report_date, obj_num, address, team_name,
+                        we_count, w_json, m_json, wt_json, 
+                        af_db, addr_reason, mf_db, mfr_reason,
+                        int(ont_gpon_sum), int(ont_xgs_sum), int(gfta_sum), int(activation_sum), 
+                        technology_type, hup_s
+                    )
+                    st.success(get_text("save_success").format(team_name, int(gfta_sum)))
+                    time.sleep(1)
+                    st.rerun()
+                else:
+                    update_report_in_db(
+                        current_edit_id,
+                        report_date, obj_num, address, team_name,
+                        we_count, w_json, m_json, wt_json, 
+                        af_db, addr_reason, mf_db, mfr_reason,
+                        int(ont_gpon_sum), int(ont_xgs_sum), int(gfta_sum), int(activation_sum), 
+                        technology_type, hup_s
+                    )
+                    st.success(get_text("update_success"))
+                    time.sleep(1)
+                    st.rerun()
 
 def admin_view():
     disp = st.session_state.get('display_name') or st.session_state['username']
