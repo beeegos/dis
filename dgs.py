@@ -1190,6 +1190,23 @@ def monter_view():
         )
         st.session_state['current_work_df'] = edited_df
 
+# --- PRZYWRÓCONY FRAGMENT: WYBÓR TECHNOLOGII ---
+    st.divider()
+    st.info(get_text("tech_label"))
+    
+    # Ustalanie domyślnej wartości (jeśli edycja)
+    tech_idx = 0
+    if loaded_report and loaded_report.get('technology_type') in TECH_OPTIONS:
+        tech_idx = TECH_OPTIONS.index(loaded_report['technology_type'])
+        
+    selected_tech = st.selectbox(
+        get_text("tech_label"), 
+        TECH_OPTIONS, 
+        index=tech_idx, 
+        label_visibility="collapsed"
+    )
+    # -----------------------------------------------
+
     gfta_sum = edited_df['Gfta'].sum()
     ont_gpon_sum = edited_df['Ont gpon'].sum()
     ont_xgs_sum = edited_df['Ont xgs'].sum()
