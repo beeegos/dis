@@ -6,7 +6,6 @@ from datetime import datetime, time, timedelta
 import json
 from fpdf import FPDF
 import bcrypt
-import io
 import time as time_lib
 
 # --- KONFIGURACJA MATERIAŁÓW ---
@@ -71,7 +70,7 @@ TRANSLATIONS = {
         "mode_new": "📝 Nowy Raport",
         "mode_edit": "✏️ Popraw Raport",
         "select_report_label": "Wybierz raport do edycji (Adres)",
-        "no_reports_to_edit": "Brak raportów dla podanej nazwy zespołu w tym dniu.",
+        "no_reports_to_edit": "Brak raportów dla Twojego zespołu w tym dniu.",
         "edit_loaded_info": "Edytujesz raport ID: {}",
         "search_team_label": "Szukaj raportów dla zespołu (nazwa):",
         
@@ -543,13 +542,15 @@ def get_reports_for_editor(team_name, date_obj, role=None):
     # Pobiera raporty danego teamu z danej daty (do edycji przez montera)
     d_str = date_obj.strftime("%Y-%m-%d") if isinstance(date_obj, (datetime, pd.Timestamp)) else str(date_obj)
     
+    # FIX: Używamy LIKE + % aby złapać daty zapisane jako '2024-01-01T00:00:00' (ISO) oraz '2024-01-01'
+    date_pattern = d_str + "%"
+
     # 1. Jeśli to admin, pokazujemy WSZYSTKIE raporty z tego dnia
     if role == 'admin':
-        data = run_query("SELECT * FROM reports WHERE date=%s", (d_str,), fetch="all")
+        data = run_query("SELECT * FROM reports WHERE date LIKE %s", (date_pattern,), fetch="all")
     else:
-        # 2. Dla zwykłego usera: Szukamy "miękko" (ignorujemy wielkość liter i spacje)
-        # Używamy ILIKE i TRIM
-        data = run_query("SELECT * FROM reports WHERE TRIM(team_name) ILIKE TRIM(%s) AND date=%s", (team_name, d_str), fetch="all")
+        # 2. Dla zwykłego usera: Szukamy "miękko" i po dacie LIKE
+        data = run_query("SELECT * FROM reports WHERE TRIM(team_name) ILIKE TRIM(%s) AND date LIKE %s", (team_name, date_pattern), fetch="all")
         
     return pd.DataFrame(data) if data else pd.DataFrame()
 
@@ -669,174 +670,6 @@ def create_pdf_report(df, start_date, end_date):
     add_line("Hup", total_hup, "st.")
     return pdf.output(dest='S').encode('latin-1', 'replace')
 
-def generate_excel_report(df):
-    """
-    Generuje raport Excel (.xlsx) z kolorowaniem wierszy wg Teamów
-    i zaawansowaną logiką kolumn (V, Hup, Tech mapping).
-    """
-    # 1. Sortowanie po nazwie Teamu (mapowanie na dg_teamX)
-    def get_sort_key(team_name):
-        tn = str(team_name).lower().replace(' ', '')
-        if 'team1' in tn: return 1
-        if 'team2' in tn: return 2
-        if 'team3' in tn: return 3
-        return 99 # Inne na końcu
-
-    # Tworzymy kopię, żeby nie psuć głównego DF
-    df = df.copy()
-    df['sort_id'] = df['team_name'].apply(get_sort_key)
-    df = df.sort_values('sort_id')
-
-    # Definicja kolumn wyjściowych
-    columns = [
-        'ALT', 'Team', 'Adresse', 'We', 'Gfta', 'V', 'von', 'bis', 
-        'LSK', 'Ws', 'Af', 'Lr', 'Srv-GFTA', 'Ka', 'H-MH', 'Hup', 
-        'Ont', 'M-K ', 'G-A', 'Serverschrank', 'MultiHUP'
-    ]
-
-    output_data = []
-
-    for _, row in df.iterrows():
-        # Mapowanie nazwy teamu dla kolumny ALT
-        raw_team = row['team_name']
-        team_map = {
-            "Team 1": "dg_team1",
-            "Team 2": "dg_team2",
-            "Team 3": "dg_team3"
-        }
-        alt_val = team_map.get(raw_team, raw_team)
-
-        # Pobieranie pracowników
-        workers = []
-        if row['workers_json']:
-            try:
-                workers = json.loads(row['workers_json'])
-            except: pass
-        if not workers:
-            workers = [{"name": "Nieznany", "start": "", "end": "", "calculated_hours": 0}]
-
-        # Obliczanie metryk
-        r_we = row['we_count']
-        r_gfta_sum = row['gfta_sum']
-        r_v = r_we - r_gfta_sum # V = WE - Gf-TA
-        r_ont = row['ont_gpon_sum'] + row['ont_xgs_sum']
-        r_activations = row['activation_sum']
-        r_tech = row['technology_type'] if row['technology_type'] else ""
-        
-        # Logika Kolumn Technologicznych
-        # Mapowanie: Nazwa z Bazy -> Nazwa Kolumny
-        # Domyślnie trafia do 'Gfta', chyba że pasuje do klucza poniżej
-        tech_map = {
-            "LSK": "LSK",
-            "Ws": "Ws", "W-S": "Ws",
-            "Af": "Af", "AF": "Af",
-            "Lr": "Lr", "L": "Lr",
-            "Ka": "Ka", "K": "Ka",
-            "Srv": "Srv-GFTA", "Serveschrank": "Srv-GFTA"
-        }
-        
-        # Normalizacja klucza (usuwamy spacje)
-        t_key = r_tech.strip()
-        target_col = tech_map.get(t_key, "Gfta")
-        
-        # Przygotowanie słownika wartości technologicznych
-        tech_values = {k: "" for k in ['Gfta', 'LSK', 'Ws', 'Af', 'Lr', 'Srv-GFTA', 'Ka']}
-        if r_gfta_sum > 0:
-            tech_values[target_col] = r_gfta_sum
-
-        # Materiały
-        mk_val = 0
-        srv_mat_val = 0
-        if row['materials_json']:
-            try:
-                mats = json.loads(row['materials_json'])
-                mk_val = mats.get("Metalikanal 30x30", 0)
-                srv_mat_val = mats.get("Serveschrank", 0)
-            except: pass
-
-        # Status HUP
-        hup_status = row.get('hup_status', '')
-        # Mapowanie statusów na kolumny Excel
-        val_hup = 1 if hup_status in ['Tak', 'Yes', 'Ja', 'Hüp', 'Hup', 'Standard'] else ""
-        val_hmh = 1 if hup_status in ['Wymiana na MHüp', 'Wymiana na M-Hüp', 'Exchange to MHüp', 'Exchange to M-Hüp', 'Austausch gegen MHüp'] else ""
-        val_multi = 1 if hup_status in ['MultiHüp', 'M-Hüp', 'M-Hup'] else ""
-        # Przebudowa może nie mieć swojej kolumny w starym Excelu, można dodać lub zignorować
-
-        # Budowanie wierszy dla każdego pracownika
-        for i, w in enumerate(workers):
-            row_data = {col: "" for col in columns}
-            
-            # Helper do kolorowania (ukryta kolumna)
-            row_data['_MetaTeam'] = alt_val 
-
-            # Nazwa pracownika z prefixem (BW)
-            w_name = w.get('name', '')
-            if w_name and not w_name.startswith("(BW)"):
-                w_name = f"(BW) {w_name}"
-            row_data['Team'] = w_name
-            
-            # Czas (HH:MM) - ucinamy sekundy i datę
-            s_raw = str(w.get('start', ''))
-            e_raw = str(w.get('end', ''))
-            row_data['von'] = s_raw[:5] if len(s_raw) >= 5 else s_raw
-            row_data['bis'] = e_raw[:5] if len(e_raw) >= 5 else e_raw
-            
-            # Wypełniamy dane projektowe TYLKO w pierwszym wierszu (pierwszy pracownik)
-            if i == 0:
-                row_data['ALT'] = alt_val
-                row_data['Adresse'] = f"{row['address']} {row['object_num']}"
-                row_data['We'] = r_we
-                row_data['V'] = r_v
-                row_data['Ont'] = r_ont
-                row_data['M-K '] = mk_val # Tutaj wpisze 0 jeśli jest 0
-                row_data['Serverschrank'] = srv_mat_val if srv_mat_val > 0 else ""
-                row_data['G-A'] = r_activations if r_activations > 0 else ""
-                
-                # Wstawiamy obliczone wartości Gf-TA do odpowiednich kolumn
-                for k, v in tech_values.items():
-                    if k in row_data:
-                        row_data[k] = v
-                
-                # Wstawiamy HUPy
-                row_data['Hup'] = val_hup
-                row_data['H-MH'] = val_hmh
-                row_data['MultiHUP'] = val_multi
-            
-            output_data.append(row_data)
-
-    # Tworzymy DataFrame
-    final_df = pd.DataFrame(output_data, columns=columns + ['_MetaTeam'])
-    
-    # STYLIZACJA (Kolory)
-    def style_rows(row):
-        team = str(row['_MetaTeam']).lower()
-        bg_color = '#FFFFFF' # Domyślny biały
-        # Kolory pastelowe dla czytelności
-        if 'dg_team1' in team: bg_color = '#DDEBF7' # Jasny Niebieski
-        elif 'dg_team2' in team: bg_color = '#E2EFDA' # Jasny Zielony
-        elif 'dg_team3' in team: bg_color = '#FCE4D6' # Jasny Pomarańczowy
-        
-        return [f'background-color: {bg_color}; border: 1px solid #000000' for _ in row]
-
-    # Aplikujemy style
-    styler = final_df.style.apply(style_rows, axis=1)
-    
-    # Ukrywamy kolumnę pomocniczą _MetaTeam
-    if hasattr(styler, "hide"):
-         styler.hide(axis='columns', subset=['_MetaTeam'])
-    
-    # Zapis do bufora Excel
-    buffer = io.BytesIO()
-    with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-        styler.to_excel(writer, index=False, sheet_name='Report')
-        
-        # Autodopasowanie szerokości kolumn (stała szerokość 15 dla czytelności)
-        worksheet = writer.sheets['Report']
-        for idx, col in enumerate(columns):
-            worksheet.set_column(idx, idx, 15)
-            
-    return buffer
-
 # --- UI START ---
 # init_db()
 
@@ -927,6 +760,15 @@ def monter_view():
 
     loaded_report = None
     current_edit_id = None
+    
+    # Automatyczne ustalanie nazwy zespołu do zapisu/wyszukiwania (dg_teamX)
+    current_team_db_name = disp
+    if "Team" in disp or "team" in disp:
+        # Jeśli nie zaczyna się od dg_, naprawiamy
+        if not disp.lower().startswith("dg_"):
+            clean_name = disp.lower().replace(" ", "")
+            if clean_name.startswith("team"):
+                current_team_db_name = "dg_" + clean_name
 
     # --- ŁADOWANIE DO EDYCJI ---
     if mode == get_text("mode_edit"):
@@ -934,17 +776,8 @@ def monter_view():
         # 1. Wybór daty
         edit_date = st.date_input("Wybierz datę raportu do edycji", datetime.now())
         
-        # FIX: Domyślna wartość wyszukiwania (Automagiczna zamiana Team X -> dg_teamX)
-        default_search_val = disp
-        if "Team" in disp and "dg_" not in disp:
-            # Próba konwersji "Team 1" -> "dg_team1"
-            # Usuwamy spacje i dodajemy prefix dg_
-            clean_name = disp.lower().replace(" ", "")
-            if clean_name.startswith("team"):
-                default_search_val = "dg_" + clean_name
-        
-        # Pole wyszukiwania (domyślnie wypełnione)
-        search_team = st.text_input(get_text("search_team_label"), value=default_search_val)
+        # Automatyczne szukanie (bez inputa)
+        search_team = current_team_db_name
         
         # 2. Pobieramy raporty - przekazujemy rolę
         # Jeśli jesteś adminem -> zobaczysz wszystko
@@ -961,8 +794,9 @@ def monter_view():
             st.info(get_text("edit_loaded_info").format(current_edit_id))
         else:
             st.warning(get_text("no_reports_to_edit"))
-            # Nie robimy return, żeby pozwolić zobaczyć pusty interfejs (chyba że wolisz blokadę)
-            # return
+            # --- FIX: Reset formularza gdy brak raportów (żeby nie było "duchów") ---
+            reset_form_state()
+            # ------------------------------------------------------------------------
 
     # --- DANE ZLECENIA ---
     with st.expander(get_text("expander_data"), expanded=True):
@@ -979,12 +813,12 @@ def monter_view():
         # Nie pozwalamy zmieniać teamu, bo to powoduje zamieszanie. System wie kim jesteś.
         # Chyba że wczytaliśmy raport (wtedy pokazujemy właściciela raportu)
         
-        team_display_val = disp
+        team_display_val = current_team_db_name
         if loaded_report is not None:
             team_display_val = loaded_report['team_name']
             
-        st.caption(f"Team: {team_display_val}")
-        # Przekazujemy do zapisu to, co jest w raporcie LUB to kim jesteśmy
+        st.caption(f"Team (DB): {team_display_val}")
+        # Przekazujemy do zapisu to, co jest w raporcie LUB to kim jesteśmy (znormalizowane)
         team_name_to_save = team_display_val
         # -------------------------------------------
 
@@ -1256,11 +1090,10 @@ def monter_view():
                         st.error(f"❌ {w['name']}: Czas pracy <= 0!")
                         can_save = False
                     
-                    if w['type'] == 'Contract':
-                        if diff > 6 and diff <= 9 and break_time < 30: st.warning(f"⚠️ {w['name']} (ArbZG): >6h = min 30min przerwy.")
-                        elif diff > 9 and break_time < 45: st.warning(f"⚠️ {w['name']} (ArbZG): >9h = min 45min przerwy.")
-                    elif w['type'] == 'B2B':
-                        if diff > 6 and break_time < 30: st.warning(f"⚠️ {w['name']} (B2B): >6h zalecana przerwa.")
+                    # --- USUNIĘTO OSTRZEŻENIA O PRZERWACH (ArbZG/B2B) ---
+                    # Dzięki temu można wpisać break=0 dla drugiej zmiany
+                    # bez zbędnych komunikatów.
+                    # ----------------------------------------------------
 
                     w_data = w.copy()
                     w_data['calculated_hours'] = round(calc_hours, 2)
@@ -1333,25 +1166,10 @@ def admin_view():
             df['date'] = pd.to_datetime(df['date'])
             st.header(get_text("day_summary_header"))
             
-            # Wybór daty i przycisk CSV w jednym rzędzie
-            c_date, c_csv = st.columns([3, 1])
-            sel_day = c_date.date_input(get_text("pick_day"), datetime.now())
+            sel_day = st.date_input(get_text("pick_day"), datetime.now())
             
             # Filtrowanie danych dla wybranego dnia
             d_df = df[df['date'].dt.date == sel_day]
-
-            # Przycisk pobierania EXCEL (zamiast CSV)
-            if not d_df.empty:
-                excel_data = generate_excel_report(d_df)
-                file_name = f"Raport_{sel_day}.xlsx"
-                
-                c_csv.download_button(
-                    label=get_text("btn_download_excel"), # <--- UŻYCIE TŁUMACZENIA
-                    data=excel_data,
-                    file_name=file_name,
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    key="download_excel_day"
-                )
             
             if d_df.empty:
                 st.info(get_text("no_reports_day"))
