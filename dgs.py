@@ -180,12 +180,12 @@ TRANSLATIONS = {
         "pdf_download": "Pobierz Raport PDF",
         "pdf_no_data": "Keine Daten im ausgewählten Zeitraum.",
         
-        "day_summary_header": "Tageszusammenfassung - nach Teams",
-        "pick_day": "Tag wählen",
+        "day_summary_header": "Podsumowanie dnia - wg Teamów",
+        "pick_day": "Wybierz dzień",
         "no_reports_day": "Keine Berichte für diesen Tag.",
         "team_header": "👷 TEAM",
         
-        "lbl_tab_summary": "📌 Zusammenfassung",
+        "lbl_tab_summary": "📌 Podsumowanie",
         "total_day_label": "∑ TAGES-SUMME:",
 
         "metric_hours": "🕒 Stunden",
@@ -214,163 +214,6 @@ TRANSLATIONS = {
         "lbl_total_hours": "Gesamtstunden",
         "lbl_addr_context": "Adresse / Auftrag",
         "chart_team": "Installationen (Team)",
-        "db_header": "Full Database Dump"
-    },
-    "ENG": {
-        "login_title": "🔐 Login - Fiber System",
-        "user_label": "Username",
-        "pass_label": "Password",
-        "login_btn": "Login",
-        "login_error": "Invalid username or password",
-        "logout_btn": "Logout",
-        "sidebar_login_info": "Logged in as:",
-        "sidebar_admin_warning": "Admin Panel",
-        
-        "form_title": "🛠️ Work Report (DG)",
-        "mode_select_label": "Select Mode:",
-        "mode_new": "📝 New Report",
-        "mode_edit": "✏️ Correct Report",
-        "select_report_label": "Select Report to Edit",
-        "no_reports_to_edit": "No reports for your team on this day.",
-        "edit_loaded_info": "Editing Report ID: {}",
-        
-        "expander_data": "📍 Order Data",
-        "date_label": "Report Date",
-        "obj_num_label": "Object Number",
-        "addr_label": "Address",
-        "worker_header": "👤 Team & Working Time",
-        "worker_select_label": "Select Worker",
-        "add_worker_btn": "➕ Add Next Worker",
-        "remove_worker_btn": "Remove Last",
-        "start_label": "Start Time",
-        "break_label": "Break (min)",
-        "end_label": "End Time",
-        
-        "err_start_time": "⚠️ Start time cannot be earlier than 6:00!",
-        "err_end_time": "⚠️ End time next day cannot be later than 5:00 AM!",
-        "lbl_next_day_info": "ℹ️ Work ends next day: {} ({}h)",
-        
-        "lbl_hup_question": "Did you install HÜP?",
-        "lbl_hup_type_select": "Select HÜP Type:",
-        "opt_hup_yes": "Yes",
-        "opt_hup_no": "No",
-        
-        "opt_hup_std": "Hüp",
-        "opt_hup_multi": "MultiHüp",
-        "opt_hup_change": "Exchange to MHüp",
-        "opt_hup_rebuild": "Rebuild MHüp",
-
-        "err_break_b2b": "⚠️ B2B: Over 6h work requires min. 30 min break!",
-        "err_break_std_6h": "⚠️ Contract: Over 6h work requires min. 30 min break!",
-        "err_break_std_9h": "⚠️ Contract: Over 9h work requires min. 45 min break!",
-        
-        "section_1_title": "1. Work List (Apartments)",
-        "lbl_we_count": "WE Count",
-        "err_we_count": "Fill in WE count and proceed.",
-
-        # Mobile View Translations (ENG)
-        "mobile_mode_toggle": "📱 Mobile Mode (Large Buttons)",
-        "select_flat_label": "Select Apartment to Edit:",
-        "flat_pos_label": "Pos",
-        "editing_info": "Editing:",
-        "flat_number_input": "Apartment Number",
-        "preview_full_list": "Full List Preview",
-        "btn_auto_fill": "⚡ Auto-fill apartment numbers",
-        "btn_delete_report": "🗑️ Delete this report (Permanently!)",
-        "btn_download_excel": "📥 Download Excel Report (Colored)",
-        
-        "section_2_title": "2. Used Materials",
-        "section_3_title": "3. Completion Status",
-        
-        "lbl_addr_finished": "Is address finished?",
-        "lbl_mfr_ready": "Is MFR ready?",
-        "lbl_reason": "Provide reason (Required):",
-        "opt_yes": "Yes",
-        "opt_no": "No",
-        
-        "save_btn": "💾 Save Report",
-        "update_btn": "💾 Update Report",
-        "save_success": "Report saved! Team: {}. Gf-TA installed: {}",
-        "update_success": "Report updated successfully!",
-        "save_error": "Save failed! Check hours or required fields.",
-        
-        "col_flat": "Flat (No)",
-        "col_activation": "Activation",
-        "tech_label": "Technology Type",
-        
-        "dash_title": "📊 Management Dashboard",
-        "tab_day": "📅 Daily Report",
-        "tab_month": "📈 Monthly Stats",
-        "tab_emp": "👥 Employees",
-        "tab_db": "🗄️ Full Database",
-        "tab_users": "🔑 Accounts / Users",
-        "tab_pdf": "📄 PDF Reports",
-        "no_data": "No data in database.",
-        
-        "emp_header": "Employee Management",
-        "add_emp_label": "Add New Employee",
-        "lbl_contract_type": "Contract Type",
-        "opt_contract_b2b": "B2B (Self-employed)",
-        "opt_contract_std": "Employment Contract",
-        "add_emp_btn": "Add to List",
-        "del_emp_btn": "Remove",
-        "current_emp_list": "Current Employee List:",
-        "emp_added": "Added employee: {} ({})",
-        "emp_deleted": "Removed employee: {}",
-        
-        "user_header": "System Account Management",
-        "add_user_header": "Add New Account",
-        "lbl_u_name": "Name (e.g. Team 1)",
-        "lbl_u_login": "Login",
-        "lbl_u_pass": "Password",
-        "lbl_u_role": "Rolle",
-        "btn_add_user": "Create Account",
-        "user_added_success": "Account '{}' created.",
-        "user_exists_error": "Login '{}' is already taken.",
-        "list_users_header": "Existing Accounts:",
-        "btn_del_user": "Delete",
-        "user_deleted": "Deleted account: {}",
-
-        "pdf_header": "Periodic Report Generator",
-        "pdf_date_range": "Select Date Range",
-        "pdf_gen_btn": "Generate PDF",
-        "pdf_download": "Download PDF Report",
-        "pdf_no_data": "No data in selected period.",
-        
-        "day_summary_header": "Daily Summary - by Teams",
-        "pick_day": "Select Day",
-        "no_reports_day": "No reports for this day.",
-        "team_header": "👷 TEAM",
-        
-        "lbl_tab_summary": "📌 Summary",
-        "total_day_label": "∑ DAILY TOTAL:",
-
-        "metric_hours": "🕒 Hours",
-        "metric_we": "🏠 WE",
-        "metric_gfta": "📦 Gf-TA",
-        "metric_ont": "modem ONT",
-        "metric_activations": "⚡ Activations",
-        "metric_hup": "🔧 HÜP (Count)",
-        "metric_hup_status": "HÜP Status",
-        "lbl_activated_list": "Activated ONT (Flat No):", 
-        "lbl_gfta_list": "Installed Gf-TA (List):",
-        "metric_kanal": "📏 Metalikanal 30x30",
-        "metric_srv": "🖥️ Serveschrank",
-        "metric_tech_used": "⚙️ Technology",
-        "details_expander": "Report Details",
-        
-        "col_materials": "Materials",
-        "col_status_addr": "Status Address",
-        "col_status_mfr": "Status MFR",
-        "lbl_workers": "Workers:",
-        "lbl_worker_hours": "Working Hours:",
-        
-        "month_header": "Monthly Analysis",
-        "pick_month": "Select Month",
-        "lbl_emp_select": "Select Worker",
-        "lbl_total_hours": "Total Hours",
-        "lbl_addr_context": "Address / Order",
-        "chart_team": "Installations (Team)",
         "db_header": "Full Database Dump"
     }
 }
@@ -560,6 +403,7 @@ def save_report_to_db(date, obj_num, address, team, we, w_json, m_json, wt_json,
 
 def update_report_in_db(rep_id, date, obj_num, address, team, we, w_json, m_json, wt_json, af, ar, mf, mr, og, ox, gs, act, tech, hs):
     d_str = date.strftime("%Y-%m-%d") if isinstance(date, (datetime, pd.Timestamp)) else str(date)
+    # FIX: Rzutowanie na int(rep_id) aby uniknąć problemów z numpy.int64
     run_query('''
         UPDATE reports SET
             date=%s, object_num=%s, address=%s, team_name=%s, we_count=%s, workers_json=%s, materials_json=%s, work_table_json=%s,
@@ -567,11 +411,12 @@ def update_report_in_db(rep_id, date, obj_num, address, team, we, w_json, m_json
             ont_gpon_sum=%s, ont_xgs_sum=%s, gfta_sum=%s, activation_sum=%s, technology_type=%s, hup_status=%s
         WHERE id=%s
     ''', (
-        d_str, obj_num, address, team, we, w_json, m_json, wt_json, af, ar, mf, mr, og, ox, gs, act, tech, hs, rep_id
+        d_str, obj_num, address, team, we, w_json, m_json, wt_json, af, ar, mf, mr, og, ox, gs, act, tech, hs, int(rep_id)
     ), fetch="none")
 
 def delete_report(report_id):
-    run_query("DELETE FROM reports WHERE id=%s", (report_id,), fetch="none")
+    # FIX: Rzutowanie na int() aby uniknąć problemów z numpy.int64
+    run_query("DELETE FROM reports WHERE id=%s", (int(report_id),), fetch="none")
 
 # Dodajemy dekorator cache_data
 # ttl=60 oznacza: "pamiętaj te dane przez 60 sekund, potem pobierz świeże"
