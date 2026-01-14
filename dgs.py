@@ -695,9 +695,14 @@ def get_employees():
     return [d['name'] for d in data]
 
 def get_reports_for_editor(team_name, date_obj):
-    # Pobiera raporty danego teamu z danej daty (do edycji przez montera)
     d_str = date_obj.strftime("%Y-%m-%d") if isinstance(date_obj, (datetime, pd.Timestamp)) else str(date_obj)
-    data = run_query("SELECT * FROM reports WHERE team_name=%s AND date=%s", (team_name, d_str), fetch="all")
+    # ZMIANA: Pobieramy raporty pasujące do teamu LUB (jeśli team_name jest pusty/None) wszystkie z tego dnia
+    if team_name:
+        # Używamy ILIKE dla mniejszej wrażliwości na wielkość liter
+        data = run_query("SELECT * FROM reports WHERE team_name ILIKE %s AND date=%s", (team_name, d_str), fetch="all")
+    else:
+        data = run_query("SELECT * FROM reports WHERE date=%s", (d_str,), fetch="all")
+        
     return pd.DataFrame(data) if data else pd.DataFrame()
 
 def save_report_to_db(date, obj_num, address, team, we, w_json, m_json, wt_json, af, ar, mf, mr, og, ox, gs, act, tech, hs):
@@ -1046,19 +1051,30 @@ def monter_view():
 
     # --- ŁADOWANIE DO EDYCJI ---
     if mode == get_text("mode_edit"):
-        user_team = st.session_state.get('display_name') or st.session_state['username']
-        reports = get_reports_for_editor(user_team, datetime.now().date())
+        # Najpierw pytamy o datę, żeby wiedzieć czego szukać
+        edit_date = st.date_input("Wybierz datę raportu do edycji", datetime.now())
+        
+        # Pytamy o nazwę zespołu, żeby przefiltrować (domyślnie zalogowany user)
+        # Jeśli chcesz widzieć raporty wszystkich, możesz wyczyścić to pole
+        filter_team = st.text_input("Szukaj raportu dla zespołu (pozostaw puste dla wszystkich):", value=disp)
+        
+        # Pobieramy raporty
+        reports = get_reports_for_editor(filter_team if filter_team.strip() else None, edit_date)
         
         if not reports.empty:
             opts = reports.index.tolist()
-            labels = [f"{row['address']} ({row['object_num']})" for i, row in reports.iterrows()]
+            # Wyświetlamy w liście: Adres (Team)
+            labels = [f"{row['address']} ({row['team_name']})" for i, row in reports.iterrows()]
             sel_idx = st.selectbox(get_text("select_report_label"), opts, format_func=lambda x: labels[opts.index(x)])
             loaded_report = reports.loc[sel_idx]
             current_edit_id = loaded_report['id']
             st.info(get_text("edit_loaded_info").format(current_edit_id))
         else:
-            st.warning(get_text("no_reports_to_edit"))
-            return
+            st.warning("Brak raportów spełniających kryteria.")
+            # Nie robimy return, żeby pozwolić zobaczyć resztę interfejsu (choć pustego)
+            
+    # --- DANE ZLECENIA ---
+    # ... (reszta kodu bez zmian, pamiętaj o wklejeniu tam zmiany z text_input dla Teamu z poprzedniej odpowiedzi)
 
     # --- DANE ZLECENIA ---
     with st.expander(get_text("expander_data"), expanded=True):
