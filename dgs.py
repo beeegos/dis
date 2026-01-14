@@ -71,7 +71,7 @@ TRANSLATIONS = {
         "mode_new": "📝 Nowy Raport",
         "mode_edit": "✏️ Popraw Raport",
         "select_report_label": "Wybierz raport do edycji (Adres)",
-        "no_reports_to_edit": "Brak raportów dla Twojego zespołu w tym dniu.",
+        "no_reports_to_edit": "Brak raportów dla podanej nazwy zespołu w tym dniu.",
         "edit_loaded_info": "Edytujesz raport ID: {}",
         "search_team_label": "Szukaj raportów dla zespołu (nazwa):",
         
@@ -927,15 +927,6 @@ def monter_view():
 
     loaded_report = None
     current_edit_id = None
-    
-    # Automatyczne ustalanie nazwy zespołu do zapisu/wyszukiwania (dg_teamX)
-    current_team_db_name = disp
-    if "Team" in disp or "team" in disp:
-        # Jeśli nie zaczyna się od dg_, naprawiamy
-        if not disp.lower().startswith("dg_"):
-            clean_name = disp.lower().replace(" ", "")
-            if clean_name.startswith("team"):
-                current_team_db_name = "dg_" + clean_name
 
     # --- ŁADOWANIE DO EDYCJI ---
     if mode == get_text("mode_edit"):
@@ -943,8 +934,17 @@ def monter_view():
         # 1. Wybór daty
         edit_date = st.date_input("Wybierz datę raportu do edycji", datetime.now())
         
-        # Automatyczne szukanie (bez inputa)
-        search_team = current_team_db_name
+        # FIX: Domyślna wartość wyszukiwania (Automagiczna zamiana Team X -> dg_teamX)
+        default_search_val = disp
+        if "Team" in disp and "dg_" not in disp:
+            # Próba konwersji "Team 1" -> "dg_team1"
+            # Usuwamy spacje i dodajemy prefix dg_
+            clean_name = disp.lower().replace(" ", "")
+            if clean_name.startswith("team"):
+                default_search_val = "dg_" + clean_name
+        
+        # Pole wyszukiwania (domyślnie wypełnione)
+        search_team = st.text_input(get_text("search_team_label"), value=default_search_val)
         
         # 2. Pobieramy raporty - przekazujemy rolę
         # Jeśli jesteś adminem -> zobaczysz wszystko
@@ -979,12 +979,12 @@ def monter_view():
         # Nie pozwalamy zmieniać teamu, bo to powoduje zamieszanie. System wie kim jesteś.
         # Chyba że wczytaliśmy raport (wtedy pokazujemy właściciela raportu)
         
-        team_display_val = current_team_db_name
+        team_display_val = disp
         if loaded_report is not None:
             team_display_val = loaded_report['team_name']
             
-        st.caption(f"Team (DB): {team_display_val}")
-        # Przekazujemy do zapisu to, co jest w raporcie LUB to kim jesteśmy (znormalizowane)
+        st.caption(f"Team: {team_display_val}")
+        # Przekazujemy do zapisu to, co jest w raporcie LUB to kim jesteśmy
         team_name_to_save = team_display_val
         # -------------------------------------------
 
