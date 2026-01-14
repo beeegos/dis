@@ -214,8 +214,8 @@ TRANSLATIONS = {
         "pick_month": "Wybierz miesiąc",
         "lbl_emp_select": "Wybierz Pracownika",
         "lbl_total_hours": "Suma Godzin",
-        "lbl_addr_context": "Adres / Zlecenie",
-        "chart_team": "Instalacje (Team)",
+        "lbl_addr_context": "Adresse / Auftrag",
+        "chart_team": "Installacje (Team)",
         "db_header": "Pełny zrzut bazy danych"
     },
     "DE": {
@@ -1517,7 +1517,10 @@ def admin_view():
                                     c2.metric(f"{we_label} / Gf-TA", f"{r_we} / {r_gfta}")
                                     
                                     c3.metric(metric_label_mat, f"{r_mat_val} {metric_unit_mat}")
-                                    c4.metric(get_text("metric_hup_status"), r_hup_stat)
+                                    # FIX: ZAMIANA METRIC NA MARKDOWN (żeby tekst się mieścił)
+                                    with c4:
+                                        st.caption(get_text("metric_hup_status"))
+                                        st.markdown(f"**{r_hup_stat}**")
 
                                     st.divider()
                                     st.caption(f"{get_text('metric_tech_used')}: **{r_tech}**")
