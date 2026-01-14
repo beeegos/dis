@@ -89,13 +89,16 @@ TRANSLATIONS = {
         "err_end_time": "⚠️ Koniec pracy następnego dnia nie może być później niż 5:00 rano!",
         "lbl_next_day_info": "ℹ️ Praca kończy się następnego dnia: {} ({}h)",
         
-        "lbl_hup_question": "Czy założyłeś Hüp?",
-        "lbl_hup_type": "Wybierz rodzaj Hüp:",
+        # HUP - NOWE
+        "lbl_hup_question": "Czy założyłeś HÜP?",
+        "lbl_hup_type_select": "Wybierz rodzaj HÜP:",
         "opt_hup_yes": "Tak",
         "opt_hup_no": "Nie",
+        
         "opt_hup_std": "Hüp",
-        "opt_hup_m": "M-Hüp",
-        "opt_hup_change": "Wymiana na M-Hüp",
+        "opt_hup_multi": "MultiHüp",
+        "opt_hup_change": "Wymiana na MHüp",
+        "opt_hup_rebuild": "Przebudowa MHüp",
         
         "err_break_b2b": "⚠️ B2B: Powyżej 6h pracy wymagana jest przerwa min. 30 min!",
         "err_break_std_6h": "⚠️ Umowa (ArbZG): Powyżej 6h pracy wymagana jest przerwa min. 30 min!",
@@ -114,7 +117,7 @@ TRANSLATIONS = {
         "preview_full_list": "Podgląd całej listy",
         "btn_auto_fill": "⚡ Auto-uzupełnij numery mieszkań (z Nr Obiektu)",
         "btn_delete_report": "🗑️ Usuń ten raport (Bezpowrotnie!)",
-        "btn_download_excel": "📥 Pobierz Raport Excel (Kolorowy)", # NOWE
+        "btn_download_excel": "📥 Pobierz Raport Excel (Kolorowy)",
 
         "section_2_title": "2. Zużyte Materiały",
         "section_3_title": "3. Status Zakończenia",
@@ -212,7 +215,7 @@ TRANSLATIONS = {
         "lbl_emp_select": "Wybierz Pracownika",
         "lbl_total_hours": "Suma Godzin",
         "lbl_addr_context": "Adres / Zlecenie",
-        "chart_team": "Installacje (Team)",
+        "chart_team": "Instalacje (Team)",
         "db_header": "Pełny zrzut bazy danych"
     },
     "DE": {
@@ -250,12 +253,14 @@ TRANSLATIONS = {
         "lbl_next_day_info": "ℹ️ Arbeit endet am nächsten Tag: {} ({}h)",
         
         "lbl_hup_question": "Haben Sie den HÜP installiert?",
-        "lbl_hup_type": "HÜP Typ wählen:",
+        "lbl_hup_type_select": "HÜP Typ wählen:",
         "opt_hup_yes": "Ja",
         "opt_hup_no": "Nein",
+        
         "opt_hup_std": "Hüp",
-        "opt_hup_m": "M-Hüp",
-        "opt_hup_change": "Austausch gegen M-Hüp",
+        "opt_hup_multi": "MultiHüp",
+        "opt_hup_change": "Austausch gegen MHüp",
+        "opt_hup_rebuild": "Umbau MHüp",
 
         "err_break_b2b": "⚠️ B2B: Über 6h Arbeit sind min. 30 Min Pause erforderlich!",
         "err_break_std_6h": "⚠️ ArbZG: Über 6h Arbeit sind min. 30 Min Pause erforderlich!",
@@ -274,7 +279,7 @@ TRANSLATIONS = {
         "preview_full_list": "Vorschau der gesamten Liste",
         "btn_auto_fill": "⚡ Wohnungsnummern automatisch ausfüllen",
         "btn_delete_report": "🗑️ Diesen Bericht löschen (Endgültig!)",
-        "btn_download_excel": "📥 Excel-Bericht herunterladen (Farbig)", # NOWE
+        "btn_download_excel": "📥 Excel-Bericht herunterladen (Farbig)",
         
         "section_2_title": "2. Materialverbrauch",
         "section_3_title": "3. Fertigstellungsstatus",
@@ -405,12 +410,14 @@ TRANSLATIONS = {
         "lbl_next_day_info": "ℹ️ Work ends next day: {} ({}h)",
         
         "lbl_hup_question": "Did you install HÜP?",
-        "lbl_hup_type": "Select HÜP Type:",
+        "lbl_hup_type_select": "Select HÜP Type:",
         "opt_hup_yes": "Yes",
         "opt_hup_no": "No",
+        
         "opt_hup_std": "Hüp",
-        "opt_hup_m": "M-Hüp",
-        "opt_hup_change": "Exchange to M-Hüp",
+        "opt_hup_multi": "MultiHüp",
+        "opt_hup_change": "Exchange to MHüp",
+        "opt_hup_rebuild": "Rebuild MHüp",
 
         "err_break_b2b": "⚠️ B2B: Over 6h work requires min. 30 min break!",
         "err_break_std_6h": "⚠️ Contract: Over 6h work requires min. 30 min break!",
@@ -429,7 +436,7 @@ TRANSLATIONS = {
         "preview_full_list": "Full List Preview",
         "btn_auto_fill": "⚡ Auto-fill apartment numbers",
         "btn_delete_report": "🗑️ Delete this report (Permanently!)",
-        "btn_download_excel": "📥 Download Excel Report (Colored)", # NOWE
+        "btn_download_excel": "📥 Download Excel Report (Colored)",
         
         "section_2_title": "2. Used Materials",
         "section_3_title": "3. Completion Status",
@@ -475,7 +482,7 @@ TRANSLATIONS = {
         "lbl_u_name": "Name (e.g. Team 1)",
         "lbl_u_login": "Login",
         "lbl_u_pass": "Password",
-        "lbl_u_role": "Role",
+        "lbl_u_role": "Rolle",
         "btn_add_user": "Create Account",
         "user_added_success": "Account '{}' created.",
         "user_exists_error": "Login '{}' is already taken.",
@@ -738,9 +745,11 @@ def get_localized_hup_status(saved_status):
         return "-"
         
     no_variants = ["Nie", "Nein", "No"]
-    change_variants = ["Wymiana na M-Hüp", "Austausch gegen M-Hüp", "Exchange to M-Hüp"]
+    change_variants = ["Wymiana na MHüp", "Austausch gegen MHüp", "Exchange to MHüp", "Wymiana na M-Hüp", "Exchange to M-Hüp"]
     std_variants = ["Hüp"]
-    m_variants = ["M-Hüp"]
+    multi_variants = ["MultiHüp"]
+    rebuild_variants = ["Przebudowa MHüp", "Umbau MHüp", "Rebuild MHüp"]
+    m_old_variants = ["M-Hüp"] # Stara kompatybilność
 
     target_key = None
     
@@ -750,8 +759,10 @@ def get_localized_hup_status(saved_status):
         target_key = "opt_hup_change"
     elif saved_status in std_variants:
         target_key = "opt_hup_std"
-    elif saved_status in m_variants:
-        target_key = "opt_hup_m"
+    elif saved_status in multi_variants or saved_status in m_old_variants:
+        target_key = "opt_hup_multi"
+    elif saved_status in rebuild_variants:
+        target_key = "opt_hup_rebuild"
     elif saved_status in ["Tak", "Ja", "Yes"]: 
         target_key = "opt_hup_yes"
 
@@ -890,9 +901,11 @@ def generate_excel_report(df):
 
         # Status HUP
         hup_status = row.get('hup_status', '')
+        # Mapowanie statusów na kolumny Excel
         val_hup = 1 if hup_status in ['Tak', 'Yes', 'Ja', 'Hüp', 'Hup', 'Standard'] else ""
-        val_hmh = 1 if hup_status in ['Wymiana na M-Hüp', 'Exchange to M-Hüp'] else ""
-        val_multi = 1 if hup_status in ['M-Hüp', 'M-Hup'] else ""
+        val_hmh = 1 if hup_status in ['Wymiana na MHüp', 'Wymiana na M-Hüp', 'Exchange to MHüp', 'Exchange to M-Hüp', 'Austausch gegen MHüp'] else ""
+        val_multi = 1 if hup_status in ['MultiHüp', 'M-Hüp', 'M-Hup'] else ""
+        # Przebudowa może nie mieć swojej kolumny w starym Excelu, można dodać lub zignorować
 
         # Budowanie wierszy dla każdego pracownika
         for i, w in enumerate(workers):
@@ -1096,23 +1109,71 @@ def monter_view():
 
     st.write("---")
 
-    # --- HÜP ---
+    # --- HÜP (NOWA LOGIKA 2-ETAPOWA) ---
     st.write(f"**{get_text('lbl_hup_question')}**")
-    hup_idx = 1
+    
+    # 1. Sprawdzamy stan początkowy (dla edycji)
+    # Domyślne wartości
+    hup_yes_no_idx = 1 # Domyślnie NIE (index 1)
+    specific_type_idx = 0 # Domyślnie pierwszy z listy typów
+    
+    # Lista typów do wyboru w kroku 2
+    hup_types = [
+        get_text("opt_hup_std"),      # Hüp
+        get_text("opt_hup_multi"),    # MultiHüp
+        get_text("opt_hup_change"),   # Wymiana na MHüp
+        get_text("opt_hup_rebuild")   # Przebudowa MHüp
+    ]
+    
     if loaded_report is not None:
         raw_hup = loaded_report.get('hup_status', 'Nie')
-        if raw_hup == "Tak": hup_idx = 0
-        elif raw_hup == "Nie": hup_idx = 1
-        elif raw_hup == "Hüp": hup_idx = 2
-        elif raw_hup == "M-Hüp": hup_idx = 3
-        elif raw_hup == "Wymiana na M-Hüp": hup_idx = 4
+        # Lista wariantów "NIE" (z bazy)
+        no_variants = ["Nie", "Nein", "No"]
+        
+        if raw_hup in no_variants:
+            hup_yes_no_idx = 1 # NIE
+        else:
+            hup_yes_no_idx = 0 # TAK (bo coś jest wybrane)
+            # Próbujemy dopasować, co dokładnie było wybrane, żeby ustawić selectbox
+            # Musimy mapować nazwy z bazy na nazwy z listy hup_types (te są z get_text)
+            # Ale uwaga: lista hup_types jest tłumaczona! A w bazie może być po polsku.
+            # Najlepiej sprawdzić czy raw_hup pasuje do którejś opcji.
+            
+            # Spróbujmy znaleźć raw_hup w liście (zakładając że język się nie zmienił)
+            if raw_hup in hup_types:
+                specific_type_idx = hup_types.index(raw_hup)
+            else:
+                # Jeśli nie znaleziono (np. zmiana języka), to fallback na helper
+                translated_hup = get_localized_hup_status(raw_hup)
+                if translated_hup in hup_types:
+                    specific_type_idx = hup_types.index(translated_hup)
 
-    hup_val = st.radio(
-        get_text("lbl_hup_type"),
-        [get_text("opt_hup_yes"), get_text("opt_hup_no"), get_text("opt_hup_std"), get_text("opt_hup_m"), get_text("opt_hup_change")],
-        index=hup_idx, key="hup_radio", horizontal=True
+    # KROK 1: Pytanie TAK/NIE
+    hup_installed = st.radio(
+        get_text("lbl_hup_question"),
+        [get_text("opt_hup_yes"), get_text("opt_hup_no")],
+        index=hup_yes_no_idx,
+        key="hup_step1",
+        label_visibility="collapsed",
+        horizontal=True
     )
     
+    final_hup_status = "Nie" # Domyślna wartość do zapisu
+    
+    # KROK 2: Jeśli TAK, to jaki typ?
+    if hup_installed == get_text("opt_hup_yes"):
+        st.write(get_text("lbl_hup_type_select"))
+        selected_type = st.selectbox(
+            get_text("lbl_hup_type_select"),
+            hup_types,
+            index=specific_type_idx,
+            label_visibility="collapsed",
+            key="hup_step2"
+        )
+        final_hup_status = selected_type
+    else:
+        final_hup_status = "Nie" # Zapisujemy "Nie" do bazy
+
     st.write("---")
 
     # --- SEKCJA 1: MIESZKANIA ---
@@ -1292,11 +1353,8 @@ def monter_view():
                 if 'current_work_df' in st.session_state:
                     wt_json = st.session_state['current_work_df'].to_json(orient="records")
 
-                hup_s = "Nie"
-                if 'hup_radio' in st.session_state:
-                    hup_val = st.session_state['hup_radio']
-                    map_hup = {get_text("opt_hup_yes"): "Tak", get_text("opt_hup_no"): "Nie", get_text("opt_hup_std"): "Hüp", get_text("opt_hup_m"): "M-Hüp", get_text("opt_hup_change"): "Wymiana na M-Hüp"}
-                    hup_s = map_hup.get(hup_val, hup_val)
+                # Tutaj używamy wartości obliczonej w nowym bloku HÜP
+                hup_s = final_hup_status
 
                 af_db = "Tak" if addr_finished == get_text("opt_yes") else "Nie"
                 mf_db = "Tak" if mfr_ready == get_text("opt_yes") else "Nie"
