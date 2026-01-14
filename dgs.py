@@ -39,6 +39,16 @@ MATERIALS_UNITS = {
     "Serveschrank": "st."
 }
 
+# --- LISTA TECHNOLOGII (Dla sekcji 3) ---
+TECHNOLOGIES = [
+    "LSK", 
+    "Leerrohr", 
+    "Ausenfasafde", 
+    "Kamin", 
+    "Serverschrank", 
+    "Wohnungsteiger"
+]
+
 # --- KONFIGURACJA STRONY ---
 st.set_page_config(page_title="Fiber System", layout="wide")
 
@@ -1276,13 +1286,13 @@ def monter_view():
     # --- SEKCJA 3: STATUS ---
     st.subheader(get_text("section_3_title"))
     
+    # Ustalanie domyślnej wartości przy edycji
     def_tech_idx = 0
-    if loaded_report is not None:
-        if loaded_report['technology_type'] == "Gf-TA": def_tech_idx = 0
-        elif loaded_report['technology_type'] == "Srv": def_tech_idx = 1
+    if loaded_report is not None and loaded_report['technology_type'] in TECHNOLOGIES:
+        def_tech_idx = TECHNOLOGIES.index(loaded_report['technology_type'])
         
-    technology_type = st.radio(get_text("tech_label"), ["Gf-TA", "Srv"], index=def_tech_idx, horizontal=True)
-
+    # Wybór technologii z nowej listy
+    technology_type = st.radio(get_text("tech_label"), TECHNOLOGIES, index=def_tech_idx, horizontal=False)
     # Statusy "Czy skończone?"
     # Używamy pomocniczej zmiennej do obsługi selectboxów Tak/Nie
     def bool_to_opt(val): return get_text("opt_yes") if val == "Tak" else get_text("opt_no")
