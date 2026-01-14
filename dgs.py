@@ -178,14 +178,14 @@ TRANSLATIONS = {
         "pdf_date_range": "Wybierz zakres dat",
         "pdf_gen_btn": "Generuj PDF",
         "pdf_download": "Pobierz Raport PDF",
-        "pdf_no_data": "Brak danych w wybranym okresie.",
+        "pdf_no_data": "Keine Daten im ausgewählten Zeitraum.",
         
-        "day_summary_header": "Podsumowanie dnia - wg Teamów",
-        "pick_day": "Wybierz dzień",
-        "no_reports_day": "Brak raportów z tego dnia.",
+        "day_summary_header": "Tageszusammenfassung - nach Teams",
+        "pick_day": "Tag wählen",
+        "no_reports_day": "Keine Berichte für diesen Tag.",
         "team_header": "👷 TEAM",
         
-        "lbl_tab_summary": "📌 Podsumowanie",
+        "lbl_tab_summary": "📌 Zusammenfassung",
         "total_day_label": "∑ TAGES-SUMME:",
 
         "metric_hours": "🕒 Stunden",
@@ -213,8 +213,8 @@ TRANSLATIONS = {
         "lbl_emp_select": "Mitarbeiter wählen",
         "lbl_total_hours": "Gesamtstunden",
         "lbl_addr_context": "Adresse / Auftrag",
-        "chart_team": "Installations (Team)",
-        "db_header": "Vollständiger Datenbankauszug"
+        "chart_team": "Installationen (Team)",
+        "db_header": "Full Database Dump"
     },
     "ENG": {
         "login_title": "🔐 Login - Fiber System",
