@@ -1007,7 +1007,7 @@ def logout():
     st.session_state['display_name'] = None
     st.rerun()
 
- def monter_view():
+def monter_view():
     disp = st.session_state.get('display_name') or st.session_state['username']
     st.sidebar.info(f"{get_text('sidebar_login_info')} {disp}")
     if st.sidebar.button(get_text("logout_btn")): logout()
