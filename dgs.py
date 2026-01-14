@@ -212,7 +212,7 @@ TRANSLATIONS = {
         "lbl_emp_select": "Wybierz Pracownika",
         "lbl_total_hours": "Suma Godzin",
         "lbl_addr_context": "Adres / Zlecenie",
-        "chart_team": "Instalacje (Team)",
+        "chart_team": "Installacje (Team)",
         "db_header": "Pełny zrzut bazy danych"
     },
     "DE": {
@@ -576,7 +576,7 @@ def run_query(query, params=None, fetch="all"):
                 conn.commit()
                 return None
     except psycopg2.InterfaceError:
-        # Jeśli połączenie zerwane, spróbuj połączyć ponownie (nie idealne, ale działa w prostych przypadkach)
+        # Jeśli połączenie zerwane, spróbuj połączyć ponownie
         conn = init_connection() 
         with conn.cursor() as cur:
             cur.execute(query, params)
@@ -687,82 +687,78 @@ def get_employees():
     if not data: return []
     return [d['name'] for d in data]
 
-def save_report_to_db(data):
+def get_reports_for_editor(team_name, date_obj):
+    # Pobiera raporty danego teamu z danej daty (do edycji przez montera)
+    d_str = date_obj.strftime("%Y-%m-%d") if isinstance(date_obj, (datetime, pd.Timestamp)) else str(date_obj)
+    data = run_query("SELECT * FROM reports WHERE team_name=%s AND date=%s", (team_name, d_str), fetch="all")
+    return pd.DataFrame(data) if data else pd.DataFrame()
+
+def save_report_to_db(date, obj_num, address, team, we, w_json, m_json, wt_json, af, ar, mf, mr, og, ox, gs, act, tech, hs):
+    # Data conversion just in case
+    d_str = date.strftime("%Y-%m-%d") if isinstance(date, (datetime, pd.Timestamp)) else str(date)
     run_query('''
         INSERT INTO reports (
-            date, team_name, address, object_num, we_count, technology_type,
-            workers_json,
-            gfta_sum, ont_gpon_sum, ont_xgs_sum, patch_ont_sum, activation_sum,
+            date, object_num, address, team_name, we_count, workers_json, materials_json, work_table_json,
             address_finished, address_finished_reason, mfr_ready, mfr_ready_reason,
-            hup_status,
-            work_table_json, materials_json
+            ont_gpon_sum, ont_xgs_sum, gfta_sum, activation_sum, technology_type, hup_status
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ''', (
-        data['date'], data['team'], data['address'], data['object_num'], data['we_count'], data['tech'],
-        json.dumps(data['workers']),
-        data['gfta_sum'], data['ont_gpon_sum'], data['ont_xgs_sum'], data['patch_ont_sum'], data['act_sum'],
-        data['addr_fin'], data['addr_reason'], data['mfr_ready'], data['mfr_reason'],
-        data['hup_status'],
-        json.dumps(data['work_table']), json.dumps(data['materials'])
+        d_str, obj_num, address, team, we, w_json, m_json, wt_json, af, ar, mf, mr, og, ox, gs, act, tech, hs
     ), fetch="none")
 
-def update_report_in_db(report_id, data):
+def update_report_in_db(rep_id, date, obj_num, address, team, we, w_json, m_json, wt_json, af, ar, mf, mr, og, ox, gs, act, tech, hs):
+    d_str = date.strftime("%Y-%m-%d") if isinstance(date, (datetime, pd.Timestamp)) else str(date)
     run_query('''
         UPDATE reports SET
-            date=%s, team_name=%s, address=%s, object_num=%s, we_count=%s, technology_type=%s,
-            workers_json=%s,
-            gfta_sum=%s, ont_gpon_sum=%s, ont_xgs_sum=%s, patch_ont_sum=%s, activation_sum=%s,
+            date=%s, object_num=%s, address=%s, team_name=%s, we_count=%s, workers_json=%s, materials_json=%s, work_table_json=%s,
             address_finished=%s, address_finished_reason=%s, mfr_ready=%s, mfr_ready_reason=%s,
-            hup_status=%s,
-            work_table_json=%s, materials_json=%s
+            ont_gpon_sum=%s, ont_xgs_sum=%s, gfta_sum=%s, activation_sum=%s, technology_type=%s, hup_status=%s
         WHERE id=%s
     ''', (
-        data['date'], data['team'], data['address'], data['object_num'], data['we_count'], data['tech'],
-        json.dumps(data['workers']),
-        data['gfta_sum'], data['ont_gpon_sum'], data['ont_xgs_sum'], data['patch_ont_sum'], data['act_sum'],
-        data['addr_fin'], data['addr_reason'], data['mfr_ready'], data['mfr_reason'],
-        data['hup_status'],
-        json.dumps(data['work_table']), json.dumps(data['materials']),
-        report_id
+        d_str, obj_num, address, team, we, w_json, m_json, wt_json, af, ar, mf, mr, og, ox, gs, act, tech, hs, rep_id
     ), fetch="none")
 
-def get_reports_by_team_and_date(team, date_str):
-    data = run_query("SELECT id, address, object_num FROM reports WHERE team_name=%s AND date=%s", (team, date_str), fetch="all")
-    # Zwracamy listę tupli żeby pasowało do starej logiki (id, address, object_num)
-    return [(d['id'], d['address'], d['object_num']) for d in data] if data else []
-
-def get_report_by_id(report_id):
-    return run_query("SELECT * FROM reports WHERE id=%s", (report_id,), fetch="one")
+def delete_report(report_id):
+    run_query("DELETE FROM reports WHERE id=%s", (report_id,), fetch="none")
 
 # Dodajemy dekorator cache_data
 # ttl=60 oznacza: "pamiętaj te dane przez 60 sekund, potem pobierz świeże"
 @st.cache_data(ttl=60)
 def load_all_data():
-    # To zapytanie pobiera teraz wszystko.
-    # W przyszłości warto zmienić "SELECT *" na konkretne kolumny, 
-    # albo pobierać tylko ostatnie 30 dni (WHERE date > ...)
     data = run_query("SELECT * FROM reports", fetch="all")
     return pd.DataFrame(data) if data else pd.DataFrame()
 
-# --- KALKULACJE CZASU ---
-def calculate_work_details(report_date, start_time, end_time, break_minutes):
-    if not start_time or not end_time: return 0.0, "", "", False, "Brak czasu", 0
-    if start_time < time(6, 0): return 0.0, "", "", False, "start_too_early", 0
-    start_dt = datetime.combine(report_date, start_time)
-    end_dt = datetime.combine(report_date, end_time)
-    is_next_day = False
-    if end_dt <= start_dt:
-        end_dt += timedelta(days=1)
-        is_next_day = True
-    if is_next_day and end_time > time(5, 0): return 0.0, "", "", False, "end_too_late", 0
-    duration = end_dt - start_dt
-    total_minutes = duration.total_seconds() / 60
-    try: brk = int(break_minutes)
-    except: brk = 0
-    actual_minutes = total_minutes - brk
-    calculated_hours = round(actual_minutes / 60, 2)
-    return calculated_hours, start_dt.strftime("%Y-%m-%d %H:%M"), end_dt.strftime("%Y-%m-%d %H:%M"), True, None, brk
+def get_localized_hup_status(saved_status):
+    """
+    Tłumaczy zapisany w bazie status HÜP na aktualny język interfejsu.
+    Obsługuje przypadki, gdy w bazie jest zapisane po PL, a oglądamy po DE.
+    """
+    if not saved_status:
+        return "-"
+        
+    no_variants = ["Nie", "Nein", "No"]
+    change_variants = ["Wymiana na M-Hüp", "Austausch gegen M-Hüp", "Exchange to M-Hüp"]
+    std_variants = ["Hüp"]
+    m_variants = ["M-Hüp"]
+
+    target_key = None
+    
+    if saved_status in no_variants:
+        target_key = "opt_hup_no"
+    elif saved_status in change_variants:
+        target_key = "opt_hup_change"
+    elif saved_status in std_variants:
+        target_key = "opt_hup_std"
+    elif saved_status in m_variants:
+        target_key = "opt_hup_m"
+    elif saved_status in ["Tak", "Ja", "Yes"]: 
+        target_key = "opt_hup_yes"
+
+    if target_key:
+        return get_text(target_key)
+    
+    return saved_status
 
 # --- PDF GENERATOR ---
 def remove_polish_chars(text):
@@ -1190,23 +1186,6 @@ def monter_view():
         )
         st.session_state['current_work_df'] = edited_df
 
-# --- PRZYWRÓCONY FRAGMENT: WYBÓR TECHNOLOGII ---
-    st.divider()
-    st.info(get_text("tech_label"))
-    
-    # Ustalanie domyślnej wartości (jeśli edycja)
-    tech_idx = 0
-    if loaded_report and loaded_report.get('technology_type') in TECH_OPTIONS:
-        tech_idx = TECH_OPTIONS.index(loaded_report['technology_type'])
-        
-    selected_tech = st.selectbox(
-        get_text("tech_label"), 
-        TECH_OPTIONS, 
-        index=tech_idx, 
-        label_visibility="collapsed"
-    )
-    # -----------------------------------------------
-
     gfta_sum = edited_df['Gfta'].sum()
     ont_gpon_sum = edited_df['Ont gpon'].sum()
     ont_xgs_sum = edited_df['Ont xgs'].sum()
@@ -1215,15 +1194,12 @@ def monter_view():
     st.info(f"Podsumowanie: Gf-TA: {gfta_sum}, ONT: {ont_gpon_sum + ont_xgs_sum}, Akt: {activation_sum}")
     st.write("---")
 
-    # --- NOWA LOKALIZACJA WYBORU TECHNOLOGII ---
-    # To jest teraz PRZED sekcją materiałów
-    
+    # --- WYBÓR TECHNOLOGII ---
     # Ustalanie domyślnej wartości
     def_tech_idx = 0
     if loaded_report is not None and loaded_report['technology_type'] in TECHNOLOGIES:
         def_tech_idx = TECHNOLOGIES.index(loaded_report['technology_type'])
     
-    # Lista rozwijana (selectbox) dla oszczędności miejsca
     technology_type = st.selectbox(get_text("tech_label"), TECHNOLOGIES, index=def_tech_idx)
     st.write("---")
 
@@ -1362,7 +1338,6 @@ def admin_view():
             # Filtrowanie danych dla wybranego dnia
             d_df = df[df['date'].dt.date == sel_day]
 
-            # Przycisk pobierania CSV (widoczny tylko gdy są dane)
             # Przycisk pobierania EXCEL (zamiast CSV)
             if not d_df.empty:
                 excel_data = generate_excel_report(d_df)
