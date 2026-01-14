@@ -158,7 +158,7 @@ TRANSLATIONS = {
         "opt_contract_std": "Umowa o pracę (ArbZG)",
         "add_emp_btn": "Dodaj do listy",
         "del_emp_btn": "Usuń z listy",
-        "current_emp_list": "Aktualna lista pracowników:",
+        "current_emp_list": "Aktuelle Mitarbeiterliste:",
         "emp_added": "Dodano pracownika: {} ({})",
         "emp_deleted": "Usunięto pracownika: {}",
         
@@ -178,174 +178,16 @@ TRANSLATIONS = {
 
         "pdf_header": "Generator Raportów Okresowych",
         "pdf_date_range": "Wybierz zakres dat",
-        "pdf_gen_btn": "Generuj PDF",
+        "pdf_gen_btn": "PDF generieren",
         "pdf_download": "Pobierz Raport PDF",
         "pdf_no_data": "Brak danych w wybranym okresie.",
         
         "day_summary_header": "Podsumowanie dnia - wg Teamów",
         "pick_day": "Wybierz dzień",
-        "no_reports_day": "Brak raportów z tego dnia.",
-        "team_header": "👷 TEAM",
-        
-        "lbl_tab_summary": "📌 Podsumowanie",
-        "total_day_label": "∑ TAGES-SUMME:",
-
-        "metric_hours": "🕒 Stunden",
-        "metric_we": "🏠 WE",
-        "metric_gfta": "📦 Gf-TA",
-        "metric_ont": "modem ONT",
-        "metric_activations": "⚡ Aktivierungen",
-        "metric_hup": "🔧 HÜP (Menge)",
-        "metric_hup_status": "HÜP Status",
-        "lbl_activated_list": "Aktivierte ONT (Wohnungsnr.):", 
-        "lbl_gfta_list": "Installierte Gf-TA (Liste):",
-        "metric_kanal": "📏 Metalikanal 30x30",
-        "metric_srv": "🖥️ Serveschrank",
-        "metric_tech_used": "⚙️ Technologie",
-        "details_expander": "Bericht Details",
-        
-        "col_materials": "Materialien",
-        "col_status_addr": "Status Adresse",
-        "col_status_mfr": "Status MFR",
-        "lbl_workers": "Mitarbeiter:",
-        "lbl_worker_hours": "Arbeitszeiten:",
-        
-        "month_header": "Monatsanalyse",
-        "pick_month": "Monat wählen",
-        "lbl_emp_select": "Mitarbeiter wählen",
-        "lbl_total_hours": "Gesamtstunden",
-        "lbl_addr_context": "Adresse / Auftrag",
-        "chart_team": "Installations (Team)",
-        "db_header": "Full Database Dump"
-    },
-    "DE": {
-        "login_title": "🔐 Anmeldung - Fiber System",
-        "user_label": "Benutzername",
-        "pass_label": "Passwort",
-        "login_btn": "Anmelden",
-        "login_error": "Falscher Benutzername oder Passwort",
-        "logout_btn": "Abmelden",
-        "sidebar_login_info": "Angemeldet als:",
-        "sidebar_admin_warning": "Administrator-Panel",
-        
-        "form_title": "🛠️ Arbeitsbericht (DG)",
-        "mode_select_label": "Modus wählen:",
-        "mode_new": "📝 Neuer Bericht",
-        "mode_edit": "✏️ Bericht korrigieren",
-        "select_report_label": "Bericht zur Bearbeitung wählen",
-        "no_reports_to_edit": "Keine Berichte Ihres Teams für diesen Tag.",
-        "edit_loaded_info": "Bericht bearbeiten ID: {}",
-        
-        "expander_data": "📍 Auftragsdaten",
-        "date_label": "Berichtsdatum",
-        "obj_num_label": "Objektnummer",
-        "addr_label": "Adresse",
-        "worker_header": "👤 Team und Arbeitszeit",
-        "worker_select_label": "Mitarbeiter wählen",
-        "add_worker_btn": "➕ Nächsten Mitarbeiter hinzufügen",
-        "remove_worker_btn": "Letzten entfernen",
-        "start_label": "Beginn",
-        "break_label": "Pause (Min)",
-        "end_label": "Ende",
-        "clean_form_btn": "🧹 Formular leeren",
-        
-        "err_start_time": "⚠️ Arbeitsbeginn nicht vor 06:00 Uhr!",
-        "err_end_time": "⚠️ Arbeitsende am nächsten Tag nicht später als 05:00 Uhr!",
-        "lbl_next_day_info": "ℹ️ Arbeit endet am nächsten Tag: {} ({}h)",
-        
-        "lbl_hup_question": "Haben Sie den HÜP installiert?",
-        "lbl_hup_type_select": "HÜP Typ wählen:",
-        "opt_hup_yes": "Ja",
-        "opt_hup_no": "Nein",
-        
-        "opt_hup_std": "Hüp",
-        "opt_hup_multi": "MultiHüp",
-        "opt_hup_change": "Austausch gegen MHüp",
-        "opt_hup_rebuild": "Umbau MHüp",
-
-        "err_break_b2b": "⚠️ B2B: Über 6h Arbeit sind min. 30 Min Pause erforderlich!",
-        "err_break_std_6h": "⚠️ ArbZG: Über 6h Arbeit sind min. 30 Min Pause erforderlich!",
-        "err_break_std_9h": "⚠️ ArbZG: Über 9h Arbeit sind min. 45 Min Pause erforderlich!",
-        
-        "section_1_title": "1. Wohnungsliste",
-        "lbl_we_count": "Anzahl WE",
-        "err_we_count": "Bitte Anzahl WE ausfüllen und fortfahren.",
-
-        # Mobile View Translations (DE)
-        "mobile_mode_toggle": "📱 Mobiler Modus (Große Tasten)",
-        "select_flat_label": "Wohnung zur Bearbeitung wählen:",
-        "flat_pos_label": "Pos.",
-        "editing_info": "Bearbeitung:",
-        "flat_number_input": "Wohnungsnummer",
-        "preview_full_list": "Vorschau der gesamten Liste",
-        "btn_auto_fill": "⚡ Wohnungsnummern automatisch ausfüllen",
-        "btn_delete_report": "🗑️ Diesen Bericht löschen (Endgültig!)",
-        "btn_download_excel": "📥 Excel-Bericht herunterladen (Farbig)",
-        
-        "section_2_title": "2. Materialverbrauch",
-        "section_3_title": "3. Fertigstellungsstatus",
-        
-        "lbl_addr_finished": "Ist die Adresse fertig?",
-        "lbl_mfr_ready": "Ist MFR fertig?",
-        "lbl_reason": "Grund angeben (Erforderlich):",
-        "opt_yes": "Ja",
-        "opt_no": "Nein",
-        
-        "save_btn": "💾 Bericht Speichern",
-        "update_btn": "💾 Bericht Aktualisieren",
-        "save_success": "Gespeichert! Team: {}. Gf-TA installiert: {}",
-        "update_success": "Bericht erfolgreich aktualisiert!",
-        "save_error": "Fehler beim Speichern! Überprüfen Sie die Zeiten/Felder.",
-        
-        "col_flat": "Wohnung (Nr)",
-        "col_activation": "Aktivierung",
-        "tech_label": "Technologieart",
-        
-        "dash_title": "📊 Management-Dashboard",
-        "tab_day": "📅 Tagesbericht",
-        "tab_month": "📈 Monatsstatistik",
-        "tab_emp": "👥 Mitarbeiter",
-        "tab_db": "🗄️ Datenbank",
-        "tab_users": "🔑 Konten / Users",
-        "tab_pdf": "📄 PDF Berichte",
-        "no_data": "Keine Daten in der Datenbank.",
-        
-        "emp_header": "Mitarbeiterverwaltung",
-        "add_emp_label": "Neuen Mitarbeiter hinzufügen",
-        "lbl_contract_type": "Vertragsart",
-        "opt_contract_b2b": "B2B (Selbstständig)",
-        "opt_contract_std": "Arbeitsvertrag (ArbZG)",
-        "add_emp_btn": "Hinzufügen",
-        "del_emp_btn": "Entfernen",
-        "current_emp_list": "Aktuelle Mitarbeiterliste:",
-        "emp_added": "Mitarbeiter hinzugefügt: {} ({})",
-        "emp_deleted": "Mitarbeiter entfernt: {}",
-        
-        "user_header": "Systemkonten verwalten",
-        "add_user_header": "Neues Konto hinzufügen",
-        "lbl_u_name": "Name (z.B. Team 1)",
-        "lbl_u_login": "Login",
-        "lbl_u_pass": "Passwort",
-        "lbl_u_role": "Rolle",
-        "btn_add_user": "Konto erstellen",
-        "user_added_success": "Konto '{}' erstellt.",
-        "user_exists_error": "Login '{}' ist bereits vergeben.",
-        "list_users_header": "Vorhandene Konten:",
-        "btn_del_user": "Entfernen",
-        "user_deleted": "Konto gelöscht: {}",
-
-        "pdf_header": "Periodischer Berichtsgenerator",
-        "pdf_date_range": "Datumsbereich auswählen",
-        "pdf_gen_btn": "PDF generieren",
-        "pdf_download": "PDF-Bericht herunterladen",
-        "pdf_no_data": "Keine Daten im ausgewählten Zeitraum.",
-        
-        "day_summary_header": "Tageszusammenfassung - nach Teams",
-        "pick_day": "Tag wählen",
         "no_reports_day": "Keine Berichte für diesen Tag.",
         "team_header": "👷 TEAM",
         
-        "lbl_tab_summary": "📌 Zusammenfassung",
+        "lbl_tab_summary": "📌 Podsumowanie",
         "total_day_label": "∑ TAGES-SUMME:",
 
         "metric_hours": "🕒 Stunden",
@@ -825,12 +667,32 @@ def monter_view():
     # --- PRACOWNICY ---
     st.subheader(get_text("worker_header"))
     
+    # --- LOGIKA ŁADOWANIA DANYCH DO FORMULARZA (WORKERS + MATERIALS) ---
     if 'workers' not in st.session_state or (loaded_report is not None and st.session_state.get('last_loaded_id') != current_edit_id):
-        if loaded_report is not None and loaded_report['workers_json']:
-            st.session_state['workers'] = json.loads(loaded_report['workers_json'])
+        # Reset domyślny
+        st.session_state['workers'] = []
+        
+        if loaded_report is not None:
+            # 1. Ładowanie pracowników
+            if loaded_report['workers_json']:
+                st.session_state['workers'] = json.loads(loaded_report['workers_json'])
+            
+            # 2. Ładowanie materiałów (FIX: WYMUSZENIE AKTUALIZACJI STANU)
+            # Musimy to zrobić tutaj, zanim formularz materiałów się wyrenderuje
+            loaded_mats_dict = {}
+            if loaded_report['materials_json']:
+                try: loaded_mats_dict = json.loads(loaded_report['materials_json'])
+                except: pass
+            
+            # Przepisujemy wartości do session_state, żeby inputy się odświeżyły
+            for m in MATERIALS:
+                st.session_state[f"mat_{m}"] = loaded_mats_dict.get(m, 0)
+                
             st.session_state['last_loaded_id'] = current_edit_id
+        
         elif 'workers' not in st.session_state:
-            st.session_state['workers'] = []
+             st.session_state['workers'] = []
+    # -------------------------------------------------------------------
             
     # Przycisk awaryjnego czyszczenia
     if st.button(get_text("clean_form_btn"), type="secondary"):
@@ -1036,17 +898,17 @@ def monter_view():
     st.subheader(get_text("section_2_title"))
     with st.container(border=True):
         cols = st.columns(2)
-        loaded_mats = {}
-        if loaded_report is not None and loaded_report['materials_json']:
-            try: loaded_mats = json.loads(loaded_report['materials_json'])
-            except: pass
-
+        # UWAGA: Tu pobieramy wartości już z session_state (które zaktualizowaliśmy wyżej)
+        # dzięki temu inputy będą miały poprawne wartości.
         for i, mat in enumerate(MATERIALS):
             col = cols[i % 2]
             unit = MATERIALS_UNITS.get(mat, "")
             label = f"{mat} [{unit}]" if unit else mat
-            init_val = loaded_mats.get(mat, 0)
-            col.number_input(label, min_value=0, step=1, key=f"mat_{mat}", value=get_val(f"mat_{mat}", init_val))
+            
+            # Pobieramy bieżącą wartość ze stanu (którą właśnie wymusiliśmy wyżej)
+            current_val = st.session_state.get(f"mat_{mat}", 0)
+            
+            col.number_input(label, min_value=0, step=1, key=f"mat_{mat}", value=current_val)
 
     # --- SEKCJA 3: STATUS (Reszta) ---
     st.subheader(get_text("section_3_title"))
@@ -1081,7 +943,24 @@ def monter_view():
                 try:
                     s = datetime.strptime(w['start'], "%H:%M")
                     e = datetime.strptime(w['end'], "%H:%M")
-                    if e < s: e += timedelta(days=1)
+                    
+                    # --- PRZYWRÓCONA WALIDACJA (RAMY CZASOWE) ---
+                    # 1. Start nie może być wcześniej niż 06:00
+                    start_limit = datetime.strptime("06:00", "%H:%M")
+                    if s < start_limit:
+                         st.error(f"❌ {w['name']}: {get_text('err_start_time')}")
+                         can_save = False
+
+                    # Logika zmiany dnia
+                    if e < s:
+                        e += timedelta(days=1)
+                        # 2. Jeśli zmiana dnia, koniec nie później niż 05:00 rano
+                        # Tworzymy limit 05:00 następnego dnia
+                        end_limit_next_day = datetime.strptime("05:00", "%H:%M") + timedelta(days=1)
+                        if e > end_limit_next_day:
+                            st.error(f"❌ {w['name']}: {get_text('err_end_time')}")
+                            can_save = False
+
                     diff = (e - s).total_seconds() / 3600.0
                     break_time = w['break']
                     calc_hours = diff - (break_time / 60.0)
@@ -1090,11 +969,6 @@ def monter_view():
                         st.error(f"❌ {w['name']}: Czas pracy <= 0!")
                         can_save = False
                     
-                    # --- USUNIĘTO OSTRZEŻENIA O PRZERWACH (ArbZG/B2B) ---
-                    # Dzięki temu można wpisać break=0 dla drugiej zmiany
-                    # bez zbędnych komunikatów.
-                    # ----------------------------------------------------
-
                     w_data = w.copy()
                     w_data['calculated_hours'] = round(calc_hours, 2)
                     s_str = w['start']
