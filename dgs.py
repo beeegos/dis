@@ -695,7 +695,9 @@ def get_employees():
     return [d['name'] for d in data]
 
 def get_reports_for_editor(team_name, date_obj):
+    # Pobiera raporty danego teamu z danej daty (do edycji przez montera)
     d_str = date_obj.strftime("%Y-%m-%d") if isinstance(date_obj, (datetime, pd.Timestamp)) else str(date_obj)
+    
     # ZMIANA: Pobieramy raporty pasujące do teamu LUB (jeśli team_name jest pusty/None) wszystkie z tego dnia
     if team_name:
         # Używamy ILIKE dla mniejszej wrażliwości na wielkość liter
@@ -1072,9 +1074,6 @@ def monter_view():
         else:
             st.warning("Brak raportów spełniających kryteria.")
             # Nie robimy return, żeby pozwolić zobaczyć resztę interfejsu (choć pustego)
-            
-    # --- DANE ZLECENIA ---
-    # ... (reszta kodu bez zmian, pamiętaj o wklejeniu tam zmiany z text_input dla Teamu z poprzedniej odpowiedzi)
 
     # --- DANE ZLECENIA ---
     with st.expander(get_text("expander_data"), expanded=True):
@@ -1113,7 +1112,14 @@ def monter_view():
         with st.expander(f"👷 {w['name']}", expanded=True):
             c1, c2, c3 = st.columns(3)
             w['start'] = c1.text_input(get_text("start_label"), value=w.get('start', '08:00'), key=f"s_{i}")
-            w['break'] = c2.number_input(get_text("break_label"), min_value=0, step=5, value=w.get('break', 0), key=f"b_{i}")
+            
+            # --- ZABEZPIECZENIE PRZED UJEMNĄ PRZERWĄ ---
+            safe_break = w.get('break', 0)
+            if safe_break < 0: safe_break = 0
+            
+            w['break'] = c2.number_input(get_text("break_label"), min_value=0, step=5, value=safe_break, key=f"b_{i}")
+            # -------------------------------------------
+            
             w['end'] = c3.text_input(get_text("end_label"), value=w.get('end', '16:00'), key=f"e_{i}")
 
     c_add, c_rem = st.columns(2)
