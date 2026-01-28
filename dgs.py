@@ -70,6 +70,7 @@ TRANSLATIONS = {
         "mode_new": "📝 Nowy Raport",
         "mode_edit": "✏️ Popraw Raport",
         "select_report_label": "Wybierz raport do edycji (Adres)",
+        "pick_edit_date": "Wybierz datę raportu do edycji",
         "no_reports_to_edit": "Brak raportów dla Twojego zespołu w tym dniu.",
         "edit_loaded_info": "Edytujesz raport ID: {}",
         "search_team_label": "Szukaj raportów dla zespołu (nazwa):",
@@ -89,6 +90,9 @@ TRANSLATIONS = {
         
         "err_start_time": "⚠️ Start pracy nie może być wcześniejszy niż 6:00!",
         "err_end_time": "⚠️ Koniec pracy następnego dnia nie może być później niż 5:00 rano!",
+        "err_time_neg": "Czas pracy <= 0!",
+        "err_worker_time": "Błąd godzin pracownika.",
+        "err_add_one_worker": "Dodaj przynajmniej jednego pracownika!",
         "lbl_next_day_info": "ℹ️ Praca kończy się następnego dnia: {} ({}h)",
         
         # HUP - NOWE
@@ -109,6 +113,8 @@ TRANSLATIONS = {
         "section_1_title": "1. Wykaz Prac (Mieszkania)",
         "lbl_we_count": "Liczba WE",
         "err_we_count": "⚠️ Uzupełnij liczbę WE (Mieszkania) aby zapisać raport!",
+        "warn_fill_obj_we": "Uzupełnij 'Numer Obiektu' i 'Liczbę WE'.",
+        "msg_flats_updated": "Zaktualizowano {} numerów mieszkań!",
         
         # Mobile View Translations & New Features
         "mobile_mode_toggle": "📱 Tryb mobilny (Duże przyciski)",
@@ -120,6 +126,7 @@ TRANSLATIONS = {
         "btn_auto_fill": "⚡ Auto-uzupełnij numery mieszkań (z Nr Obiektu)",
         "btn_delete_report": "🗑️ Usuń ten raport (Bezpowrotnie!)",
         "btn_download_excel": "📥 Pobierz Raport Excel (Kolorowy)",
+        "lbl_summary_inline": "Podsumowanie",
 
         "section_2_title": "2. Zużyte Materiały",
         "section_3_title": "3. Status Zakończenia",
@@ -161,6 +168,7 @@ TRANSLATIONS = {
         "current_emp_list": "Aktualna lista pracowników:",
         "emp_added": "Dodano pracownika: {} ({})",
         "emp_deleted": "Usunięto pracownika: {}",
+        "msg_no_employees": "Brak pracowników.",
         
         # Admin Users
         "user_header": "Zarządzanie Kontami Systemowymi",
@@ -178,13 +186,13 @@ TRANSLATIONS = {
 
         "pdf_header": "Generator Raportów Okresowych",
         "pdf_date_range": "Wybierz zakres dat",
-        "pdf_gen_btn": "PDF generieren",
+        "pdf_gen_btn": "Generuj PDF",
         "pdf_download": "Pobierz Raport PDF",
         "pdf_no_data": "Brak danych w wybranym okresie.",
         
         "day_summary_header": "Podsumowanie dnia - wg Teamów",
         "pick_day": "Wybierz dzień",
-        "no_reports_day": "Keine Berichte für diesen Tag.",
+        "no_reports_day": "Brak raportów z tego dnia.",
         "team_header": "👷 TEAM",
         
         "lbl_tab_summary": "📌 Podsumowanie",
@@ -216,7 +224,181 @@ TRANSLATIONS = {
         "lbl_total_hours": "Gesamtstunden",
         "lbl_addr_context": "Adresse / Auftrag",
         "chart_team": "Installations (Team)",
-        "db_header": "Full Database Dump"
+        "db_header": "Full Database Dump",
+        "warn_no_work_month": "Brak raportów pracy dla tego pracownika w wybranym miesiącu.",
+        
+        "btn_init_db": "🔧 Wymuś inicjalizację bazy (init_db)",
+        "msg_db_init": "Baza zainicjalizowana!"
+    },
+    "DE": {
+        "login_title": "🔐 Anmeldung - Fiber System",
+        "user_label": "Benutzername",
+        "pass_label": "Passwort",
+        "login_btn": "Anmelden",
+        "login_error": "Falscher Benutzername oder Passwort",
+        "logout_btn": "Abmelden",
+        "sidebar_login_info": "Angemeldet als:",
+        "sidebar_admin_warning": "Administrator-Panel",
+        
+        "form_title": "🛠️ Arbeitsbericht (DG)",
+        "mode_select_label": "Modus wählen:",
+        "mode_new": "📝 Neuer Bericht",
+        "mode_edit": "✏️ Bericht korrigieren",
+        "select_report_label": "Bericht zur Bearbeitung wählen",
+        "pick_edit_date": "Berichtsdatum zur Bearbeitung wählen",
+        "no_reports_to_edit": "Keine Berichte Ihres Teams für diesen Tag.",
+        "edit_loaded_info": "Bericht bearbeiten ID: {}",
+        
+        "expander_data": "📍 Auftragsdaten",
+        "date_label": "Berichtsdatum",
+        "obj_num_label": "Objektnummer",
+        "addr_label": "Adresse",
+        "worker_header": "👤 Team und Arbeitszeit",
+        "worker_select_label": "Mitarbeiter wählen",
+        "add_worker_btn": "➕ Nächsten Mitarbeiter hinzufügen",
+        "remove_worker_btn": "Letzten entfernen",
+        "start_label": "Beginn",
+        "break_label": "Pause (Min)",
+        "end_label": "Ende",
+        "clean_form_btn": "🧹 Formular leeren",
+        
+        "err_start_time": "⚠️ Arbeitsbeginn nicht vor 06:00 Uhr!",
+        "err_end_time": "⚠️ Arbeitsende am nächsten Tag nicht später als 05:00 Uhr!",
+        "err_time_neg": "Arbeitszeit <= 0!",
+        "err_worker_time": "Fehler bei den Mitarbeiterzeiten.",
+        "err_add_one_worker": "Fügen Sie mindestens einen Mitarbeiter hinzu!",
+        "lbl_next_day_info": "ℹ️ Arbeit endet am nächsten Tag: {} ({}h)",
+        
+        "lbl_hup_question": "Haben Sie den HÜP installiert?",
+        "lbl_hup_type_select": "HÜP Typ wählen:",
+        "opt_hup_yes": "Ja",
+        "opt_hup_no": "Nein",
+        
+        "opt_hup_std": "Hüp",
+        "opt_hup_multi": "MultiHüp",
+        "opt_hup_change": "Austausch gegen MHüp",
+        "opt_hup_rebuild": "Umbau MHüp",
+
+        "err_break_b2b": "⚠️ B2B: Über 6h Arbeit sind min. 30 Min Pause erforderlich!",
+        "err_break_std_6h": "⚠️ ArbZG: Über 6h Arbeit sind min. 30 Min Pause erforderlich!",
+        "err_break_std_9h": "⚠️ ArbZG: Über 9h Arbeit sind min. 45 Min Pause erforderlich!",
+        
+        "section_1_title": "1. Wohnungsliste",
+        "lbl_we_count": "Anzahl WE",
+        "err_we_count": "⚠️ Bitte Anzahl WE ausfüllen, um zu speichern!",
+        "warn_fill_obj_we": "Objektnummer und WE-Anzahl ausfüllen.",
+        "msg_flats_updated": "{} Wohnungsnummern aktualisiert!",
+
+        # Mobile View Translations (DE)
+        "mobile_mode_toggle": "📱 Mobiler Modus (Große Tasten)",
+        "select_flat_label": "Wohnung zur Bearbeitung wählen:",
+        "flat_pos_label": "Pos.",
+        "editing_info": "Bearbeitung:",
+        "flat_number_input": "Wohnungsnummer",
+        "preview_full_list": "Vorschau der gesamten Liste",
+        "btn_auto_fill": "⚡ Wohnungsnummern automatisch ausfüllen",
+        "btn_delete_report": "🗑️ Diesen Bericht löschen (Endgültig!)",
+        "btn_download_excel": "📥 Excel-Bericht herunterladen (Farbig)",
+        "lbl_summary_inline": "Zusammenfassung",
+        
+        "section_2_title": "2. Materialverbrauch",
+        "section_3_title": "3. Fertigstellungsstatus",
+        
+        "lbl_addr_finished": "Ist die Adresse fertig?",
+        "lbl_mfr_ready": "Ist MFR fertig?",
+        "lbl_reason": "Grund angeben (Erforderlich):",
+        "opt_yes": "Ja",
+        "opt_no": "Nein",
+        
+        "save_btn": "💾 Bericht Speichern",
+        "update_btn": "💾 Bericht Aktualisieren",
+        "save_success": "Gespeichert! Team: {}. Gf-TA installiert: {}",
+        "update_success": "Bericht erfolgreich aktualisiert!",
+        "save_error": "Fehler beim Speichern! Überprüfen Sie die Zeiten/Felder.",
+        
+        "col_flat": "Wohnung (Nr)",
+        "col_activation": "Aktivierung",
+        "tech_label": "Technologieart",
+        
+        "dash_title": "📊 Management-Dashboard",
+        "tab_day": "📅 Tagesbericht",
+        "tab_month": "📈 Monatsstatistik",
+        "tab_emp": "👥 Mitarbeiter",
+        "tab_db": "🗄️ Datenbank",
+        "tab_users": "🔑 Konten / Users",
+        "tab_pdf": "📄 PDF Berichte",
+        "no_data": "Keine Daten in der Datenbank.",
+        
+        "emp_header": "Mitarbeiterverwaltung",
+        "add_emp_label": "Neuen Mitarbeiter hinzufügen",
+        "lbl_contract_type": "Vertragsart",
+        "opt_contract_b2b": "B2B (Selbstständig)",
+        "opt_contract_std": "Arbeitsvertrag (ArbZG)",
+        "add_emp_btn": "Hinzufügen",
+        "del_emp_btn": "Entfernen",
+        "current_emp_list": "Aktuelle Mitarbeiterliste:",
+        "emp_added": "Mitarbeiter hinzugefügt: {} ({})",
+        "emp_deleted": "Mitarbeiter entfernt: {}",
+        "msg_no_employees": "Keine Mitarbeiter.",
+        
+        "user_header": "Systemkonten verwalten",
+        "add_user_header": "Neues Konto hinzufügen",
+        "lbl_u_name": "Name (z.B. Team 1)",
+        "lbl_u_login": "Login",
+        "lbl_u_pass": "Passwort",
+        "lbl_u_role": "Rolle",
+        "btn_add_user": "Konto erstellen",
+        "user_added_success": "Konto '{}' erstellt.",
+        "user_exists_error": "Login '{}' ist bereits vergeben.",
+        "list_users_header": "Vorhandene Konten:",
+        "btn_del_user": "Entfernen",
+        "user_deleted": "Konto gelöscht: {}",
+
+        "pdf_header": "Periodischer Berichtsgenerator",
+        "pdf_date_range": "Datumsbereich auswählen",
+        "pdf_gen_btn": "PDF generieren",
+        "pdf_download": "PDF-Bericht herunterladen",
+        "pdf_no_data": "Keine Daten im ausgewählten Zeitraum.",
+        
+        "day_summary_header": "Tageszusammenfassung - nach Teams",
+        "pick_day": "Tag wählen",
+        "no_reports_day": "Keine Berichte für diesen Tag.",
+        "team_header": "👷 TEAM",
+        
+        "lbl_tab_summary": "📌 Zusammenfassung",
+        "total_day_label": "∑ TAGES-SUMME:",
+
+        "metric_hours": "🕒 Stunden",
+        "metric_we": "🏠 WE",
+        "metric_gfta": "📦 Gf-TA",
+        "metric_ont": "modem ONT",
+        "metric_activations": "⚡ Aktivierungen",
+        "metric_hup": "🔧 HÜP (Menge)",
+        "metric_hup_status": "HÜP Status",
+        "lbl_activated_list": "Aktivierte ONT (Wohnungsnr.):", 
+        "lbl_gfta_list": "Installierte Gf-TA (Liste):",
+        "metric_kanal": "📏 Metalikanal 30x30",
+        "metric_srv": "🖥️ Serveschrank",
+        "metric_tech_used": "⚙️ Technologie",
+        "details_expander": "Bericht Details",
+        
+        "col_materials": "Materialien",
+        "col_status_addr": "Status Adresse",
+        "col_status_mfr": "Status MFR",
+        "lbl_workers": "Mitarbeiter:",
+        "lbl_worker_hours": "Arbeitszeiten:",
+        
+        "month_header": "Monatsanalyse",
+        "pick_month": "Monat wählen",
+        "lbl_emp_select": "Mitarbeiter wählen",
+        "lbl_total_hours": "Gesamtstunden",
+        "lbl_addr_context": "Adresse / Auftrag",
+        "chart_team": "Installations (Team)",
+        "db_header": "Full Database Dump",
+        "warn_no_work_month": "Keine Arbeitsberichte für diesen Mitarbeiter im ausgewählten Monat.",
+
+        "btn_init_db": "🔧 Datenbank initialisieren erzwingen (init_db)",
+        "msg_db_init": "Datenbank initialisiert!"
     },
     "ENG": {
         "login_title": "🔐 Login - Fiber System",
@@ -233,6 +415,7 @@ TRANSLATIONS = {
         "mode_new": "📝 New Report",
         "mode_edit": "✏️ Edit Report",
         "select_report_label": "Select report to edit (Address)",
+        "pick_edit_date": "Select report date to edit",
         "no_reports_to_edit": "No reports for your team on this date.",
         "edit_loaded_info": "Editing report ID: {}",
         "search_team_label": "Search reports for team:",
@@ -252,6 +435,9 @@ TRANSLATIONS = {
         
         "err_start_time": "⚠️ Start time cannot be earlier than 06:00 AM!",
         "err_end_time": "⚠️ End time next day cannot be later than 05:00 AM!",
+        "err_time_neg": "Work time <= 0!",
+        "err_worker_time": "Worker hours error.",
+        "err_add_one_worker": "Add at least one worker!",
         "lbl_next_day_info": "ℹ️ Work ends next day: {} ({}h)",
         
         "lbl_hup_question": "Did you install HÜP?",
@@ -271,6 +457,8 @@ TRANSLATIONS = {
         "section_1_title": "1. Flats List",
         "lbl_we_count": "WE Count",
         "err_we_count": "⚠️ Please fill WE count to save!",
+        "warn_fill_obj_we": "Fill 'Object Number' and 'WE Count'.",
+        "msg_flats_updated": "Updated {} flat numbers!",
         
         "mobile_mode_toggle": "📱 Mobile Mode (Big Buttons)",
         "select_flat_label": "Select flat to edit:",
@@ -281,6 +469,7 @@ TRANSLATIONS = {
         "btn_auto_fill": "⚡ Auto-fill Flat Numbers",
         "btn_delete_report": "🗑️ Delete this report (Permanent!)",
         "btn_download_excel": "📥 Download Excel Report",
+        "lbl_summary_inline": "Summary",
 
         "section_2_title": "2. Materials Used",
         "section_3_title": "3. Completion Status",
@@ -320,6 +509,7 @@ TRANSLATIONS = {
         "current_emp_list": "Current Employee List:",
         "emp_added": "Employee added: {} ({})",
         "emp_deleted": "Employee removed: {}",
+        "msg_no_employees": "No employees.",
         
         "user_header": "System Accounts Management",
         "add_user_header": "Add new account",
@@ -374,7 +564,11 @@ TRANSLATIONS = {
         "lbl_total_hours": "Total Hours",
         "lbl_addr_context": "Address / Order",
         "chart_team": "Installations (Team)",
-        "db_header": "Full Database Dump"
+        "db_header": "Full Database Dump",
+        "warn_no_work_month": "No reports for this employee in selected month.",
+        
+        "btn_init_db": "🔧 Force DB Init (init_db)",
+        "msg_db_init": "Database initialized!"
     }
 }
 
@@ -781,7 +975,7 @@ def monter_view():
     if mode == get_text("mode_edit"):
         
         # 1. Wybór daty
-        edit_date = st.date_input("Wybierz datę raportu do edycji", datetime.now())
+        edit_date = st.date_input(get_text("pick_edit_date"), datetime.now())
         
         # Automatyczne szukanie (bez inputa)
         search_team = current_team_db_name
@@ -997,10 +1191,10 @@ def monter_view():
             for i in range(limit):
                 df.at[i, 'Wohnung'] = f"{obj_num}-{i+1}"
             st.session_state['current_work_df'] = df
-            st.success(f"Zaktualizowano {limit} numerów mieszkań!")
+            st.success(get_text("msg_flats_updated").format(limit))
             st.rerun()
         else:
-            st.warning("Uzupełnij 'Numer Obiektu' i 'Liczbę WE'.")
+            st.warning(get_text("warn_fill_obj_we"))
 
     use_mobile_view = st.toggle(get_text("mobile_mode_toggle"), value=True)
 
@@ -1047,7 +1241,7 @@ def monter_view():
     ont_xgs_sum = edited_df['Ont xgs'].sum()
     activation_sum = edited_df['Activation'].sum()
     
-    st.info(f"Podsumowanie: Gf-TA: {gfta_sum}, ONT: {ont_gpon_sum + ont_xgs_sum}, Akt: {activation_sum}")
+    st.info(f"{get_text('lbl_summary_inline')}: Gf-TA: {gfta_sum}, ONT: {ont_gpon_sum + ont_xgs_sum}, Akt: {activation_sum}")
     st.write("---")
 
     # --- WYBÓR TECHNOLOGII ---
@@ -1103,7 +1297,7 @@ def monter_view():
             st.error(get_text("err_we_count"))
         # -----------------------------
         elif not st.session_state['workers']:
-            st.error("Dodaj przynajmniej jednego pracownika!")
+            st.error(get_text("err_add_one_worker"))
         else:
             can_save = True
             final_workers = []
@@ -1135,7 +1329,7 @@ def monter_view():
                     calc_hours = diff - (break_time / 60.0)
                     
                     if calc_hours <= 0:
-                        st.error(f"❌ {w['name']}: Czas pracy <= 0!")
+                        st.error(f"❌ {w['name']}: {get_text('err_time_neg')}")
                         can_save = False
                     
                     w_data = w.copy()
@@ -1147,7 +1341,7 @@ def monter_view():
                     w_data['display_end'] = e_str
                     final_workers.append(w_data)
                 except:
-                    st.error("Błąd godzin pracownika.")
+                    st.error(get_text("err_worker_time"))
                     can_save = False
 
             if can_save:
@@ -1456,7 +1650,7 @@ def admin_view():
                     width='stretch'
                 )
             else:
-                st.warning("Brak raportów pracy dla tego pracownika w wybranym miesiącu.")
+                st.warning(get_text("warn_no_work_month"))
 
             st.divider()
             st.subheader(get_text("chart_team"))
@@ -1484,25 +1678,25 @@ def admin_view():
                         remove_employee(name)
                         st.rerun()
             else:
-                st.info("Brak pracowników.")
+                st.info(get_text("msg_no_employees"))
 
     # --- TAB 4: BAZA DANYCH ---
     with t4:
         st.dataframe(df)
         st.divider()
-        if st.button("🔧 Wymuś inicjalizację bazy (init_db)"):
+        if st.button(get_text("btn_init_db")):
             init_db()
-            st.success("Baza zainicjalizowana!")
+            st.success(get_text("msg_db_init"))
 
     # --- TAB 5: UŻYTKOWNICY SYSTEMU ---
     with t5:
         with st.expander(get_text("add_user_header")):
             with st.form("au"):
-                u, p = st.text_input("Login"), st.text_input("Hasło", type="password")
-                r, d = st.selectbox("Rola", ["monter", "admin"]), st.text_input("Nazwa")
-                if st.form_submit_button("Dodaj") and u and p:
-                    if add_system_user(u, p, r, d): st.success("OK"); st.rerun()
-                    else: st.error("Error")
+                u, p = st.text_input(get_text("lbl_u_login")), st.text_input(get_text("lbl_u_pass"), type="password")
+                r, d = st.selectbox(get_text("lbl_u_role"), ["monter", "admin"]), st.text_input(get_text("lbl_u_name"))
+                if st.form_submit_button(get_text("btn_add_user")) and u and p:
+                    if add_system_user(u, p, r, d): st.success(get_text("user_added_success").format(u)); st.rerun()
+                    else: st.error(get_text("user_exists_error").format(u))
         for i, row in get_all_system_users().iterrows():
             c1, c2, c3 = st.columns([3,2,1])
             c1.write(f"{row['display_name']} ({row['role']})")
@@ -1517,7 +1711,7 @@ def admin_view():
         if st.button(get_text("pdf_gen_btn")):
             df['date'] = pd.to_datetime(df['date'])
             f_df = df[(df['date'].dt.date >= sd) & (df['date'].dt.date <= ed)]
-            if f_df.empty: st.warning("Brak danych")
+            if f_df.empty: st.warning(get_text("pdf_no_data"))
             else:
                 st.download_button(get_text("pdf_download"), create_pdf_report(f_df, sd, ed), f"rap_{sd}_{ed}.pdf", "application/pdf")
 
