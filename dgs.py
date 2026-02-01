@@ -86,6 +86,7 @@ TRANSLATIONS = {
         "start_label": "Początek",
         "break_label": "Przerwa (min)",
         "end_label": "Koniec",
+        "car_label": "Auto",
         "clean_form_btn": "🧹 Wyczyść formularz",
         
         "err_start_time": "⚠️ Start pracy nie może być wcześniejszy niż 6:00!",
@@ -151,24 +152,29 @@ TRANSLATIONS = {
         "dash_title": "📊 Dashboard Zarządzania",
         "tab_day": "📅 Raport Dzienny",
         "tab_month": "📈 Statystyki Miesięczne",
-        "tab_emp": "👥 Pracownicy",
+        "tab_emp": "👥 Pracownicy / Auta",
         "tab_db": "🗄️ Pełna Baza",
         "tab_users": "🔑 Konta / Users",
         "tab_pdf": "📄 Raporty PDF",
         "no_data": "Brak danych w bazie.",
         
-        # Admin Employees
+        # Admin Employees & Cars
         "emp_header": "Zarządzanie Pracownikami",
+        "car_header": "Zarządzanie Flotą (Auta)",
         "add_emp_label": "Dodaj pracownika (Imię i Nazwisko)",
+        "add_car_label": "Dodaj auto (Nr Rejestracyjny)",
         "lbl_contract_type": "Typ umowy",
         "opt_contract_b2b": "B2B (Samozatrudnienie)",
         "opt_contract_std": "Umowa o pracę (ArbZG)",
         "add_emp_btn": "Dodaj do listy",
-        "del_emp_btn": "Usuń z listy",
+        "add_car_btn": "Dodaj auto",
+        "del_btn": "Usuń",
         "current_emp_list": "Aktualna lista pracowników:",
+        "current_car_list": "Aktualna lista aut:",
         "emp_added": "Dodano pracownika: {} ({})",
-        "emp_deleted": "Usunięto pracownika: {}",
+        "car_added": "Dodano auto: {}",
         "msg_no_employees": "Brak pracowników.",
+        "msg_no_cars": "Brak aut w systemie.",
         
         # Admin Users
         "user_header": "Zarządzanie Kontami Systemowymi",
@@ -260,6 +266,7 @@ TRANSLATIONS = {
         "start_label": "Beginn",
         "break_label": "Pause (Min)",
         "end_label": "Ende",
+        "car_label": "Auto",
         "clean_form_btn": "🧹 Formular leeren",
         
         "err_start_time": "⚠️ Arbeitsbeginn nicht vor 06:00 Uhr!",
@@ -323,23 +330,29 @@ TRANSLATIONS = {
         "dash_title": "📊 Management-Dashboard",
         "tab_day": "📅 Tagesbericht",
         "tab_month": "📈 Monatsstatistik",
-        "tab_emp": "👥 Mitarbeiter",
+        "tab_emp": "👥 Mitarbeiter / Autos",
         "tab_db": "🗄️ Datenbank",
         "tab_users": "🔑 Konten / Users",
         "tab_pdf": "📄 PDF Berichte",
         "no_data": "Keine Daten in der Datenbank.",
         
         "emp_header": "Mitarbeiterverwaltung",
+        "car_header": "Fahrzeugverwaltung",
         "add_emp_label": "Neuen Mitarbeiter hinzufügen",
+        "add_car_label": "Neues Auto hinzufügen (Kennzeichen)",
         "lbl_contract_type": "Vertragsart",
         "opt_contract_b2b": "B2B (Selbstständig)",
         "opt_contract_std": "Arbeitsvertrag (ArbZG)",
         "add_emp_btn": "Hinzufügen",
-        "del_emp_btn": "Entfernen",
+        "add_car_btn": "Auto hinzufügen",
+        "del_btn": "Entfernen",
         "current_emp_list": "Aktuelle Mitarbeiterliste:",
+        "current_car_list": "Aktuelle Fahrzeugliste:",
         "emp_added": "Mitarbeiter hinzugefügt: {} ({})",
+        "car_added": "Auto hinzugefügt: {}",
         "emp_deleted": "Mitarbeiter entfernt: {}",
         "msg_no_employees": "Keine Mitarbeiter.",
+        "msg_no_cars": "Keine Autos im System.",
         
         "user_header": "Systemkonten verwalten",
         "add_user_header": "Neues Konto hinzufügen",
@@ -431,6 +444,7 @@ TRANSLATIONS = {
         "start_label": "Start",
         "break_label": "Break (min)",
         "end_label": "End",
+        "car_label": "Car",
         "clean_form_btn": "🧹 Clear form",
         
         "err_start_time": "⚠️ Start time cannot be earlier than 06:00 AM!",
@@ -493,23 +507,29 @@ TRANSLATIONS = {
         "dash_title": "📊 Management Dashboard",
         "tab_day": "📅 Daily Report",
         "tab_month": "📈 Monthly Stats",
-        "tab_emp": "👥 Employees",
+        "tab_emp": "👥 Employees / Cars",
         "tab_db": "🗄️ Full DB",
         "tab_users": "🔑 Accounts / Users",
         "tab_pdf": "📄 PDF Reports",
         "no_data": "No data in database.",
         
         "emp_header": "Employee Management",
+        "car_header": "Fleet Management (Cars)",
         "add_emp_label": "Add new employee",
+        "add_car_label": "Add car (License Plate)",
         "lbl_contract_type": "Contract Type",
         "opt_contract_b2b": "B2B (Self-employed)",
         "opt_contract_std": "Standard Contract",
         "add_emp_btn": "Add",
-        "del_emp_btn": "Remove",
+        "add_car_btn": "Add Car",
+        "del_btn": "Remove",
         "current_emp_list": "Current Employee List:",
+        "current_car_list": "Current Car List:",
         "emp_added": "Employee added: {} ({})",
+        "car_added": "Car added: {}",
         "emp_deleted": "Employee removed: {}",
         "msg_no_employees": "No employees.",
+        "msg_no_cars": "No cars.",
         
         "user_header": "System Accounts Management",
         "add_user_header": "Add new account",
@@ -644,6 +664,13 @@ def init_db():
             contract_type TEXT DEFAULT 'Contract'
         )
     ''', fetch="none")
+
+    # 1.1 Samochody (Auta)
+    run_query('''
+        CREATE TABLE IF NOT EXISTS company_cars (
+            plate TEXT PRIMARY KEY
+        )
+    ''', fetch="none")
     
     # 2. Użytkownicy
     run_query('''
@@ -738,6 +765,20 @@ def get_employees():
     data = run_query("SELECT name FROM employees ORDER BY name", fetch="all")
     if not data: return []
     return [d['name'] for d in data]
+
+def add_car(plate):
+    try:
+        run_query("INSERT INTO company_cars (plate) VALUES (%s)", (plate,), fetch="none")
+        return True
+    except: return False
+
+def remove_car(plate):
+    run_query("DELETE FROM company_cars WHERE plate = %s", (plate,), fetch="none")
+
+def get_cars():
+    data = run_query("SELECT plate FROM company_cars ORDER BY plate", fetch="all")
+    if not data: return []
+    return [d['plate'] for d in data]
 
 def get_reports_for_editor(team_name, date_obj, role=None):
     # Pobiera raporty danego teamu z danej daty (do edycji przez montera)
@@ -1057,28 +1098,35 @@ def monter_view():
     if st.button(get_text("clean_form_btn"), type="secondary"):
         reset_form_state()
         st.rerun()
+        
+    # --- Pobieranie listy aut ---
+    car_list = ["-"] + get_cars()
 
     for i, w in enumerate(st.session_state['workers']):
         with st.expander(f"👷 {w['name']}", expanded=True):
-            c1, c2, c3 = st.columns(3)
+            # Zmieniony układ na 4 kolumny (dodano auto)
+            c1, c2, c3, c4 = st.columns(4)
             w['start'] = c1.text_input(get_text("start_label"), value=w.get('start', '08:00'), key=f"s_{i}")
             
             # --- ZABEZPIECZENIE PRZED BŁĘDNĄ/PUSTĄ PRZERWĄ ---
             raw_break = w.get('break')
             try:
-                # Próbujemy konwertować na int, radząc sobie z None i napisami
                 safe_break = int(raw_break) if raw_break is not None else 0
             except (ValueError, TypeError):
-                # Jeśli się nie uda (np. pusty string, litery), ustawiamy 0
                 safe_break = 0
-            
-            # Dodatkowo, jeśli ujemna
             if safe_break < 0: safe_break = 0
             
             w['break'] = c2.number_input(get_text("break_label"), min_value=0, step=5, value=safe_break, key=f"b_{i}")
             # -------------------------------------------
             
             w['end'] = c3.text_input(get_text("end_label"), value=w.get('end', '16:00'), key=f"e_{i}")
+            
+            # --- NOWE POLE: AUTO ---
+            current_car = w.get('car', '-')
+            # Jeśli auto z raportu nie istnieje już w bazie, dodaj je do listy tymczasowo
+            if current_car not in car_list: car_list.append(current_car)
+            
+            w['car'] = c4.selectbox(get_text("car_label"), car_list, index=car_list.index(current_car), key=f"c_{i}")
 
     c_add, c_rem = st.columns(2)
     emp_map = get_employees_map()
@@ -1088,7 +1136,7 @@ def monter_view():
         st.session_state['workers'].append({
             "name": new_worker_name, 
             "type": emp_map[new_worker_name],
-            "start": "08:00", "end": "16:00", "break": 30
+            "start": "08:00", "end": "16:00", "break": 30, "car": "-"
         })
         st.rerun()
 
@@ -1332,6 +1380,22 @@ def monter_view():
                         st.error(f"❌ {w['name']}: {get_text('err_time_neg')}")
                         can_save = False
                     
+                    # --- WALIDACJA PRZERW WG UMOWY ---
+                    # Pobieramy typ umowy (domyślnie 'Contract' jeśli brak w bazie)
+                    c_type = emp_map.get(w['name'], 'Contract') 
+                    
+                    # Warunki:
+                    # 1. B2B i Contract > 6h pracy -> min 30 min przerwy
+                    if calc_hours > 6 and break_time < 30:
+                        st.error(f"❌ {w['name']} ({c_type}): {get_text('err_break_b2b') if c_type == 'B2B' else get_text('err_break_std_6h')}")
+                        can_save = False
+                    
+                    # 2. Tylko Contract > 9h pracy -> min 45 min przerwy
+                    if c_type != 'B2B' and calc_hours > 9 and break_time < 45:
+                        st.error(f"❌ {w['name']} (Umowa): {get_text('err_break_std_9h')}")
+                        can_save = False
+                    # ---------------------------------
+
                     w_data = w.copy()
                     w_data['calculated_hours'] = round(calc_hours, 2)
                     s_str = w['start']
@@ -1480,12 +1544,15 @@ def admin_view():
                                             w_data = json.loads(row['workers_json'])
                                             for w in w_data:
                                                 report_hours += w.get('calculated_hours', 0)
+                                                # Pobieramy auto
+                                                car_used = w.get('car', '-')
+                                                
                                                 if 'display_start' in w and 'display_end' in w:
-                                                    workers_details_list.append(f"{w['name']} {w['display_start']} - {w['display_end']} ({w['break']} min)")
+                                                    workers_details_list.append(f"{w['name']} {w['display_start']} - {w['display_end']} ({w['break']} min) [Auto: {car_used}]")
                                                 else:
                                                     s_time = str(w['start'])[:5]
                                                     e_time = str(w['end'])[:5]
-                                                    workers_details_list.append(f"{w['name']} {s_time}-{e_time} ({w['break']})")
+                                                    workers_details_list.append(f"{w['name']} {s_time}-{e_time} ({w['break']}) [Auto: {car_used}]")
                                         except: pass
                                     
                                     r_gfta = row['gfta_sum']
@@ -1620,6 +1687,7 @@ def admin_view():
                                 "Start": s_disp,
                                 "Stop": e_disp,
                                 "Przerwa": target.get('break', 0),
+                                "Auto": target.get('car', '-'),
                                 "Godziny": target.get('calculated_hours', 0),
                                 "Adres": f"{row['address']} ({row['object_num']})"
                             }
@@ -1643,6 +1711,7 @@ def admin_view():
                         "Start": st.column_config.TextColumn(get_text("start_label")),
                         "Stop": st.column_config.TextColumn(get_text("end_label")),
                         "Przerwa": st.column_config.TextColumn(get_text("break_label")),
+                        "Auto": st.column_config.TextColumn(get_text("car_label")),
                         "Godziny": st.column_config.NumberColumn(get_text("metric_hours"), format="%.2f"),
                         "Adres": st.column_config.TextColumn(get_text("lbl_addr_context"), width="medium")
                     },
@@ -1658,27 +1727,50 @@ def admin_view():
                 team_stats = m_df.groupby('team_name')[['gfta_sum', 'ont_gpon_sum', 'ont_xgs_sum']].sum().reset_index()
                 st.bar_chart(team_stats.set_index('team_name'))
 
-    # --- TAB 3: PRACOWNICY ---
+    # --- TAB 3: PRACOWNICY / AUTA ---
     with t3:
+        st.subheader(get_text("emp_header"))
         c_f, c_l = st.columns(2)
         with c_f.form("add_e"):
             nm = st.text_input(get_text("add_emp_label"))
             ct = st.radio(get_text("lbl_contract_type"), ["B2B", "Contract"])
             if st.form_submit_button(get_text("add_emp_btn")) and nm: 
-                if add_employee(nm, ct): st.success("OK"); st.rerun()
+                if add_employee(nm, ct): st.success(get_text("emp_added").format(nm, ct)); st.rerun()
         
         with c_l:
+            st.caption(get_text("current_emp_list"))
             emp_map = get_employees_map()
             if emp_map:
                 for name, c_type in emp_map.items():
                     c1, c2 = st.columns([4,1])
                     c_label = "B2B" if c_type == "B2B" else "Umowa"
                     c1.write(f"👤 **{name}** [{c_label}]")
-                    if c2.button("X", key=f"d_{name}"): 
+                    if c2.button(get_text("del_btn"), key=f"d_{name}"): 
                         remove_employee(name)
                         st.rerun()
             else:
                 st.info(get_text("msg_no_employees"))
+
+        st.divider()
+        st.subheader(get_text("car_header"))
+        c_c1, c_c2 = st.columns(2)
+        with c_c1.form("add_c"):
+            pl = st.text_input(get_text("add_car_label"))
+            if st.form_submit_button(get_text("add_car_btn")) and pl:
+                if add_car(pl): st.success(get_text("car_added").format(pl)); st.rerun()
+        
+        with c_c2:
+            st.caption(get_text("current_car_list"))
+            cars = get_cars()
+            if cars:
+                for car in cars:
+                    cc1, cc2 = st.columns([4,1])
+                    cc1.write(f"🚗 **{car}**")
+                    if cc2.button(get_text("del_btn"), key=f"dc_{car}"):
+                        remove_car(car)
+                        st.rerun()
+            else:
+                st.info(get_text("msg_no_cars"))
 
     # --- TAB 4: BAZA DANYCH ---
     with t4:
