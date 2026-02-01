@@ -152,7 +152,8 @@ TRANSLATIONS = {
         "dash_title": "📊 Dashboard Zarządzania",
         "tab_day": "📅 Raport Dzienny",
         "tab_month": "📈 Statystyki Miesięczne",
-        "tab_emp": "👥 Pracownicy / Auta",
+        "tab_emp": "👥 Pracownicy",
+        "tab_cars": "🚗 Flota / Auta",  # NOWA ZAKŁADKA
         "tab_db": "🗄️ Pełna Baza",
         "tab_users": "🔑 Konta / Users",
         "tab_pdf": "📄 Raporty PDF",
@@ -173,6 +174,7 @@ TRANSLATIONS = {
         "current_car_list": "Aktualna lista aut:",
         "emp_added": "Dodano pracownika: {} ({})",
         "car_added": "Dodano auto: {}",
+        "emp_deleted": "Usunięto pracownika: {}",
         "msg_no_employees": "Brak pracowników.",
         "msg_no_cars": "Brak aut w systemie.",
         
@@ -330,7 +332,8 @@ TRANSLATIONS = {
         "dash_title": "📊 Management-Dashboard",
         "tab_day": "📅 Tagesbericht",
         "tab_month": "📈 Monatsstatistik",
-        "tab_emp": "👥 Mitarbeiter / Autos",
+        "tab_emp": "👥 Mitarbeiter",
+        "tab_cars": "🚗 Flotte / Autos",
         "tab_db": "🗄️ Datenbank",
         "tab_users": "🔑 Konten / Users",
         "tab_pdf": "📄 PDF Berichte",
@@ -507,7 +510,8 @@ TRANSLATIONS = {
         "dash_title": "📊 Management Dashboard",
         "tab_day": "📅 Daily Report",
         "tab_month": "📈 Monthly Stats",
-        "tab_emp": "👥 Employees / Cars",
+        "tab_emp": "👥 Employees",
+        "tab_cars": "🚗 Fleet / Cars",
         "tab_db": "🗄️ Full DB",
         "tab_users": "🔑 Accounts / Users",
         "tab_pdf": "📄 PDF Reports",
@@ -1454,8 +1458,9 @@ def admin_view():
     if st.sidebar.button(get_text("logout_btn")): logout()
     st.title(get_text("dash_title"))
     df = load_all_data()
-    t1, t2, t3, t4, t5, t6 = st.tabs([
+    t1, t2, t3, t_cars, t4, t5, t6 = st.tabs([
         get_text("tab_day"), get_text("tab_month"), get_text("tab_emp"), 
+        get_text("tab_cars"),
         get_text("tab_db"), get_text("tab_users"), get_text("tab_pdf")
     ])
 
@@ -1727,7 +1732,7 @@ def admin_view():
                 team_stats = m_df.groupby('team_name')[['gfta_sum', 'ont_gpon_sum', 'ont_xgs_sum']].sum().reset_index()
                 st.bar_chart(team_stats.set_index('team_name'))
 
-    # --- TAB 3: PRACOWNICY / AUTA ---
+    # --- TAB 3: PRACOWNICY ---
     with t3:
         st.subheader(get_text("emp_header"))
         c_f, c_l = st.columns(2)
@@ -1751,7 +1756,8 @@ def admin_view():
             else:
                 st.info(get_text("msg_no_employees"))
 
-        st.divider()
+    # --- TAB CARS: AUTA ---
+    with t_cars:
         st.subheader(get_text("car_header"))
         c_c1, c_c2 = st.columns(2)
         with c_c1.form("add_c"):
