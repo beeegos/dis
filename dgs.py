@@ -917,7 +917,8 @@ def create_pdf_report(df, start_date, end_date):
     return pdf.output(dest='S').encode('latin-1', 'replace')
 
 # --- UI START ---
-# init_db()
+# init_db() # FIX: ODKOMENTUJ TO NA JEDEN RAZ!
+init_db()
 
 if 'lang' not in st.session_state: st.session_state['lang'] = 'PL'
 def get_text(key): return TRANSLATIONS[st.session_state['lang']][key]
