@@ -153,7 +153,7 @@ TRANSLATIONS = {
         "tab_day": "📅 Raport Dzienny",
         "tab_month": "📈 Statystyki Miesięczne",
         "tab_emp": "👥 Pracownicy",
-        "tab_cars": "🚗 Flota / Auta",  # NOWA ZAKŁADKA
+        "tab_cars": "🚗 Flota / Auta",
         "tab_db": "🗄️ Pełna Baza",
         "tab_users": "🔑 Konta / Users",
         "tab_pdf": "📄 Raporty PDF",
@@ -233,8 +233,8 @@ TRANSLATIONS = {
         "lbl_addr_context": "Adresse / Auftrag",
         "chart_team": "Installations (Team)",
         "db_header": "Full Database Dump",
-        "warn_no_work_month": "Brak raportów pracy dla tego pracownika w wybranym miesiącu.",
-        
+        "warn_no_work_month": "Keine Arbeitsberichte für diesen Mitarbeiter im ausgewählten Monat.",
+
         "btn_init_db": "🔧 Wymuś inicjalizację bazy (init_db)",
         "msg_db_init": "Baza zainicjalizowana!"
     },
@@ -578,7 +578,7 @@ TRANSLATIONS = {
         
         "col_materials": "Materials",
         "col_status_addr": "Address Status",
-        "col_status_mfr": "MFR Status",
+        "col_status_mfr": "Status MFR",
         "lbl_workers": "Workers:",
         "lbl_worker_hours": "Work hours:",
         
@@ -632,7 +632,7 @@ def init_connection():
     return psycopg2.connect(st.secrets["DATABASE_URL"], cursor_factory=RealDictCursor)
 
 def run_query(query, params=None, fetch="all"):
-    """Uniwersalna funkcja do zapytań SQL z obsługą reconnectu"""
+    """Uniwersalna funkcja do zapytań SQL z obsługą reconnectu i rollback"""
     conn = init_connection()
     try:
         with conn.cursor() as cur:
@@ -657,6 +657,13 @@ def run_query(query, params=None, fetch="all"):
             elif fetch == "none":
                 conn.commit()
                 return None
+    except psycopg2.Error as e:
+        # WAŻNE: Obsługa błędu transakcji (np. InFailedSqlTransaction)
+        conn.rollback()
+        # Rzucamy błąd dalej, lub zwracamy None
+        # Tutaj printujemy dla debugu, ale apka nie powinna paść totalnie
+        print(f"SQL Error: {e}")
+        return None
 
 def init_db():
     # Tworzenie tabel w PostgreSQL
@@ -917,7 +924,7 @@ def create_pdf_report(df, start_date, end_date):
     return pdf.output(dest='S').encode('latin-1', 'replace')
 
 # --- UI START ---
-# init_db() # FIX: ODKOMENTUJ TO NA JEDEN RAZ!
+# Inicjalizacja bazy przy starcie (tworzy tabele jesli nie ma)
 init_db()
 
 if 'lang' not in st.session_state: st.session_state['lang'] = 'PL'
