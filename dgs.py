@@ -107,9 +107,9 @@ TRANSLATIONS = {
         "opt_hup_change": "Wymiana na MHüp",
         "opt_hup_rebuild": "Przebudowa MHüp",
         
-        "err_break_b2b": "⚠️ B2B: Powyżej 6h pracy wymagana jest przerwa min. 30 min!",
-        "err_break_std_6h": "⚠️ Umowa (ArbZG): Powyżej 6h pracy wymagana jest przerwa min. 30 min!",
-        "err_break_std_9h": "⚠️ Umowa (ArbZG): Powyżej 9h pracy wymagana jest przerwa min. 45 min!",
+        "err_break_b2b": "⚠️ B2B: Dzienny czas pracy > 6h wymaga łącznie min. 30 min przerwy!",
+        "err_break_std_6h": "⚠️ Umowa: Dzienny czas pracy > 6h wymaga łącznie min. 30 min przerwy!",
+        "err_break_std_9h": "⚠️ Umowa: Dzienny czas pracy > 9h wymaga łącznie min. 45 min przerwy!",
         
         "section_1_title": "1. Wykaz Prac (Mieszkania)",
         "lbl_we_count": "Liczba WE",
@@ -153,7 +153,7 @@ TRANSLATIONS = {
         "tab_day": "📅 Raport Dzienny",
         "tab_month": "📈 Statystyki Miesięczne",
         "tab_emp": "👥 Pracownicy",
-        "tab_cars": "🚗 Flota / Auta",
+        "tab_cars": "🚗 Flota / Auta",  # NOWA ZAKŁADKA
         "tab_db": "🗄️ Pełna Baza",
         "tab_users": "🔑 Konta / Users",
         "tab_pdf": "📄 Raporty PDF",
@@ -233,8 +233,8 @@ TRANSLATIONS = {
         "lbl_addr_context": "Adresse / Auftrag",
         "chart_team": "Installations (Team)",
         "db_header": "Full Database Dump",
-        "warn_no_work_month": "Keine Arbeitsberichte für diesen Mitarbeiter im ausgewählten Monat.",
-
+        "warn_no_work_month": "Brak raportów pracy dla tego pracownika w wybranym miesiącu.",
+        
         "btn_init_db": "🔧 Wymuś inicjalizację bazy (init_db)",
         "msg_db_init": "Baza zainicjalizowana!"
     },
@@ -381,186 +381,8 @@ TRANSLATIONS = {
         "no_reports_day": "Keine Berichte für diesen Tag.",
         "team_header": "👷 TEAM",
         
-        "lbl_tab_summary": "📌 Zusammenfassung",
-        "total_day_label": "∑ TAGES-SUMME:",
-
-        "metric_hours": "🕒 Stunden",
-        "metric_we": "🏠 WE",
-        "metric_gfta": "📦 Gf-TA",
-        "metric_ont": "modem ONT",
-        "metric_activations": "⚡ Aktivierungen",
-        "metric_hup": "🔧 HÜP (Menge)",
-        "metric_hup_status": "HÜP Status",
-        "lbl_activated_list": "Aktivierte ONT (Wohnungsnr.):", 
-        "lbl_gfta_list": "Installierte Gf-TA (Liste):",
-        "metric_kanal": "📏 Metalikanal 30x30",
-        "metric_srv": "🖥️ Serveschrank",
-        "metric_tech_used": "⚙️ Technologie",
-        "details_expander": "Bericht Details",
-        
-        "col_materials": "Materialien",
-        "col_status_addr": "Status Adresse",
-        "col_status_mfr": "Status MFR",
-        "lbl_workers": "Mitarbeiter:",
-        "lbl_worker_hours": "Arbeitszeiten:",
-        
-        "month_header": "Monatsanalyse",
-        "pick_month": "Monat wählen",
-        "lbl_emp_select": "Mitarbeiter wählen",
-        "lbl_total_hours": "Gesamtstunden",
-        "lbl_addr_context": "Adresse / Auftrag",
-        "chart_team": "Installations (Team)",
-        "db_header": "Full Database Dump",
-        "warn_no_work_month": "Keine Arbeitsberichte für diesen Mitarbeiter im ausgewählten Monat.",
-
-        "btn_init_db": "🔧 Datenbank initialisieren erzwingen (init_db)",
-        "msg_db_init": "Datenbank initialisiert!"
-    },
-    "ENG": {
-        "login_title": "🔐 Login - Fiber System",
-        "user_label": "Login",
-        "pass_label": "Password",
-        "login_btn": "Sign In",
-        "login_error": "Invalid credentials",
-        "logout_btn": "Log out",
-        "sidebar_login_info": "Logged in as:",
-        "sidebar_admin_warning": "Admin Panel",
-        
-        "form_title": "🛠️ Work Report (DG)",
-        "mode_select_label": "Select mode:",
-        "mode_new": "📝 New Report",
-        "mode_edit": "✏️ Edit Report",
-        "select_report_label": "Select report to edit (Address)",
-        "pick_edit_date": "Select report date to edit",
-        "no_reports_to_edit": "No reports for your team on this date.",
-        "edit_loaded_info": "Editing report ID: {}",
-        "search_team_label": "Search reports for team:",
-        
-        "expander_data": "📍 Order Data",
-        "date_label": "Report Date",
-        "obj_num_label": "Object Number",
-        "addr_label": "Address",
-        "worker_header": "👤 Team & Work Time",
-        "worker_select_label": "Select Worker",
-        "add_worker_btn": "➕ Add next worker",
-        "remove_worker_btn": "Remove last",
-        "start_label": "Start",
-        "break_label": "Break (min)",
-        "end_label": "End",
-        "car_label": "Car",
-        "clean_form_btn": "🧹 Clear form",
-        
-        "err_start_time": "⚠️ Start time cannot be earlier than 06:00 AM!",
-        "err_end_time": "⚠️ End time next day cannot be later than 05:00 AM!",
-        "err_time_neg": "Work time <= 0!",
-        "err_worker_time": "Worker hours error.",
-        "err_add_one_worker": "Add at least one worker!",
-        "lbl_next_day_info": "ℹ️ Work ends next day: {} ({}h)",
-        
-        "lbl_hup_question": "Did you install HÜP?",
-        "lbl_hup_type_select": "Select HÜP type:",
-        "opt_hup_yes": "Yes",
-        "opt_hup_no": "No",
-        
-        "opt_hup_std": "Hüp",
-        "opt_hup_multi": "MultiHüp",
-        "opt_hup_change": "Exchange to MHüp",
-        "opt_hup_rebuild": "Rebuild MHüp",
-        
-        "err_break_b2b": "⚠️ B2B: Over 6h work requires min. 30 min break!",
-        "err_break_std_6h": "⚠️ Contract: Over 6h work requires min. 30 min break!",
-        "err_break_std_9h": "⚠️ Contract: Over 9h work requires min. 45 min break!",
-        
-        "section_1_title": "1. Flats List",
-        "lbl_we_count": "WE Count",
-        "err_we_count": "⚠️ Please fill WE count to save!",
-        "warn_fill_obj_we": "Fill 'Object Number' and 'WE Count'.",
-        "msg_flats_updated": "Updated {} flat numbers!",
-        
-        "mobile_mode_toggle": "📱 Mobile Mode (Big Buttons)",
-        "select_flat_label": "Select flat to edit:",
-        "flat_pos_label": "Pos.",
-        "editing_info": "Editing:",
-        "flat_number_input": "Flat Number",
-        "preview_full_list": "Full List Preview",
-        "btn_auto_fill": "⚡ Auto-fill Flat Numbers",
-        "btn_delete_report": "🗑️ Delete this report (Permanent!)",
-        "btn_download_excel": "📥 Download Excel Report",
-        "lbl_summary_inline": "Summary",
-
-        "section_2_title": "2. Materials Used",
-        "section_3_title": "3. Completion Status",
-        
-        "lbl_addr_finished": "Is address finished?",
-        "lbl_mfr_ready": "Is MFR ready?",
-        "lbl_reason": "Reason (Required):",
-        "opt_yes": "Yes",
-        "opt_no": "No",
-        
-        "save_btn": "💾 Save Report",
-        "update_btn": "💾 Update Report",
-        "save_success": "Saved! Team: {}. Gf-TA installed: {}",
-        "update_success": "Report updated successfully!",
-        "save_error": "Save error! Check times/fields.",
-        
-        "col_flat": "Flat (No)",
-        "col_activation": "Activation",
-        "tech_label": "Technology Type",
-        
-        "dash_title": "📊 Management Dashboard",
-        "tab_day": "📅 Daily Report",
-        "tab_month": "📈 Monthly Stats",
-        "tab_emp": "👥 Employees",
-        "tab_cars": "🚗 Fleet / Cars",
-        "tab_db": "🗄️ Full DB",
-        "tab_users": "🔑 Accounts / Users",
-        "tab_pdf": "📄 PDF Reports",
-        "no_data": "No data in database.",
-        
-        "emp_header": "Employee Management",
-        "car_header": "Fleet Management (Cars)",
-        "add_emp_label": "Add new employee",
-        "add_car_label": "Add car (License Plate)",
-        "lbl_contract_type": "Contract Type",
-        "opt_contract_b2b": "B2B (Self-employed)",
-        "opt_contract_std": "Standard Contract",
-        "add_emp_btn": "Add",
-        "add_car_btn": "Add Car",
-        "del_btn": "Remove",
-        "current_emp_list": "Current Employee List:",
-        "current_car_list": "Current Car List:",
-        "emp_added": "Employee added: {} ({})",
-        "car_added": "Car added: {}",
-        "emp_deleted": "Employee removed: {}",
-        "msg_no_employees": "No employees.",
-        "msg_no_cars": "No cars.",
-        
-        "user_header": "System Accounts Management",
-        "add_user_header": "Add new account",
-        "lbl_u_name": "Name (e.g. Team 1)",
-        "lbl_u_login": "Login",
-        "lbl_u_pass": "Password",
-        "lbl_u_role": "Role",
-        "btn_add_user": "Create Account",
-        "user_added_success": "Account '{}' created.",
-        "user_exists_error": "Login '{}' is already taken.",
-        "list_users_header": "Existing accounts:",
-        "btn_del_user": "Delete",
-        "user_deleted": "Account deleted: {}",
-
-        "pdf_header": "Periodic Report Generator",
-        "pdf_date_range": "Select date range",
-        "pdf_gen_btn": "Generate PDF",
-        "pdf_download": "Download PDF Report",
-        "pdf_no_data": "No data in selected range.",
-        
-        "day_summary_header": "Daily Summary - by Teams",
-        "pick_day": "Pick a day",
-        "no_reports_day": "No reports for this day.",
-        "team_header": "👷 TEAM",
-        
         "lbl_tab_summary": "📌 Summary",
-        "total_day_label": "∑ DAILY TOTAL:",
+        "total_day_label": "∑ TAGES-SUMME:",
 
         "metric_hours": "🕒 Hours",
         "metric_we": "🏠 WE",
@@ -578,7 +400,7 @@ TRANSLATIONS = {
         
         "col_materials": "Materials",
         "col_status_addr": "Address Status",
-        "col_status_mfr": "Status MFR",
+        "col_status_mfr": "MFR Status",
         "lbl_workers": "Workers:",
         "lbl_worker_hours": "Work hours:",
         
@@ -661,7 +483,6 @@ def run_query(query, params=None, fetch="all"):
         # WAŻNE: Obsługa błędu transakcji (np. InFailedSqlTransaction)
         conn.rollback()
         # Rzucamy błąd dalej, lub zwracamy None
-        # Tutaj printujemy dla debugu, ale apka nie powinna paść totalnie
         print(f"SQL Error: {e}")
         return None
 
@@ -791,21 +612,26 @@ def get_cars():
     if not data: return []
     return [d['plate'] for d in data]
 
+# --- OPTYMALIZACJA: Funkcja korzystająca z CACHE ---
 def get_reports_for_editor(team_name, date_obj, role=None):
-    # Pobiera raporty danego teamu z danej daty (do edycji przez montera)
+    """
+    Pobiera raporty z CACHE (load_all_data) zamiast odpytywać bazę.
+    Znacznie przyspiesza działanie aplikacji przy każdej interakcji.
+    """
+    all_df = load_all_data() # To jest cachowane!
+    if all_df.empty: return pd.DataFrame()
+    
     d_str = date_obj.strftime("%Y-%m-%d") if isinstance(date_obj, (datetime, pd.Timestamp)) else str(date_obj)
     
-    # FIX: Używamy LIKE + % aby złapać daty zapisane jako '2024-01-01T00:00:00' (ISO) oraz '2024-01-01'
-    date_pattern = d_str + "%"
-
-    # 1. Jeśli to admin, pokazujemy WSZYSTKIE raporty z tego dnia
+    # Filtrowanie w pamięci (Pandas)
+    mask_date = all_df['date'].astype(str).str.startswith(d_str)
+    
     if role == 'admin':
-        data = run_query("SELECT * FROM reports WHERE date LIKE %s", (date_pattern,), fetch="all")
+        return all_df[mask_date]
     else:
-        # 2. Dla zwykłego usera: Szukamy "miękko" i po dacie LIKE
-        data = run_query("SELECT * FROM reports WHERE TRIM(team_name) ILIKE TRIM(%s) AND date LIKE %s", (team_name, date_pattern), fetch="all")
-        
-    return pd.DataFrame(data) if data else pd.DataFrame()
+        # Filtrowanie po teamie (case insensitive)
+        mask_team = all_df['team_name'].str.strip().str.lower() == team_name.strip().lower()
+        return all_df[mask_date & mask_team]
 
 def save_report_to_db(date, obj_num, address, team, we, w_json, m_json, wt_json, af, ar, mf, mr, og, ox, gs, act, tech, hs):
     # Data conversion just in case
@@ -844,6 +670,39 @@ def delete_report(report_id):
 def load_all_data():
     data = run_query("SELECT * FROM reports", fetch="all")
     return pd.DataFrame(data) if data else pd.DataFrame()
+
+def get_worker_day_stats(worker_name, query_date, exclude_report_id=None):
+    """
+    Oblicza sumaryczny czas pracy i przerw pracownika w danym dniu
+    ze wszystkich raportów (z pominięciem exclude_report_id).
+    Używa CACHE (load_all_data) dla wydajności.
+    """
+    all_df = load_all_data()
+    if all_df.empty: return 0.0, 0
+    
+    d_str = query_date.strftime("%Y-%m-%d") if isinstance(query_date, (datetime, pd.Timestamp)) else str(query_date)
+    
+    # Filtrujemy tylko ten dzień
+    day_df = all_df[all_df['date'].astype(str).str.startswith(d_str)]
+    
+    total_hours = 0.0
+    total_break_min = 0
+    
+    for idx, row in day_df.iterrows():
+        # Pomijamy edytowany raport (żeby nie liczyć podwójnie)
+        if exclude_report_id is not None and str(row['id']) == str(exclude_report_id):
+            continue
+            
+        if row['workers_json']:
+            try:
+                w_list = json.loads(row['workers_json'])
+                for w in w_list:
+                    if w['name'] == worker_name:
+                        total_hours += w.get('calculated_hours', 0)
+                        total_break_min += w.get('break', 0)
+            except: pass
+            
+    return total_hours, total_break_min
 
 def get_localized_hup_status(saved_status):
     """
@@ -1367,7 +1226,7 @@ def monter_view():
                     s = datetime.strptime(w['start'], "%H:%M")
                     e = datetime.strptime(w['end'], "%H:%M")
                     
-                    # --- PRZYWRÓCONA WALIDACJA (RAMY CZASOWE) ---
+                    # --- WALIDACJA (RAMY CZASOWE) ---
                     # 1. Start nie może być wcześniej niż 06:00
                     start_limit = datetime.strptime("06:00", "%H:%M")
                     if s < start_limit:
@@ -1385,26 +1244,36 @@ def monter_view():
                             can_save = False
 
                     diff = (e - s).total_seconds() / 3600.0
-                    break_time = w['break']
-                    calc_hours = diff - (break_time / 60.0)
+                    current_break = w['break']
+                    calc_hours = diff - (current_break / 60.0)
                     
                     if calc_hours <= 0:
                         st.error(f"❌ {w['name']}: {get_text('err_time_neg')}")
                         can_save = False
                     
-                    # --- WALIDACJA PRZERW WG UMOWY ---
-                    # Pobieramy typ umowy (domyślnie 'Contract' jeśli brak w bazie)
+                    # --- WALIDACJA PRZERW WG UMOWY (DZIENNA) ---
+                    # 1. Pobieramy historię pracy z innych raportów tego dnia
+                    hist_hours, hist_break = get_worker_day_stats(
+                        w['name'], 
+                        report_date, 
+                        exclude_report_id=current_edit_id
+                    )
+                    
+                    # 2. Sumujemy
+                    total_daily_work_hours = hist_hours + calc_hours
+                    total_daily_break_min = hist_break + current_break
+                    
                     c_type = emp_map.get(w['name'], 'Contract') 
                     
-                    # Warunki:
-                    # 1. B2B i Contract > 6h pracy -> min 30 min przerwy
-                    if calc_hours > 6 and break_time < 30:
-                        st.error(f"❌ {w['name']} ({c_type}): {get_text('err_break_b2b') if c_type == 'B2B' else get_text('err_break_std_6h')}")
+                    # Warunki (sprawdzamy CAŁY DZIEŃ):
+                    # B2B i Contract > 6h pracy -> łącznie min 30 min przerwy
+                    if total_daily_work_hours > 6 and total_daily_break_min < 30:
+                        st.error(f"❌ {w['name']} ({c_type}): {get_text('err_break_b2b') if c_type == 'B2B' else get_text('err_break_std_6h')} (Total: {total_daily_work_hours:.1f}h, Przerwa: {total_daily_break_min}m)")
                         can_save = False
                     
-                    # 2. Tylko Contract > 9h pracy -> min 45 min przerwy
-                    if c_type != 'B2B' and calc_hours > 9 and break_time < 45:
-                        st.error(f"❌ {w['name']} (Umowa): {get_text('err_break_std_9h')}")
+                    # Tylko Contract > 9h pracy -> łącznie min 45 min przerwy
+                    if c_type != 'B2B' and total_daily_work_hours > 9 and total_daily_break_min < 45:
+                        st.error(f"❌ {w['name']} (Umowa): {get_text('err_break_std_9h')} (Total: {total_daily_work_hours:.1f}h, Przerwa: {total_daily_break_min}m)")
                         can_save = False
                     # ---------------------------------
 
