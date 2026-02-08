@@ -983,7 +983,7 @@ def create_pdf_report(df, start_date, end_date):
 
 # --- UI START ---
 # Inicjalizacja bazy przy starcie (tworzy tabele jesli nie ma)
-init_db()
+#init_db()
 
 if 'lang' not in st.session_state: st.session_state['lang'] = 'PL'
 def get_text(key): return TRANSLATIONS[st.session_state['lang']][key]
