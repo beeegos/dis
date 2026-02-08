@@ -50,7 +50,27 @@ TECHNOLOGIES = [
 ]
 
 # --- KONFIGURACJA STRONY ---
-st.set_page_config(page_title="Fiber System", layout="wide")
+st.set_page_config(page_title="Fiber System", layout="wide", initial_sidebar_state="collapsed")
+
+# --- MOBILE CSS HACKS ---
+st.markdown("""
+<style>
+    div.stButton > button {
+        width: 100%;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        font-weight: bold;
+    }
+    div[data-baseweb="checkbox"] label {
+        font-size: 1.2rem !important;
+    }
+    div[data-testid="stExpander"] {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # --- SŁOWNIK TŁUMACZEŃ (PL, DE, ENG) ---
 TRANSLATIONS = {
@@ -64,7 +84,6 @@ TRANSLATIONS = {
         "sidebar_login_info": "Zalogowano jako:",
         "sidebar_admin_warning": "Panel Administratora",
         
-        # Formularz Montera
         "form_title": "🛠️ Formularz Pracy (DG)",
         "mode_select_label": "Wybierz tryb:",
         "mode_new": "📝 Nowy Raport",
@@ -81,9 +100,9 @@ TRANSLATIONS = {
         "addr_label": "Adres",
         "worker_header": "👤 Zespół i Czas Pracy",
         "worker_select_label": "Wybierz Pracownika",
-        "add_worker_btn": "➕ Dodaj kolejnego pracownika",
+        "add_worker_btn": "➕ Dodaj pracownika",
         "remove_worker_btn": "Usuń ostatniego",
-        "start_label": "Początek",
+        "start_label": "Start",
         "break_label": "Przerwa (min)",
         "end_label": "Koniec",
         "car_label": "Auto",
@@ -96,7 +115,6 @@ TRANSLATIONS = {
         "err_add_one_worker": "Dodaj przynajmniej jednego pracownika!",
         "lbl_next_day_info": "ℹ️ Praca kończy się następnego dnia: {} ({}h)",
         
-        # HUP - NOWE
         "lbl_hup_question": "Czy założyłeś HÜP?",
         "lbl_hup_type_select": "Wybierz rodzaj HÜP:",
         "opt_hup_yes": "Tak",
@@ -117,19 +135,20 @@ TRANSLATIONS = {
         "warn_fill_obj_we": "Uzupełnij 'Numer Obiektu' i 'Liczbę WE'.",
         "msg_flats_updated": "Zaktualizowano {} numerów mieszkań!",
         
-        # Mobile View Translations & New Features
         "mobile_mode_toggle": "📱 Tryb mobilny (Duże przyciski)",
         "select_flat_label": "Wybierz mieszkanie do edycji:",
         "flat_pos_label": "Poz",
         "editing_info": "Edytujesz:",
         "flat_number_input": "Numer mieszkania (Wohnung)",
         "preview_full_list": "Podgląd całej listy",
-        "btn_auto_fill": "⚡ Auto-uzupełnij numery mieszkań (z Nr Obiektu)",
+        "btn_auto_fill": "⚡ Auto-uzupełnij numery mieszkań",
         "btn_delete_report": "🗑️ Usuń ten raport (Bezpowrotnie!)",
         "btn_download_excel": "📥 Pobierz Raport Excel (Kolorowy)",
         "lbl_summary_inline": "Podsumowanie",
+        "btn_prev": "⬅️ Poprzednie",
+        "btn_next": "Następne ➡️",
 
-        "section_2_title": "2. Zużyte Materiały",
+        "section_2_title": "2. Zużyte Materiały (Kliknij aby rozwinąć)",
         "section_3_title": "3. Status Zakończenia",
         
         "lbl_addr_finished": "Czy adres jest skończony?",
@@ -148,18 +167,16 @@ TRANSLATIONS = {
         "col_activation": "Aktywacja",
         "tech_label": "Rodzaj Technologii",
         
-        # Admin Dashboard
         "dash_title": "📊 Dashboard Zarządzania",
         "tab_day": "📅 Raport Dzienny",
         "tab_month": "📈 Statystyki Miesięczne",
         "tab_emp": "👥 Pracownicy",
-        "tab_cars": "🚗 Flota / Auta",  # NOWA ZAKŁADKA
+        "tab_cars": "🚗 Flota / Auta",
         "tab_db": "🗄️ Pełna Baza",
         "tab_users": "🔑 Konta / Users",
         "tab_pdf": "📄 Raporty PDF",
         "no_data": "Brak danych w bazie.",
         
-        # Admin Employees & Cars
         "emp_header": "Zarządzanie Pracownikami",
         "car_header": "Zarządzanie Flotą (Auta)",
         "add_emp_label": "Dodaj pracownika (Imię i Nazwisko)",
@@ -178,7 +195,6 @@ TRANSLATIONS = {
         "msg_no_employees": "Brak pracowników.",
         "msg_no_cars": "Brak aut w systemie.",
         
-        # Admin Users
         "user_header": "Zarządzanie Kontami Systemowymi",
         "add_user_header": "Dodaj nowe konto",
         "lbl_u_name": "Nazwa (np. Team 1)",
@@ -233,7 +249,7 @@ TRANSLATIONS = {
         "lbl_addr_context": "Adresse / Auftrag",
         "chart_team": "Installations (Team)",
         "db_header": "Full Database Dump",
-        "warn_no_work_month": "Keine Arbeitsberichte für diesen Mitarbeiter im ausgewählten Monat.",
+        "warn_no_work_month": "Brak raportów pracy dla tego pracownika w wybranym miesiącu.",
         
         "btn_init_db": "🔧 Wymuś inicjalizację bazy (init_db)",
         "msg_db_init": "Baza zainicjalizowana!"
@@ -309,8 +325,10 @@ TRANSLATIONS = {
         "btn_delete_report": "🗑️ Diesen Bericht löschen (Endgültig!)",
         "btn_download_excel": "📥 Excel-Bericht herunterladen (Farbig)",
         "lbl_summary_inline": "Zusammenfassung",
+        "btn_prev": "⬅️ Vorherige",
+        "btn_next": "Nächste ➡️",
         
-        "section_2_title": "2. Materialverbrauch",
+        "section_2_title": "2. Materialverbrauch (Klicken zum Erweitern)",
         "section_3_title": "3. Fertigstellungsstatus",
         
         "lbl_addr_finished": "Ist die Adresse fertig?",
@@ -385,6 +403,186 @@ TRANSLATIONS = {
         "total_day_label": "∑ TAGES-SUMME:",
 
         "metric_hours": "🕒 Stunden",
+        "metric_we": "🏠 WE",
+        "metric_gfta": "📦 Gf-TA",
+        "metric_ont": "ONT modem",
+        "metric_activations": "⚡ Activations",
+        "metric_hup": "🔧 HÜP (Qty)",
+        "metric_hup_status": "HÜP Status",
+        "lbl_activated_list": "Aktivierte ONT (Flat No):", 
+        "lbl_gfta_list": "Installed Gf-TA (List):",
+        "metric_kanal": "📏 Metalikanal 30x30",
+        "metric_srv": "🖥️ Serveschrank",
+        "metric_tech_used": "⚙️ Technology",
+        "details_expander": "Report Details",
+        
+        "col_materials": "Materials",
+        "col_status_addr": "Address Status",
+        "col_status_mfr": "MFR Status",
+        "lbl_workers": "Workers:",
+        "lbl_worker_hours": "Work hours:",
+        
+        "month_header": "Monthly Analysis",
+        "pick_month": "Select Month",
+        "lbl_emp_select": "Select Employee",
+        "lbl_total_hours": "Total Hours",
+        "lbl_addr_context": "Address / Order",
+        "chart_team": "Installations (Team)",
+        "db_header": "Full Database Dump",
+        "warn_no_work_month": "No reports for this employee in selected month.",
+        
+        "btn_init_db": "🔧 Force DB Init (init_db)",
+        "msg_db_init": "Database initialized!"
+    },
+    "ENG": {
+        "login_title": "🔐 Login - Fiber System",
+        "user_label": "Login",
+        "pass_label": "Password",
+        "login_btn": "Sign In",
+        "login_error": "Invalid credentials",
+        "logout_btn": "Log out",
+        "sidebar_login_info": "Logged in as:",
+        "sidebar_admin_warning": "Admin Panel",
+        
+        "form_title": "🛠️ Work Report (DG)",
+        "mode_select_label": "Select mode:",
+        "mode_new": "📝 New Report",
+        "mode_edit": "✏️ Edit Report",
+        "select_report_label": "Select report to edit (Address)",
+        "pick_edit_date": "Select report date to edit",
+        "no_reports_to_edit": "No reports for your team on this date.",
+        "edit_loaded_info": "Editing report ID: {}",
+        "search_team_label": "Search reports for team:",
+        
+        "expander_data": "📍 Order Data",
+        "date_label": "Report Date",
+        "obj_num_label": "Object Number",
+        "addr_label": "Address",
+        "worker_header": "👤 Team & Work Time",
+        "worker_select_label": "Select Worker",
+        "add_worker_btn": "➕ Add next worker",
+        "remove_worker_btn": "Remove last",
+        "start_label": "Start",
+        "break_label": "Break (min)",
+        "end_label": "End",
+        "car_label": "Car",
+        "clean_form_btn": "🧹 Clear form",
+        
+        "err_start_time": "⚠️ Start time cannot be earlier than 06:00 AM!",
+        "err_end_time": "⚠️ End time next day cannot be later than 05:00 AM!",
+        "err_time_neg": "Work time <= 0!",
+        "err_worker_time": "Worker hours error.",
+        "err_add_one_worker": "Add at least one worker!",
+        "lbl_next_day_info": "ℹ️ Work ends next day: {} ({}h)",
+        
+        "lbl_hup_question": "Did you install HÜP?",
+        "lbl_hup_type_select": "Select HÜP type:",
+        "opt_hup_yes": "Yes",
+        "opt_hup_no": "No",
+        
+        "opt_hup_std": "Hüp",
+        "opt_hup_multi": "MultiHüp",
+        "opt_hup_change": "Exchange to MHüp",
+        "opt_hup_rebuild": "Rebuild MHüp",
+        
+        "err_break_b2b": "⚠️ B2B: Over 6h work requires min. 30 min break!",
+        "err_break_std_6h": "⚠️ Contract: Over 6h work requires min. 30 min break!",
+        "err_break_std_9h": "⚠️ Contract: Over 9h work requires min. 45 min break!",
+        
+        "section_1_title": "1. Flats List",
+        "lbl_we_count": "WE Count",
+        "err_we_count": "⚠️ Please fill WE count to save!",
+        "warn_fill_obj_we": "Fill 'Object Number' and 'WE Count'.",
+        "msg_flats_updated": "Updated {} flat numbers!",
+        
+        "mobile_mode_toggle": "📱 Mobile Mode (Big Buttons)",
+        "select_flat_label": "Select flat to edit:",
+        "flat_pos_label": "Pos.",
+        "editing_info": "Editing:",
+        "flat_number_input": "Flat Number",
+        "preview_full_list": "Full List Preview",
+        "btn_auto_fill": "⚡ Auto-fill Flat Numbers",
+        "btn_delete_report": "🗑️ Delete this report (Permanent!)",
+        "btn_download_excel": "📥 Download Excel Report",
+        "lbl_summary_inline": "Summary",
+        "btn_prev": "⬅️ Prev",
+        "btn_next": "Next ➡️",
+
+        "section_2_title": "2. Materials Used (Click to expand)",
+        "section_3_title": "3. Completion Status",
+        
+        "lbl_addr_finished": "Is address finished?",
+        "lbl_mfr_ready": "Is MFR ready?",
+        "lbl_reason": "Reason (Required):",
+        "opt_yes": "Yes",
+        "opt_no": "No",
+        
+        "save_btn": "💾 Save Report",
+        "update_btn": "💾 Update Report",
+        "save_success": "Saved! Team: {}. Gf-TA installed: {}",
+        "update_success": "Report updated successfully!",
+        "save_error": "Save error! Check times/fields.",
+        
+        "col_flat": "Flat (No)",
+        "col_activation": "Activation",
+        "tech_label": "Technology Type",
+        
+        "dash_title": "📊 Management Dashboard",
+        "tab_day": "📅 Daily Report",
+        "tab_month": "📈 Monthly Stats",
+        "tab_emp": "👥 Employees",
+        "tab_cars": "🚗 Fleet / Cars",
+        "tab_db": "🗄️ Full DB",
+        "tab_users": "🔑 Accounts / Users",
+        "tab_pdf": "📄 PDF Reports",
+        "no_data": "No data in database.",
+        
+        "emp_header": "Employee Management",
+        "car_header": "Fleet Management (Cars)",
+        "add_emp_label": "Add new employee",
+        "add_car_label": "Add car (License Plate)",
+        "lbl_contract_type": "Contract Type",
+        "opt_contract_b2b": "B2B (Self-employed)",
+        "opt_contract_std": "Standard Contract",
+        "add_emp_btn": "Add",
+        "add_car_btn": "Add Car",
+        "del_btn": "Remove",
+        "current_emp_list": "Current Employee List:",
+        "current_car_list": "Current Car List:",
+        "emp_added": "Employee added: {} ({})",
+        "car_added": "Car added: {}",
+        "emp_deleted": "Employee removed: {}",
+        "msg_no_employees": "No employees.",
+        "msg_no_cars": "No cars.",
+        
+        "user_header": "System Accounts Management",
+        "add_user_header": "Add new account",
+        "lbl_u_name": "Name (e.g. Team 1)",
+        "lbl_u_login": "Login",
+        "lbl_u_pass": "Password",
+        "lbl_u_role": "Role",
+        "btn_add_user": "Create Account",
+        "user_added_success": "Account '{}' created.",
+        "user_exists_error": "Login '{}' is already taken.",
+        "list_users_header": "Existing accounts:",
+        "btn_del_user": "Delete",
+        "user_deleted": "Account deleted: {}",
+
+        "pdf_header": "Periodic Report Generator",
+        "pdf_date_range": "Select date range",
+        "pdf_gen_btn": "Generate PDF",
+        "pdf_download": "Download PDF Report",
+        "pdf_no_data": "No data in selected range.",
+        
+        "day_summary_header": "Daily Summary - by Teams",
+        "pick_day": "Pick a day",
+        "no_reports_day": "No reports for this day.",
+        "team_header": "👷 TEAM",
+        
+        "lbl_tab_summary": "📌 Summary",
+        "total_day_label": "∑ DAILY TOTAL:",
+
+        "metric_hours": "🕒 Hours",
         "metric_we": "🏠 WE",
         "metric_gfta": "📦 Gf-TA",
         "metric_ont": "ONT modem",
@@ -850,6 +1048,49 @@ def reset_form_state():
         if k in st.session_state:
             del st.session_state[k]
 
+# --- NOWA FUNKCJA: Ładowanie raportu do session state i WYMUSZANIE wartości widżetów ---
+def force_load_report_into_state(loaded_report):
+    """Nadpisuje klucze w session_state, aby widżety się odświeżyły"""
+    if loaded_report is None: return
+
+    # 1. Pracownicy
+    workers = []
+    if loaded_report['workers_json']:
+        try: workers = json.loads(loaded_report['workers_json'])
+        except: pass
+    
+    st.session_state['workers'] = workers
+    # FIX: Nadpisz klucze widżetów (s_0, e_0, etc.)
+    for i, w in enumerate(workers):
+        st.session_state[f"s_{i}"] = w.get('start', '08:00')
+        st.session_state[f"b_{i}"] = w.get('break', 0)
+        st.session_state[f"e_{i}"] = w.get('end', '16:00')
+        st.session_state[f"c_{i}"] = w.get('car', '-')
+
+    # 2. Materiały
+    loaded_mats = {}
+    if loaded_report['materials_json']:
+        try: loaded_mats = json.loads(loaded_report['materials_json'])
+        except: pass
+    
+    for m in MATERIALS:
+        st.session_state[f"mat_{m}"] = loaded_mats.get(m, 0)
+    
+    # 3. Tabela
+    if loaded_report['work_table_json']:
+        try:
+            df = pd.DataFrame(json.loads(loaded_report['work_table_json']))
+            # Uzupełnij do 20 wierszy jeśli brakuje (standard UI)
+            if len(df) < 20:
+                missing = 20 - len(df)
+                ext = pd.DataFrame({"Wohnung": ["" for _ in range(missing)], "Gfta": [False]*missing, "Ont gpon": [False]*missing, "Ont xgs": [False]*missing, "Patch Ont": [False]*missing, "Activation": [False]*missing})
+                df = pd.concat([df, ext], ignore_index=True)
+            st.session_state['current_work_df'] = df
+        except:
+            pass
+    
+    st.session_state['last_loaded_id'] = loaded_report['id']
+
 def monter_view():
     disp = st.session_state.get('display_name') or st.session_state['username']
     user_role = st.session_state.get('role') # Pobieramy rolę (monter/admin)
@@ -906,6 +1147,13 @@ def monter_view():
             loaded_report = reports.loc[sel_idx]
             current_edit_id = loaded_report['id']
             st.info(get_text("edit_loaded_info").format(current_edit_id))
+
+            # --- CRITICAL FIX: WYMUSZENIE PRZEŁADOWANIA STANU GDY ZMIENIONO RAPORT ---
+            if 'last_loaded_id' not in st.session_state or st.session_state['last_loaded_id'] != current_edit_id:
+                force_load_report_into_state(loaded_report)
+                st.rerun() # Wymuszamy odświeżenie widżetów natychmiast
+            # ------------------------------------------------------------------------
+
         else:
             st.warning(get_text("no_reports_to_edit"))
             # --- FIX: Reset formularza gdy brak raportów (żeby nie było "duchów") ---
@@ -939,32 +1187,9 @@ def monter_view():
     # --- PRACOWNICY ---
     st.subheader(get_text("worker_header"))
     
-    # --- LOGIKA ŁADOWANIA DANYCH DO FORMULARZA (WORKERS + MATERIALS) ---
-    if 'workers' not in st.session_state or (loaded_report is not None and st.session_state.get('last_loaded_id') != current_edit_id):
-        # Reset domyślny
-        st.session_state['workers'] = []
-        
-        if loaded_report is not None:
-            # 1. Ładowanie pracowników
-            if loaded_report['workers_json']:
-                st.session_state['workers'] = json.loads(loaded_report['workers_json'])
-            
-            # 2. Ładowanie materiałów (FIX: WYMUSZENIE AKTUALIZACJI STANU)
-            # Musimy to zrobić tutaj, zanim formularz materiałów się wyrenderuje
-            loaded_mats_dict = {}
-            if loaded_report['materials_json']:
-                try: loaded_mats_dict = json.loads(loaded_report['materials_json'])
-                except: pass
-            
-            # Przepisujemy wartości do session_state, żeby inputy się odświeżyły
-            for m in MATERIALS:
-                st.session_state[f"mat_{m}"] = loaded_mats_dict.get(m, 0)
-                
-            st.session_state['last_loaded_id'] = current_edit_id
-        
-        elif 'workers' not in st.session_state:
+    # Jeśli nowy raport, to inicjujemy pustą listę
+    if 'workers' not in st.session_state:
              st.session_state['workers'] = []
-    # -------------------------------------------------------------------
             
     # Przycisk awaryjnego czyszczenia
     if st.button(get_text("clean_form_btn"), type="secondary"):
@@ -978,6 +1203,8 @@ def monter_view():
         with st.expander(f"👷 {w['name']}", expanded=True):
             # Zmieniony układ na 4 kolumny (dodano auto)
             c1, c2, c3, c4 = st.columns(4)
+            # Używamy klucza 'key', który jest powiązany z session_state. 
+            # Dzięki force_load_report_into_state, te klucze mają już nowe wartości.
             w['start'] = c1.text_input(get_text("start_label"), value=w.get('start', '08:00'), key=f"s_{i}")
             
             # --- ZABEZPIECZENIE PRZED BŁĘDNĄ/PUSTĄ PRZERWĄ ---
@@ -1089,20 +1316,12 @@ def monter_view():
     st.subheader(get_text("section_1_title"))
     we_count = st.number_input(get_text("lbl_we_count"), min_value=0, step=1, value=get_val('we_count', loaded_report['we_count'] if loaded_report is not None else 0))
     
-    if 'current_work_df' not in st.session_state or st.session_state.get('last_loaded_report_id') != current_edit_id:
-        if loaded_report is not None and loaded_report['work_table_json']:
-            loaded_df = pd.DataFrame(json.loads(loaded_report['work_table_json']))
-            if len(loaded_df) < 20:
-                missing = 20 - len(loaded_df)
-                ext = pd.DataFrame({"Wohnung": ["" for _ in range(missing)], "Gfta": [False]*missing, "Ont gpon": [False]*missing, "Ont xgs": [False]*missing, "Patch Ont": [False]*missing, "Activation": [False]*missing})
-                loaded_df = pd.concat([loaded_df, ext], ignore_index=True)
-            st.session_state['current_work_df'] = loaded_df
-        else:
-            st.session_state['current_work_df'] = pd.DataFrame({
-                "Wohnung": [str(i+1) for i in range(20)], 
-                "Gfta": [False]*20, "Ont gpon": [False]*20, "Ont xgs": [False]*20, "Patch Ont": [False]*20, "Activation": [False]*20
-            })
-        st.session_state['last_loaded_report_id'] = current_edit_id
+    # Inicjalizacja DF jeśli puste
+    if 'current_work_df' not in st.session_state:
+        st.session_state['current_work_df'] = pd.DataFrame({
+            "Wohnung": [str(i+1) for i in range(20)], 
+            "Gfta": [False]*20, "Ont gpon": [False]*20, "Ont xgs": [False]*20, "Patch Ont": [False]*20, "Activation": [False]*20
+        })
 
     if st.button(get_text("btn_auto_fill")):
         if obj_num and we_count > 0:
@@ -1120,29 +1339,70 @@ def monter_view():
 
     if use_mobile_view:
         df = st.session_state['current_work_df']
+        
+        # --- ZMIANA: Obsługa "Poprzedni/Następny" zamiast tylko listy ---
+        if 'mobile_flat_idx' not in st.session_state:
+            st.session_state['mobile_flat_idx'] = 0
+            
+        # Ograniczniki
+        max_idx = len(df) - 1
+        if st.session_state['mobile_flat_idx'] > max_idx: st.session_state['mobile_flat_idx'] = max_idx
+        if st.session_state['mobile_flat_idx'] < 0: st.session_state['mobile_flat_idx'] = 0
+            
+        # UI Wyboru (Select + Buttons)
+        c_sel, c_prev, c_next = st.columns([2, 1, 1])
+        
+        # Lista do selectboxa
         opts = df.index.tolist()
         lbls = [f"{get_text('flat_pos_label')}: {i+1} | Nr: {row['Wohnung']}" for i, row in df.iterrows()]
-        sel_idx = st.selectbox(get_text("select_flat_label"), opts, format_func=lambda x: lbls[x])
         
-        st.info(f"{get_text('editing_info')} **{df.at[sel_idx, 'Wohnung']}**")
+        # Aktualizacja przez Selectbox
+        sel_idx = c_sel.selectbox(
+            get_text("select_flat_label"), 
+            opts, 
+            index=st.session_state['mobile_flat_idx'],
+            format_func=lambda x: lbls[x],
+            label_visibility="collapsed"
+        )
+        
+        # Jeśli zmieniono selectbox, aktualizujemy stan
+        if sel_idx != st.session_state['mobile_flat_idx']:
+            st.session_state['mobile_flat_idx'] = sel_idx
+            st.rerun()
+            
+        # Przyciski Prev/Next
+        if c_prev.button(get_text("btn_prev"), use_container_width=True):
+            if st.session_state['mobile_flat_idx'] > 0:
+                st.session_state['mobile_flat_idx'] -= 1
+                st.rerun()
+        
+        if c_next.button(get_text("btn_next"), use_container_width=True):
+            if st.session_state['mobile_flat_idx'] < max_idx:
+                st.session_state['mobile_flat_idx'] += 1
+                st.rerun()
+
+        # Główny widok edycji
+        current_idx = st.session_state['mobile_flat_idx']
+        
+        st.info(f"{get_text('editing_info')} **{df.at[current_idx, 'Wohnung']}**")
         
         c_m1, c_m2 = st.columns(2)
-        new_flat = c_m1.text_input(get_text("flat_number_input"), value=df.at[sel_idx, 'Wohnung'])
-        if new_flat != df.at[sel_idx, 'Wohnung']:
-            df.at[sel_idx, 'Wohnung'] = new_flat
+        new_flat = c_m1.text_input(get_text("flat_number_input"), value=df.at[current_idx, 'Wohnung'])
+        if new_flat != df.at[current_idx, 'Wohnung']:
+            df.at[current_idx, 'Wohnung'] = new_flat
             st.rerun()
 
         st.write("---")
         c_t1, c_t2 = st.columns(2)
-        def up_val(col): st.session_state['current_work_df'].at[sel_idx, col] = st.session_state[f"mob_{sel_idx}_{col}"]
+        def up_val(col): st.session_state['current_work_df'].at[current_idx, col] = st.session_state[f"mob_{current_idx}_{col}"]
         
         with c_t1:
-            st.toggle("Gf-TA", value=df.at[sel_idx, 'Gfta'], key=f"mob_{sel_idx}_Gfta", on_change=up_val, args=("Gfta",))
-            st.toggle("ONT GPON", value=df.at[sel_idx, 'Ont gpon'], key=f"mob_{sel_idx}_Ont gpon", on_change=up_val, args=("Ont gpon",))
-            st.toggle("Activation", value=df.at[sel_idx, 'Activation'], key=f"mob_{sel_idx}_Activation", on_change=up_val, args=("Activation",))
+            st.toggle("Gf-TA", value=df.at[current_idx, 'Gfta'], key=f"mob_{current_idx}_Gfta", on_change=up_val, args=("Gfta",))
+            st.toggle("ONT GPON", value=df.at[current_idx, 'Ont gpon'], key=f"mob_{current_idx}_Ont gpon", on_change=up_val, args=("Ont gpon",))
+            st.toggle("Activation", value=df.at[current_idx, 'Activation'], key=f"mob_{current_idx}_Activation", on_change=up_val, args=("Activation",))
         with c_t2:
-            st.toggle("Patch ONT", value=df.at[sel_idx, 'Patch Ont'], key=f"mob_{sel_idx}_Patch Ont", on_change=up_val, args=("Patch Ont",))
-            st.toggle("ONT XGS", value=df.at[sel_idx, 'Ont xgs'], key=f"mob_{sel_idx}_Ont xgs", on_change=up_val, args=("Ont xgs",))
+            st.toggle("Patch ONT", value=df.at[current_idx, 'Patch Ont'], key=f"mob_{current_idx}_Patch Ont", on_change=up_val, args=("Patch Ont",))
+            st.toggle("ONT XGS", value=df.at[current_idx, 'Ont xgs'], key=f"mob_{current_idx}_Ont xgs", on_change=up_val, args=("Ont xgs",))
         
         st.write("---")
         with st.expander(get_text("preview_full_list")):
@@ -1173,9 +1433,8 @@ def monter_view():
     technology_type = st.selectbox(get_text("tech_label"), TECHNOLOGIES, index=def_tech_idx)
     st.write("---")
 
-    # --- SEKCJA 2: MATERIAŁY ---
-    st.subheader(get_text("section_2_title"))
-    with st.container(border=True):
+    # --- SEKCJA 2: MATERIAŁY (UKRYTE DOMYŚLNIE) ---
+    with st.expander(get_text("section_2_title"), expanded=False):
         cols = st.columns(2)
         # UWAGA: Tu pobieramy wartości już z session_state (które zaktualizowaliśmy wyżej)
         # dzięki temu inputy będą miały poprawne wartości.
