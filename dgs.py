@@ -233,7 +233,7 @@ TRANSLATIONS = {
         "lbl_addr_context": "Adresse / Auftrag",
         "chart_team": "Installations (Team)",
         "db_header": "Full Database Dump",
-        "warn_no_work_month": "Brak raportów pracy dla tego pracownika w wybranym miesiącu.",
+        "warn_no_work_month": "Keine Arbeitsberichte für diesen Mitarbeiter im ausgewählten Monat.",
         
         "btn_init_db": "🔧 Wymuś inicjalizację bazy (init_db)",
         "msg_db_init": "Baza zainicjalizowana!"
@@ -381,10 +381,10 @@ TRANSLATIONS = {
         "no_reports_day": "Keine Berichte für diesen Tag.",
         "team_header": "👷 TEAM",
         
-        "lbl_tab_summary": "📌 Summary",
+        "lbl_tab_summary": "📌 Zusammenfassung",
         "total_day_label": "∑ TAGES-SUMME:",
 
-        "metric_hours": "🕒 Hours",
+        "metric_hours": "🕒 Stunden",
         "metric_we": "🏠 WE",
         "metric_gfta": "📦 Gf-TA",
         "metric_ont": "ONT modem",
@@ -613,6 +613,13 @@ def get_cars():
     return [d['plate'] for d in data]
 
 # --- OPTYMALIZACJA: Funkcja korzystająca z CACHE ---
+# --- FIX: Dodano ORDER BY id DESC dla stabilności widoku edycji!
+@st.cache_data(ttl=60)
+def load_all_data():
+    # SORTOWANIE JEST KLUCZOWE DLA STABILNOŚCI EDYTORA
+    data = run_query("SELECT * FROM reports ORDER BY id DESC", fetch="all")
+    return pd.DataFrame(data) if data else pd.DataFrame()
+
 def get_reports_for_editor(team_name, date_obj, role=None):
     """
     Pobiera raporty z CACHE (load_all_data) zamiast odpytywać bazę.
@@ -626,6 +633,7 @@ def get_reports_for_editor(team_name, date_obj, role=None):
     # Filtrowanie w pamięci (Pandas)
     mask_date = all_df['date'].astype(str).str.startswith(d_str)
     
+    # Wynik i tak będzie posortowany po ID malejąco, bo load_all_data tak zwraca
     if role == 'admin':
         return all_df[mask_date]
     else:
@@ -663,13 +671,6 @@ def update_report_in_db(rep_id, date, obj_num, address, team, we, w_json, m_json
 def delete_report(report_id):
     # FIX: Rzutowanie na int() aby uniknąć problemów z numpy.int64
     run_query("DELETE FROM reports WHERE id=%s", (int(report_id),), fetch="none")
-
-# Dodajemy dekorator cache_data
-# ttl=60 oznacza: "pamiętaj te dane przez 60 sekund, potem pobierz świeże"
-@st.cache_data(ttl=60)
-def load_all_data():
-    data = run_query("SELECT * FROM reports", fetch="all")
-    return pd.DataFrame(data) if data else pd.DataFrame()
 
 def get_worker_day_stats(worker_name, query_date, exclude_report_id=None):
     """
