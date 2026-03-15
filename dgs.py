@@ -320,7 +320,7 @@ TRANSLATIONS = {
         "flat_pos_label": "Pos.",
         "editing_info": "Bearbeitung:",
         "flat_number_input": "Wohnungsnummer",
-        "preview_full_list": "Vorschau der gesamten Liste",
+        "preview_full_list": "Vorschau der entiren Liste",
         "btn_auto_fill": "⚡ Wohnungsnummern automatisch ausfüllen",
         "btn_delete_report": "🗑️ Diesen Bericht löschen (Endgültig!)",
         "btn_download_excel": "📥 Excel-Bericht herunterladen (Farbig)",
@@ -429,7 +429,7 @@ TRANSLATIONS = {
         "lbl_addr_context": "Address / Order",
         "chart_team": "Installations (Team)",
         "db_header": "Full Database Dump",
-        "warn_no_work_month": "No reports for this employee in selected month.",
+        "warn_no_work_month": "Keine Arbeitsberichte für diesen Mitarbeiter im ausgewählten Monat.",
         
         "btn_init_db": "🔧 Force DB Init (init_db)",
         "msg_db_init": "Database initialized!"
@@ -983,7 +983,7 @@ def create_pdf_report(df, start_date, end_date):
 
 # --- UI START ---
 # Inicjalizacja bazy przy starcie (tworzy tabele jesli nie ma)
-#init_db()
+init_db()
 
 if 'lang' not in st.session_state: st.session_state['lang'] = 'PL'
 def get_text(key): return TRANSLATIONS[st.session_state['lang']][key]
@@ -1519,21 +1519,21 @@ def monter_view():
                         exclude_report_id=current_edit_id
                     )
                     
-                    # 2. Sumujemy
-                    total_daily_work_hours = hist_hours + calc_hours
+                    # 2. Sumujemy (DODANO ZAOKRĄGLENIE ABY UNIKNĄĆ BŁĘDÓW PRECYZJI)
+                    total_daily_work_hours = round(hist_hours + calc_hours, 2)
                     total_daily_break_min = hist_break + current_break
                     
                     c_type = emp_map.get(w['name'], 'Contract') 
                     
                     # Warunki (sprawdzamy CAŁY DZIEŃ):
                     # B2B i Contract > 6h pracy -> łącznie min 30 min przerwy
-                    if total_daily_work_hours > 6 and total_daily_break_min < 30:
-                        st.error(f"❌ {w['name']} ({c_type}): {get_text('err_break_b2b') if c_type == 'B2B' else get_text('err_break_std_6h')} (Total: {total_daily_work_hours:.1f}h, Przerwa: {total_daily_break_min}m)")
+                    if total_daily_work_hours > 6.00 and total_daily_break_min < 30:
+                        st.error(f"❌ {w['name']} ({c_type}): {get_text('err_break_b2b') if c_type == 'B2B' else get_text('err_break_std_6h')} (Total: {total_daily_work_hours:.2f}h, Przerwa: {total_daily_break_min}m)")
                         can_save = False
                     
                     # Tylko Contract > 9h pracy -> łącznie min 45 min przerwy
-                    if c_type != 'B2B' and total_daily_work_hours > 9 and total_daily_break_min < 45:
-                        st.error(f"❌ {w['name']} (Umowa): {get_text('err_break_std_9h')} (Total: {total_daily_work_hours:.1f}h, Przerwa: {total_daily_break_min}m)")
+                    if c_type != 'B2B' and total_daily_work_hours > 9.00 and total_daily_break_min < 45:
+                        st.error(f"❌ {w['name']} (Umowa): {get_text('err_break_std_9h')} (Total: {total_daily_work_hours:.2f}h, Przerwa: {total_daily_break_min}m)")
                         can_save = False
                     # ---------------------------------
 
