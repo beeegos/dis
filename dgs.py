@@ -684,7 +684,7 @@ def run_query(query, params=None, fetch="all"):
         print(f"SQL Error: {e}")
         return None
 
-def init_db():
+#def init_db():
     # Tworzenie tabel w PostgreSQL
     
     # 1. Pracownicy
